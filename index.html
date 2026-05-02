@@ -1598,6 +1598,8 @@ async function submitBooking() {
   const email = document.getElementById('email').value.trim();
   const phone = document.getElementById('phone').value.trim();
 
+  const now = new Date().toISOString();
+
   const contactPayload = {
     id: contactId,
     client_reference: publicReference,
@@ -1605,7 +1607,7 @@ async function submitBooking() {
     email: email,
     phone: phone,
     type: document.getElementById('client_type').value,
-    created_at: new Date().toISOString()
+    created_at: now
   };
 
   try {
@@ -1621,7 +1623,7 @@ async function submitBooking() {
       address: state.address,
       postcode: state.postcode,
       city: 'London',
-      created_at: new Date().toISOString()
+      created_at: now
     };
 
     const { error: propertyErr } = await supabaseClient
@@ -1644,7 +1646,7 @@ async function submitBooking() {
       status: leadStatus,
       estimated_value: state.price || 0,
       epc_type: state.type,
-      created_at: new Date().toISOString()
+      created_at: now
     };
 
     const { error: leadErr } = await supabaseClient
@@ -1672,7 +1674,6 @@ async function submitBooking() {
       id: jobId,
       contact_id: contactId,
       property_id: propertyId,
-      lead_id: leadId,
       reference: publicReference,
       booking_date: state.date,
       booking_window: state.window,
@@ -1698,10 +1699,17 @@ async function submitBooking() {
         postcode: state.postcode,
         property_type: propertyType,
         pricing_band: state.quoteLabel,
-        notes: notes
+        service_type: state.type,
+        quote_amount: state.price || 0,
+        appointment_date: state.date,
+        appointment_window: state.window,
+        area: state.zoneName,
+        source: source,
+        notes: notes,
+        created_at: now
       },
       field_status: null,
-      created_at: new Date().toISOString()
+      created_at: now
     };
 
     const { error: jobErr } = await supabaseClient
