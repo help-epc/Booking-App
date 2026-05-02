@@ -846,15 +846,6 @@ footer a {
           <label>Property type</label>
           <select id="property_type">
             <option value="">— Select —</option>
-            <option>Flat / Apartment</option>
-            <option>Terraced house</option>
-            <option>Semi-detached</option>
-            <option>Detached house</option>
-            <option>Bungalow</option>
-            <option>Shop</option>
-            <option>Office</option>
-            <option>Warehouse</option>
-            <option>Other</option>
           </select>
         </div>
       </div>
@@ -1251,6 +1242,46 @@ function checkPostcode() {
   }
 }
 
+function updatePropertyTypeOptions(type) {
+  const select = document.getElementById('property_type');
+
+  const domesticOptions = [
+    'Flat / Apartment',
+    'Terraced house',
+    'Semi-detached house',
+    'Detached house',
+    'Bungalow',
+    'Maisonette',
+    'Other residential property'
+  ];
+
+  const commercialOptions = [
+    'Shop / Retail unit',
+    'Office',
+    'Restaurant / Café',
+    'Warehouse / Industrial unit',
+    'Workshop',
+    'Mixed-use commercial premises',
+    'Community / Public building',
+    'Medical / Dental / Clinic',
+    'School / Nursery / Education',
+    'Hotel / Guest accommodation',
+    'Storage unit',
+    'Other commercial premises'
+  ];
+
+  const options = type === 'Commercial' ? commercialOptions : domesticOptions;
+
+  select.innerHTML = '<option value="">— Select —</option>';
+
+  options.forEach(optionText => {
+    const option = document.createElement('option');
+    option.value = optionText;
+    option.textContent = optionText;
+    select.appendChild(option);
+  });
+}
+
 function selectType(type) {
   state.type = type;
   state.price = null;
@@ -1264,6 +1295,7 @@ function selectType(type) {
   document.getElementById('domestic-fields').style.display = type === 'Domestic' ? 'block' : 'none';
   document.getElementById('commercial-fields').style.display = type === 'Commercial' ? 'block' : 'none';
 
+  updatePropertyTypeOptions(type);
   refreshQuote();
 }
 
