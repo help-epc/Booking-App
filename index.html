@@ -1595,23 +1595,23 @@ async function submitBooking() {
   const source = normaliseSource(document.getElementById('source').value);
   const propertyType = document.getElementById('property_type').value;
   const notes = document.getElementById('notes').value;
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
 
   const contactPayload = {
     id: contactId,
     client_reference: publicReference,
     name: fullName,
-    email: document.getElementById('email').value.trim(),
-    phone: document.getElementById('phone').value.trim(),
+    email: email,
+    phone: phone,
     type: document.getElementById('client_type').value,
     created_at: new Date().toISOString()
   };
 
   try {
-    const { data: contact, error: contactErr } = await supabaseClient
+    const { error: contactErr } = await supabaseClient
       .from('contacts')
-      .insert(contactPayload)
-      .select()
-      .single();
+      .insert(contactPayload);
 
     if (contactErr) throw contactErr;
 
@@ -1624,11 +1624,9 @@ async function submitBooking() {
       created_at: new Date().toISOString()
     };
 
-    const { data: property, error: propertyErr } = await supabaseClient
+    const { error: propertyErr } = await supabaseClient
       .from('properties')
-      .insert(propertyPayload)
-      .select()
-      .single();
+      .insert(propertyPayload);
 
     if (propertyErr) throw propertyErr;
 
@@ -1640,7 +1638,6 @@ async function submitBooking() {
     const leadPayload = {
       id: leadId,
       contact_id: contactId,
-      property_id: propertyId,
       property_address: state.address,
       postcode: state.postcode,
       source: source,
@@ -1650,11 +1647,9 @@ async function submitBooking() {
       created_at: new Date().toISOString()
     };
 
-    const { data: lead, error: leadErr } = await supabaseClient
+    const { error: leadErr } = await supabaseClient
       .from('leads')
-      .insert(leadPayload)
-      .select()
-      .single();
+      .insert(leadPayload);
 
     if (leadErr) throw leadErr;
 
@@ -1697,8 +1692,8 @@ async function submitBooking() {
         lead_id: leadId,
         job_id: jobId,
         customer_name: fullName,
-        customer_email: document.getElementById('email').value.trim(),
-        customer_phone: document.getElementById('phone').value.trim(),
+        customer_email: email,
+        customer_phone: phone,
         property_address: state.address,
         postcode: state.postcode,
         property_type: propertyType,
@@ -1709,11 +1704,9 @@ async function submitBooking() {
       created_at: new Date().toISOString()
     };
 
-    const { data: job, error: jobErr } = await supabaseClient
+    const { error: jobErr } = await supabaseClient
       .from('jobs')
-      .insert(jobPayload)
-      .select()
-      .single();
+      .insert(jobPayload);
 
     if (jobErr) throw jobErr;
 
