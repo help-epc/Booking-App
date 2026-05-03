@@ -584,10 +584,7 @@ main {
   border: 1px solid #f5c2c7;
 }
 
-.days-grid {
-  display: grid;
-  gap: 12px;
-}
+.days-grid { display: grid; gap: 12px; }
 
 .day-card {
   border: 1.5px solid var(--border);
@@ -748,11 +745,6 @@ main {
   font-size: 13px;
   color: var(--ink3);
   line-height: 1.5;
-}
-
-.terms-check a {
-  color: var(--accent);
-  text-decoration: none;
 }
 
 .btn-row {
@@ -931,18 +923,9 @@ footer a {
   <h1>Book your EPC<br><em>assessment online</em></h1>
   <p>Fast, professional energy performance certificates for London properties. Accredited assessor, certificates issued promptly after assessment and payment.</p>
   <div class="trust-badges">
-    <div class="badge">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-      Fully accredited DEA
-    </div>
-    <div class="badge">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      AM / PM booking windows
-    </div>
-    <div class="badge">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-      Secure booking request
-    </div>
+    <div class="badge">Fully accredited DEA</div>
+    <div class="badge">AM / PM booking windows</div>
+    <div class="badge">Secure booking request</div>
   </div>
 </div>
 
@@ -1045,55 +1028,46 @@ footer a {
               <div class="band-info"><div class="band-range">0 to 100 m²</div><div class="band-duration">Small commercial premises</div></div>
               <div class="band-price">£180</div>
             </div>
-
             <div class="band-option" onclick="selectCommercialBand(this, 215, '101 to 200 m²', 75, 'commercial_sqm')">
               <div class="band-radio"></div>
               <div class="band-info"><div class="band-range">101 to 200 m²</div><div class="band-duration">Small to medium commercial premises</div></div>
               <div class="band-price">£215</div>
             </div>
-
             <div class="band-option" onclick="selectCommercialBand(this, 255, '201 to 300 m²', 90, 'commercial_sqm')">
               <div class="band-radio"></div>
               <div class="band-info"><div class="band-range">201 to 300 m²</div><div class="band-duration">Medium commercial premises</div></div>
               <div class="band-price">£255</div>
             </div>
-
             <div class="band-option" onclick="selectCommercialBand(this, 305, '301 to 400 m²', 105, 'commercial_sqm')">
               <div class="band-radio"></div>
               <div class="band-info"><div class="band-range">301 to 400 m²</div><div class="band-duration">Medium commercial premises</div></div>
               <div class="band-price">£305</div>
             </div>
-
             <div class="band-option" onclick="selectCommercialBand(this, 355, '401 to 500 m²', 120, 'commercial_sqm')">
               <div class="band-radio"></div>
               <div class="band-info"><div class="band-range">401 to 500 m²</div><div class="band-duration">Larger commercial premises</div></div>
               <div class="band-price">£355</div>
             </div>
-
             <div class="band-option" onclick="selectCommercialBand(this, 410, '501 to 600 m²', 135, 'commercial_sqm')">
               <div class="band-radio"></div>
               <div class="band-info"><div class="band-range">501 to 600 m²</div><div class="band-duration">Larger commercial premises</div></div>
               <div class="band-price">£410</div>
             </div>
-
             <div class="band-option" onclick="selectCommercialBand(this, 455, '601 to 700 m²', 150, 'commercial_sqm')">
               <div class="band-radio"></div>
               <div class="band-info"><div class="band-range">601 to 700 m²</div><div class="band-duration">Large commercial premises</div></div>
               <div class="band-price">£455</div>
             </div>
-
             <div class="band-option" onclick="selectCommercialBand(this, 495, '701 to 800 m²', 165, 'commercial_sqm')">
               <div class="band-radio"></div>
               <div class="band-info"><div class="band-range">701 to 800 m²</div><div class="band-duration">Large commercial premises</div></div>
               <div class="band-price">£495</div>
             </div>
-
             <div class="band-option" onclick="selectCommercialBand(this, 535, '801 to 900 m²', 180, 'commercial_sqm')">
               <div class="band-radio"></div>
               <div class="band-info"><div class="band-range">801 to 900 m²</div><div class="band-duration">Very large commercial premises</div></div>
               <div class="band-price">£535</div>
             </div>
-
             <div class="band-option" onclick="selectCommercialBand(this, 0, '901 m² to 10,000 m² — Custom quote', 0, 'commercial_custom')">
               <div class="band-radio"></div>
               <div class="band-info"><div class="band-range">901 m² to 10,000 m²</div><div class="band-duration">Custom quote required</div></div>
@@ -1293,11 +1267,7 @@ footer a {
 
   <div class="form-step" id="step-success">
     <div class="success-screen">
-      <div class="success-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-        </svg>
-      </div>
+      <div class="success-icon">✓</div>
       <h2>Booking request received</h2>
       <p>Your EPC booking request has been saved. Please keep your reference number in case you need to contact us about this job.</p>
       <div class="booking-ref">
@@ -1363,7 +1333,6 @@ const state = {
   liveJobs: [],
   availabilityLoaded: false,
   availabilityError: '',
-  contact: {},
   reference: ''
 };
 
@@ -1413,6 +1382,18 @@ const commercialSubtypes = [
   ['Community / leisure building', 'Community / leisure building'],
   ['Other commercial', 'Other commercial']
 ];
+
+function generateUUID() {
+  if (window.crypto && window.crypto.randomUUID) {
+    return window.crypto.randomUUID();
+  }
+
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 
 function getZone(pc) {
   const clean = String(pc || '').replace(/\s/g, '').toUpperCase();
@@ -2138,6 +2119,8 @@ async function submitBooking() {
     }
 
     const reference = generateReference();
+    const jobId = generateUUID();
+
     state.reference = reference;
 
     const fname = document.getElementById('fname').value.trim();
@@ -2150,6 +2133,7 @@ async function submitBooking() {
 
     const documents = {
       public_reference: reference,
+      job_id: jobId,
       customer_name: fullName,
       customer_email: email,
       customer_phone: phone,
@@ -2216,6 +2200,7 @@ async function submitBooking() {
     });
 
     const jobPayload = {
+      id: jobId,
       contact_id: contact ? contact.id : null,
       property_id: property ? property.id : null,
       lead_id: lead ? lead.id : null,
@@ -2243,6 +2228,7 @@ async function submitBooking() {
       console.warn('Full job insert failed. Retrying minimal job payload:', jobErr.message);
 
       const minimalJobPayload = {
+        id: jobId,
         reference: reference,
         booking_date: state.date,
         booking_window: state.bookingWindow,
