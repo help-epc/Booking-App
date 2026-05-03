@@ -948,26 +948,11 @@ footer a {
 
 <div class="progress-wrap">
   <div class="progress-steps">
-    <div class="step-tab active" id="tab-1">
-      <div class="step-num">1</div>
-      <span class="step-label">Property</span>
-    </div>
-    <div class="step-tab" id="tab-2">
-      <div class="step-num">2</div>
-      <span class="step-label">Details</span>
-    </div>
-    <div class="step-tab" id="tab-3">
-      <div class="step-num">3</div>
-      <span class="step-label">Calendar</span>
-    </div>
-    <div class="step-tab" id="tab-4">
-      <div class="step-num">4</div>
-      <span class="step-label">Contact</span>
-    </div>
-    <div class="step-tab" id="tab-5">
-      <div class="step-num">5</div>
-      <span class="step-label">Confirm</span>
-    </div>
+    <div class="step-tab active" id="tab-1"><div class="step-num">1</div><span class="step-label">Property</span></div>
+    <div class="step-tab" id="tab-2"><div class="step-num">2</div><span class="step-label">Details</span></div>
+    <div class="step-tab" id="tab-3"><div class="step-num">3</div><span class="step-label">Calendar</span></div>
+    <div class="step-tab" id="tab-4"><div class="step-num">4</div><span class="step-label">Contact</span></div>
+    <div class="step-tab" id="tab-5"><div class="step-num">5</div><span class="step-label">Confirm</span></div>
   </div>
 </div>
 
@@ -979,6 +964,7 @@ footer a {
       <h2>What type of property?</h2>
       <p>Select the type of EPC assessment you need.</p>
     </div>
+
     <div class="step-body">
       <div class="type-cards">
         <div class="type-card" id="card-domestic" onclick="selectType('Domestic')">
@@ -986,6 +972,7 @@ footer a {
           <div class="type-name">Domestic</div>
           <div class="type-desc">Houses, flats, apartments and residential properties. From £60.</div>
         </div>
+
         <div class="type-card" id="card-commercial" onclick="selectType('Commercial')">
           <span class="type-icon">🏢</span>
           <div class="type-name">Commercial</div>
@@ -993,6 +980,7 @@ footer a {
         </div>
       </div>
     </div>
+
     <div class="btn-row">
       <button class="btn btn-primary" onclick="goToStep(2)">Continue →</button>
     </div>
@@ -1027,82 +1015,24 @@ footer a {
       </div>
 
       <div id="domestic-pricing" style="display:none">
-        <div class="price-bands">
-          <div class="price-band-label">Estimated property value <span class="req">*</span></div>
-          <div class="bands-grid">
-            <div class="band-option" onclick="selectBand(this, 60, 'Up to £999,000', 45, 'domestic_value')">
-              <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">Up to £999,000</div>
-                <div class="band-duration">Typical residential EPC</div>
-              </div>
-              <div class="band-price">£60</div>
-            </div>
+        <div class="field">
+          <label>Estimated property value <span class="req">*</span></label>
+          <select id="domestic-property-value" onchange="handleDomesticValueChange()">
+            <option value="">— Select —</option>
+            <option value="999000">Up to £999,000</option>
+            <option value="1999999">£1,000,000 to £1,999,999</option>
+            <option value="2999999">£2,000,000 to £2,999,999</option>
+            <option value="3999999">£3,000,000 to £3,999,999</option>
+            <option value="4000000">Over £4,000,000</option>
+          </select>
+          <div class="error-msg" id="err-domestic-value">Please select a property value band.</div>
+        </div>
 
-            <div class="band-option" onclick="selectBand(this, 80, '£1,000,000 to £1,999,999', 60, 'domestic_value')">
-              <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">£1,000,000 to £1,999,999</div>
-                <div class="band-duration">Higher value residential property</div>
-              </div>
-              <div class="band-price">£80</div>
-            </div>
-
-            <div class="band-option" onclick="selectBand(this, 110, '£2,000,000 to £2,999,999', 75, 'domestic_value')">
-              <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">£2,000,000 to £2,999,999</div>
-                <div class="band-duration">Larger / higher value residential property</div>
-              </div>
-              <div class="band-price">£110</div>
-            </div>
-
-            <div class="band-option" onclick="selectBand(this, 150, '£3,000,000 to £3,999,999', 90, 'domestic_value')">
-              <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">£3,000,000 to £3,999,999</div>
-                <div class="band-duration">Large high-value residential property</div>
-              </div>
-              <div class="band-price">£150</div>
-            </div>
-
-            <div class="band-option" onclick="selectBand(this, 180, 'Over £4,000,000 / 100 to 150 m²', 105, 'domestic_sqm')">
-              <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">Over £4,000,000 / 100 to 150 m²</div>
-                <div class="band-duration">Large high-value residential property</div>
-              </div>
-              <div class="band-price">£180</div>
-            </div>
-
-            <div class="band-option" onclick="selectBand(this, 240, 'Over £4,000,000 / 151 to 300 m²', 120, 'domestic_sqm')">
-              <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">Over £4,000,000 / 151 to 300 m²</div>
-                <div class="band-duration">Extended large residential property</div>
-              </div>
-              <div class="band-price">£240</div>
-            </div>
-
-            <div class="band-option" onclick="selectBand(this, 400, 'Over £4,000,000 / 301 to 500 m²', 150, 'domestic_sqm')">
-              <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">Over £4,000,000 / 301 to 500 m²</div>
-                <div class="band-duration">Very large residential property</div>
-              </div>
-              <div class="band-price">£400</div>
-            </div>
-
-            <div class="band-option" onclick="selectBand(this, 450, 'Over £4,000,000 / 501 to 10,000 m²', 180, 'domestic_sqm')">
-              <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">Over £4,000,000 / 501 to 10,000 m²</div>
-                <div class="band-duration">Estate / very large dwelling</div>
-              </div>
-              <div class="band-price">£450</div>
-            </div>
-          </div>
-          <div class="error-msg" id="err-band-domestic">Please select a domestic pricing band.</div>
+        <div class="field" id="domestic-sqm-field" style="display:none">
+          <label>Approximate floor area m² <span class="req">*</span></label>
+          <input type="number" min="1" id="domestic-sqm" placeholder="e.g. 180" oninput="handleDomesticSqmChange()">
+          <div class="hint">Required for properties over £4,000,000.</div>
+          <div class="error-msg" id="err-domestic-sqm">Please enter the approximate square meterage.</div>
         </div>
       </div>
 
@@ -1110,93 +1040,63 @@ footer a {
         <div class="price-bands">
           <div class="price-band-label">Approximate commercial floor area <span class="req">*</span></div>
           <div class="bands-grid">
-            <div class="band-option" onclick="selectBand(this, 180, '0 to 100 m²', 60, 'commercial_sqm')">
+            <div class="band-option" onclick="selectCommercialBand(this, 180, '0 to 100 m²', 60, 'commercial_sqm')">
               <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">0 to 100 m²</div>
-                <div class="band-duration">Small commercial premises</div>
-              </div>
+              <div class="band-info"><div class="band-range">0 to 100 m²</div><div class="band-duration">Small commercial premises</div></div>
               <div class="band-price">£180</div>
             </div>
 
-            <div class="band-option" onclick="selectBand(this, 215, '101 to 200 m²', 75, 'commercial_sqm')">
+            <div class="band-option" onclick="selectCommercialBand(this, 215, '101 to 200 m²', 75, 'commercial_sqm')">
               <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">101 to 200 m²</div>
-                <div class="band-duration">Small to medium commercial premises</div>
-              </div>
+              <div class="band-info"><div class="band-range">101 to 200 m²</div><div class="band-duration">Small to medium commercial premises</div></div>
               <div class="band-price">£215</div>
             </div>
 
-            <div class="band-option" onclick="selectBand(this, 255, '201 to 300 m²', 90, 'commercial_sqm')">
+            <div class="band-option" onclick="selectCommercialBand(this, 255, '201 to 300 m²', 90, 'commercial_sqm')">
               <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">201 to 300 m²</div>
-                <div class="band-duration">Medium commercial premises</div>
-              </div>
+              <div class="band-info"><div class="band-range">201 to 300 m²</div><div class="band-duration">Medium commercial premises</div></div>
               <div class="band-price">£255</div>
             </div>
 
-            <div class="band-option" onclick="selectBand(this, 305, '301 to 400 m²', 105, 'commercial_sqm')">
+            <div class="band-option" onclick="selectCommercialBand(this, 305, '301 to 400 m²', 105, 'commercial_sqm')">
               <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">301 to 400 m²</div>
-                <div class="band-duration">Medium commercial premises</div>
-              </div>
+              <div class="band-info"><div class="band-range">301 to 400 m²</div><div class="band-duration">Medium commercial premises</div></div>
               <div class="band-price">£305</div>
             </div>
 
-            <div class="band-option" onclick="selectBand(this, 355, '401 to 500 m²', 120, 'commercial_sqm')">
+            <div class="band-option" onclick="selectCommercialBand(this, 355, '401 to 500 m²', 120, 'commercial_sqm')">
               <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">401 to 500 m²</div>
-                <div class="band-duration">Larger commercial premises</div>
-              </div>
+              <div class="band-info"><div class="band-range">401 to 500 m²</div><div class="band-duration">Larger commercial premises</div></div>
               <div class="band-price">£355</div>
             </div>
 
-            <div class="band-option" onclick="selectBand(this, 410, '501 to 600 m²', 135, 'commercial_sqm')">
+            <div class="band-option" onclick="selectCommercialBand(this, 410, '501 to 600 m²', 135, 'commercial_sqm')">
               <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">501 to 600 m²</div>
-                <div class="band-duration">Larger commercial premises</div>
-              </div>
+              <div class="band-info"><div class="band-range">501 to 600 m²</div><div class="band-duration">Larger commercial premises</div></div>
               <div class="band-price">£410</div>
             </div>
 
-            <div class="band-option" onclick="selectBand(this, 455, '601 to 700 m²', 150, 'commercial_sqm')">
+            <div class="band-option" onclick="selectCommercialBand(this, 455, '601 to 700 m²', 150, 'commercial_sqm')">
               <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">601 to 700 m²</div>
-                <div class="band-duration">Large commercial premises</div>
-              </div>
+              <div class="band-info"><div class="band-range">601 to 700 m²</div><div class="band-duration">Large commercial premises</div></div>
               <div class="band-price">£455</div>
             </div>
 
-            <div class="band-option" onclick="selectBand(this, 495, '701 to 800 m²', 165, 'commercial_sqm')">
+            <div class="band-option" onclick="selectCommercialBand(this, 495, '701 to 800 m²', 165, 'commercial_sqm')">
               <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">701 to 800 m²</div>
-                <div class="band-duration">Large commercial premises</div>
-              </div>
+              <div class="band-info"><div class="band-range">701 to 800 m²</div><div class="band-duration">Large commercial premises</div></div>
               <div class="band-price">£495</div>
             </div>
 
-            <div class="band-option" onclick="selectBand(this, 535, '801 to 900 m²', 180, 'commercial_sqm')">
+            <div class="band-option" onclick="selectCommercialBand(this, 535, '801 to 900 m²', 180, 'commercial_sqm')">
               <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">801 to 900 m²</div>
-                <div class="band-duration">Very large commercial premises</div>
-              </div>
+              <div class="band-info"><div class="band-range">801 to 900 m²</div><div class="band-duration">Very large commercial premises</div></div>
               <div class="band-price">£535</div>
             </div>
 
-            <div class="band-option" onclick="selectBand(this, 0, '901 m² to 10,000 m² — Custom quote', 0, 'commercial_custom')">
+            <div class="band-option" onclick="selectCommercialBand(this, 0, '901 m² to 10,000 m² — Custom quote', 0, 'commercial_custom')">
               <div class="band-radio"></div>
-              <div class="band-info">
-                <div class="band-range">901 m² to 10,000 m²</div>
-                <div class="band-duration">Custom quote required</div>
-              </div>
+              <div class="band-info"><div class="band-range">901 m² to 10,000 m²</div><div class="band-duration">Custom quote required</div></div>
               <div class="band-price">POA</div>
             </div>
           </div>
@@ -1230,7 +1130,7 @@ footer a {
   <div class="form-step" id="step-3">
     <div class="step-header">
       <h2>Choose your date and window</h2>
-      <p>The booking app now checks the live calendar in Supabase before offering AM or PM windows.</p>
+      <p>The booking app checks the live calendar in Supabase before offering AM or PM windows.</p>
     </div>
 
     <div class="step-body">
@@ -1422,9 +1322,6 @@ footer a {
 </footer>
 
 <script>
-// ============================================================================
-// SUPABASE CONFIGURATION
-// ============================================================================
 const SUPABASE_URL = 'https://lokyeggbiusgrrxbvnho.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxva3llZ2diaXVzZ3JyeGJ2bmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMjA1NzIsImV4cCI6MjA5MjU5NjU3Mn0.c9OAP7QnOYA9sB-0afDnUDnu-9SNXyRqgoggTWUiJhQ';
 
@@ -1445,14 +1342,13 @@ try {
   console.error('Supabase setup error:', error);
 }
 
-// ============================================================================
-// STATE
-// ============================================================================
 const state = {
   type: null,
   price: 0,
   band: '',
   pricingBasis: '',
+  propertyValue: null,
+  squareMeterage: null,
   duration: 0,
   deposit: 0,
   balance: 0,
@@ -1471,11 +1367,7 @@ const state = {
   reference: ''
 };
 
-const londonPrefixes = [
-  'NW','SW','SE','WC','EC',
-  'N','E','W',
-  'EN','HA','IG','RM','TW','KT','BR','CR','SM','UB','DA'
-];
+const londonPrefixes = ['NW','SW','SE','WC','EC','N','E','W','EN','HA','IG','RM','TW','KT','BR','CR','SM','UB','DA'];
 
 const zones = {
   N: 'North London',
@@ -1524,6 +1416,7 @@ const commercialSubtypes = [
 
 function getZone(pc) {
   const clean = String(pc || '').replace(/\s/g, '').toUpperCase();
+
   for (const prefix of londonPrefixes) {
     if (clean.startsWith(prefix)) {
       return {
@@ -1532,6 +1425,7 @@ function getZone(pc) {
       };
     }
   }
+
   return null;
 }
 
@@ -1542,6 +1436,7 @@ function isClosedStatus(status) {
 function safeDocuments(row) {
   if (!row || !row.documents) return {};
   if (typeof row.documents === 'object') return row.documents;
+
   try {
     return JSON.parse(row.documents);
   } catch {
@@ -1616,33 +1511,49 @@ function setSubtypeOptions(type) {
   });
 }
 
-function selectType(type) {
-  state.type = type;
+function resetPricing() {
   state.price = 0;
   state.band = '';
   state.pricingBasis = '';
+  state.propertyValue = null;
+  state.squareMeterage = null;
   state.duration = 0;
   state.deposit = 0;
   state.balance = 0;
+
+  const domesticValue = document.getElementById('domestic-property-value');
+  const domesticSqm = document.getElementById('domestic-sqm');
+
+  if (domesticValue) domesticValue.value = '';
+  if (domesticSqm) domesticSqm.value = '';
+
+  document.querySelectorAll('.band-option').forEach(option => option.classList.remove('selected'));
+
+  const sqmField = document.getElementById('domestic-sqm-field');
+  if (sqmField) sqmField.style.display = 'none';
+
+  updatePriceSummary();
+}
+
+function selectType(type) {
+  state.type = type;
   state.subtype = '';
+
+  resetPricing();
 
   document.getElementById('card-domestic').classList.toggle('selected', type === 'Domestic');
   document.getElementById('card-commercial').classList.toggle('selected', type === 'Commercial');
 
   setSubtypeOptions(type);
-
-  document.querySelectorAll('.band-option').forEach(option => option.classList.remove('selected'));
-  updatePriceSummary();
 }
 
-function selectBand(el, price, bandName, duration, pricingBasis) {
-  document.querySelectorAll('.band-option').forEach(option => option.classList.remove('selected'));
-  el.classList.add('selected');
-
+function setQuote(price, bandName, duration, pricingBasis, propertyValue, sqm) {
   state.price = Number(price) || 0;
-  state.band = bandName;
+  state.band = bandName || '';
   state.duration = Number(duration) || 0;
-  state.pricingBasis = pricingBasis;
+  state.pricingBasis = pricingBasis || '';
+  state.propertyValue = propertyValue || null;
+  state.squareMeterage = sqm || null;
 
   if (state.type === 'Commercial') {
     state.deposit = 0;
@@ -1655,12 +1566,98 @@ function selectBand(el, price, bandName, duration, pricingBasis) {
   updatePriceSummary();
 }
 
+function handleDomesticValueChange() {
+  const value = document.getElementById('domestic-property-value').value;
+  const sqmField = document.getElementById('domestic-sqm-field');
+
+  state.squareMeterage = null;
+
+  if (!value) {
+    sqmField.style.display = 'none';
+    setQuote(0, '', 0, '', null, null);
+    return;
+  }
+
+  if (value === '999000') {
+    sqmField.style.display = 'none';
+    setQuote(60, 'Up to £999,000', 45, 'domestic_value', 999000, null);
+    return;
+  }
+
+  if (value === '1999999') {
+    sqmField.style.display = 'none';
+    setQuote(80, '£1,000,000 to £1,999,999', 60, 'domestic_value', 1500000, null);
+    return;
+  }
+
+  if (value === '2999999') {
+    sqmField.style.display = 'none';
+    setQuote(110, '£2,000,000 to £2,999,999', 75, 'domestic_value', 2500000, null);
+    return;
+  }
+
+  if (value === '3999999') {
+    sqmField.style.display = 'none';
+    setQuote(150, '£3,000,000 to £3,999,999', 90, 'domestic_value', 3500000, null);
+    return;
+  }
+
+  if (value === '4000000') {
+    sqmField.style.display = 'block';
+    state.propertyValue = 4000000;
+    handleDomesticSqmChange();
+  }
+}
+
+function handleDomesticSqmChange() {
+  const value = document.getElementById('domestic-property-value').value;
+
+  if (value !== '4000000') return;
+
+  const sqm = Number(document.getElementById('domestic-sqm').value || 0);
+
+  if (!sqm || sqm <= 0) {
+    setQuote(0, 'Over £4,000,000 — square meterage required', 0, 'domestic_sqm', 4000000, null);
+    return;
+  }
+
+  if (sqm >= 100 && sqm <= 150) {
+    setQuote(180, 'Over £4,000,000 / 100 to 150 m²', 105, 'domestic_sqm', 4000000, sqm);
+    return;
+  }
+
+  if (sqm >= 151 && sqm <= 300) {
+    setQuote(240, 'Over £4,000,000 / 151 to 300 m²', 120, 'domestic_sqm', 4000000, sqm);
+    return;
+  }
+
+  if (sqm >= 301 && sqm <= 500) {
+    setQuote(400, 'Over £4,000,000 / 301 to 500 m²', 150, 'domestic_sqm', 4000000, sqm);
+    return;
+  }
+
+  if (sqm >= 501 && sqm <= 10000) {
+    setQuote(450, 'Over £4,000,000 / 501 to 10,000 m²', 180, 'domestic_sqm', 4000000, sqm);
+    return;
+  }
+
+  setQuote(180, 'Over £4,000,000 — starting from £180, review required', 120, 'domestic_sqm', 4000000, sqm);
+}
+
+function selectCommercialBand(el, price, bandName, duration, pricingBasis) {
+  document.querySelectorAll('.band-option').forEach(option => option.classList.remove('selected'));
+  el.classList.add('selected');
+
+  const sqm = getEstimatedSquareMeterageFromBandName(bandName);
+  setQuote(price, bandName, duration, pricingBasis, null, sqm);
+}
+
 function updatePriceSummary() {
   const summary2 = document.getElementById('price-summary-step2');
   const isCommercial = state.type === 'Commercial';
   const isCustom = state.price === 0;
 
-  summary2.style.display = state.band ? 'block' : 'none';
+  if (summary2) summary2.style.display = state.band ? 'block' : 'none';
 
   ['step2', 'step3'].forEach(step => {
     const fee = document.getElementById(`quote-fee-${step}`);
@@ -1718,6 +1715,7 @@ function showErr(errId, fieldId) {
   const field = fieldId ? document.getElementById(fieldId) : null;
 
   if (err) err.classList.add('show');
+
   if (field) {
     field.classList.add('error');
     field.focus();
@@ -1729,11 +1727,11 @@ function showErr(errId, fieldId) {
   }, 3500);
 }
 
-function clearBandErrors() {
-  const d = document.getElementById('err-band-domestic');
-  const c = document.getElementById('err-band-commercial');
-  if (d) d.classList.remove('show');
-  if (c) c.classList.remove('show');
+function clearPricingErrors() {
+  ['err-domestic-value', 'err-domestic-sqm', 'err-band-commercial'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('show');
+  });
 }
 
 async function loadLiveAvailability() {
@@ -1806,7 +1804,6 @@ function buildDateGrid() {
 
     const dow = d.getDay();
 
-    // Monday to Friday only for now. Weekend booking can be added later if needed.
     if (dow !== 0 && dow !== 6) {
       const iso = d.toISOString().split('T')[0];
       const dateStr = `${days[dow]} ${d.getDate()} ${months[d.getMonth()]}`;
@@ -1879,11 +1876,6 @@ function selectWindow(el, iso, str, windowName) {
   if (err) err.classList.remove('show');
 }
 
-function getSelectedSubtypeLabel() {
-  const select = document.getElementById('prop-subtype');
-  return select.options[select.selectedIndex]?.textContent || '';
-}
-
 function populateConfirm() {
   const fname = document.getElementById('fname').value.trim();
   const lname = document.getElementById('lname').value.trim();
@@ -1918,9 +1910,7 @@ function populateConfirm() {
 
 function goToStep(n) {
   const active = document.querySelector('.form-step.active');
-  const cur = active && active.id === 'step-success'
-    ? 6
-    : parseInt(active.id.replace('step-', ''), 10);
+  const cur = active && active.id === 'step-success' ? 6 : parseInt(active.id.replace('step-', ''), 10);
 
   if (n > cur) {
     if (cur === 1) {
@@ -1935,7 +1925,7 @@ function goToStep(n) {
       const pc = document.getElementById('postcode').value.trim().toUpperCase();
       const subtype = document.getElementById('prop-subtype').value;
 
-      clearBandErrors();
+      clearPricingErrors();
 
       if (!addr) {
         showErr('err-address', 'address');
@@ -1952,11 +1942,35 @@ function goToStep(n) {
         return;
       }
 
-      if (!state.band) {
-        const errId = state.type === 'Commercial' ? 'err-band-commercial' : 'err-band-domestic';
-        const err = document.getElementById(errId);
-        if (err) err.classList.add('show');
-        return;
+      if (state.type === 'Domestic') {
+        const domesticValue = document.getElementById('domestic-property-value').value;
+
+        if (!domesticValue) {
+          showErr('err-domestic-value', 'domestic-property-value');
+          return;
+        }
+
+        if (domesticValue === '4000000') {
+          const sqm = Number(document.getElementById('domestic-sqm').value || 0);
+
+          if (!sqm || sqm <= 0) {
+            showErr('err-domestic-sqm', 'domestic-sqm');
+            return;
+          }
+        }
+
+        if (!state.band || state.price === 0) {
+          alert('Please complete the domestic pricing details.');
+          return;
+        }
+      }
+
+      if (state.type === 'Commercial') {
+        if (!state.band) {
+          const err = document.getElementById('err-band-commercial');
+          if (err) err.classList.add('show');
+          return;
+        }
       }
 
       state.address = addr;
@@ -1979,10 +1993,7 @@ function goToStep(n) {
       }
 
       const availability = getAvailabilityForDate(state.date);
-      const stillAvailable =
-        state.bookingWindow === 'AM'
-          ? availability.amAvailable
-          : availability.pmAvailable;
+      const stillAvailable = state.bookingWindow === 'AM' ? availability.amAvailable : availability.pmAvailable;
 
       if (!stillAvailable) {
         alert('That window has just become full. Please choose another available window.');
@@ -2045,12 +2056,7 @@ function goToStep(n) {
 
 async function insertContact(contactPayload) {
   try {
-    const { data, error } = await supabaseClient
-      .from('contacts')
-      .insert(contactPayload)
-      .select()
-      .single();
-
+    const { data, error } = await supabaseClient.from('contacts').insert(contactPayload).select().single();
     if (error) throw error;
     return data;
   } catch (err) {
@@ -2061,12 +2067,7 @@ async function insertContact(contactPayload) {
 
 async function insertProperty(propertyPayload) {
   try {
-    const { data, error } = await supabaseClient
-      .from('properties')
-      .insert(propertyPayload)
-      .select()
-      .single();
-
+    const { data, error } = await supabaseClient.from('properties').insert(propertyPayload).select().single();
     if (error) throw error;
     return data;
   } catch (err) {
@@ -2077,12 +2078,7 @@ async function insertProperty(propertyPayload) {
 
 async function insertLead(leadPayload) {
   try {
-    const { data, error } = await supabaseClient
-      .from('leads')
-      .insert(leadPayload)
-      .select()
-      .single();
-
+    const { data, error } = await supabaseClient.from('leads').insert(leadPayload).select().single();
     if (error) throw error;
     return data;
   } catch (err) {
@@ -2092,32 +2088,12 @@ async function insertLead(leadPayload) {
 }
 
 async function insertJob(jobPayload) {
-  const { data, error } = await supabaseClient
-    .from('jobs')
-    .insert(jobPayload)
-    .select()
-    .single();
-
+  const { data, error } = await supabaseClient.from('jobs').insert(jobPayload).select().single();
   if (error) throw error;
   return data;
 }
 
-function getEstimatedValueFromBand() {
-  if (state.pricingBasis === 'domestic_value') {
-    if (state.band.includes('999,000')) return 999000;
-    if (state.band.includes('1,000,000')) return 1500000;
-    if (state.band.includes('2,000,000')) return 2500000;
-    if (state.band.includes('3,000,000')) return 3500000;
-  }
-
-  if (state.pricingBasis === 'domestic_sqm') return 4000000;
-
-  return null;
-}
-
-function getEstimatedSquareMeterageFromBand() {
-  const band = state.band;
-
+function getEstimatedSquareMeterageFromBandName(band) {
   if (band.includes('0 to 100') || band.includes('100 m²')) return 100;
   if (band.includes('101 to 200') || band.includes('151 to 300')) return 200;
   if (band.includes('201 to 300')) return 300;
@@ -2128,7 +2104,6 @@ function getEstimatedSquareMeterageFromBand() {
   if (band.includes('701 to 800')) return 800;
   if (band.includes('801 to 900')) return 900;
   if (band.includes('901')) return 901;
-
   return null;
 }
 
@@ -2151,10 +2126,7 @@ async function submitBooking() {
 
   try {
     const latestAvailability = getAvailabilityForDate(state.date);
-    const stillAvailable =
-      state.bookingWindow === 'AM'
-        ? latestAvailability.amAvailable
-        : latestAvailability.pmAvailable;
+    const stillAvailable = state.bookingWindow === 'AM' ? latestAvailability.amAvailable : latestAvailability.pmAvailable;
 
     if (!stillAvailable) {
       alert('That window has just become full. Please choose another available window.');
@@ -2176,9 +2148,6 @@ async function submitBooking() {
     const access = document.getElementById('access').value.trim();
     const referral = document.getElementById('referral').value || 'Website';
 
-    const estimatedValue = getEstimatedValueFromBand();
-    const estimatedSqm = getEstimatedSquareMeterageFromBand();
-
     const documents = {
       public_reference: reference,
       customer_name: fullName,
@@ -2193,6 +2162,8 @@ async function submitBooking() {
       property_subtype: state.subtype,
       pricing_band: state.band,
       pricing_basis: state.pricingBasis,
+      property_value: state.propertyValue,
+      square_meterage: state.squareMeterage,
       quote_amount: state.price,
       deposit_amount: state.deposit,
       balance_due: state.balance,
@@ -2224,8 +2195,8 @@ async function submitBooking() {
       address: state.address,
       postcode: state.postcode,
       city: 'London',
-      property_value: estimatedValue,
-      square_meterage: estimatedSqm
+      property_value: state.propertyValue,
+      square_meterage: state.squareMeterage
     });
 
     const leadStatus = state.type === 'Commercial' || state.price === 0 ? 'Review required' : 'Awaiting booking';
@@ -2238,8 +2209,8 @@ async function submitBooking() {
       source: referral,
       status: leadStatus,
       epc_type: state.type,
-      property_value: estimatedValue,
-      square_meterage: estimatedSqm,
+      property_value: state.propertyValue,
+      square_meterage: state.squareMeterage,
       estimated_value: state.price,
       documents: documents
     });
