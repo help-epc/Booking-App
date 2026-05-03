@@ -28,6 +28,9 @@
   --warning-bg: #fffbeb;
   --warning-border: #fde68a;
   --warning-text: #92400e;
+  --blue-bg: #eff6ff;
+  --blue-border: #bfdbfe;
+  --blue-text: #1d4ed8;
   --shadow: 0 4px 24px rgba(17,24,39,0.10);
   --radius: 14px;
   --radius-sm: 8px;
@@ -151,12 +154,6 @@ header {
   padding: 6px 14px;
   font-size: 12px;
   color: rgba(255,255,255,0.75);
-}
-
-.badge svg {
-  width: 14px;
-  height: 14px;
-  color: #f5a623;
 }
 
 .progress-wrap {
@@ -526,7 +523,6 @@ main {
   font-weight: 500;
 }
 
-.postcode-status.ok,
 .postcode-status.zone {
   display: flex;
   background: var(--success-bg);
@@ -625,6 +621,47 @@ main {
   text-align: right;
 }
 
+.route-message {
+  font-size: 13px;
+  margin: 12px 0;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+.route-message strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.route-message.good {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid #bbf7d0;
+}
+
+.route-message.open {
+  background: var(--blue-bg);
+  color: var(--blue-text);
+  border: 1px solid var(--blue-border);
+}
+
+.route-message.poor {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border: 1px solid var(--warning-border);
+}
+
+.route-message.unknown {
+  background: #f8fafc;
+  color: var(--ink3);
+  border: 1px solid var(--border);
+}
+
 .window-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -677,14 +714,31 @@ main {
 
 .window-option.disabled .window-left { color: var(--error); }
 
-.am-first-note {
+.day-message {
   font-size: 12px;
-  color: var(--success);
   margin-top: 10px;
-  display: none;
+  padding: 9px 11px;
+  border-radius: var(--radius-sm);
+  line-height: 1.45;
 }
 
-.am-first-note.show { display: block; }
+.day-message.ok {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid #bbf7d0;
+}
+
+.day-message.warning {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border: 1px solid var(--warning-border);
+}
+
+.day-message.full {
+  background: var(--error-bg);
+  color: var(--error);
+  border: 1px solid #f5c2c7;
+}
 
 .confirm-block {
   background: var(--surface);
@@ -827,12 +881,9 @@ main {
   align-items: center;
   justify-content: center;
   margin: 0 auto 24px;
-}
-
-.success-icon svg {
-  width: 36px;
-  height: 36px;
+  font-size: 34px;
   color: var(--accent);
+  font-weight: 700;
 }
 
 .success-screen h2 {
@@ -924,8 +975,8 @@ footer a {
   <p>Fast, professional energy performance certificates for London properties. Accredited assessor, certificates issued promptly after assessment and payment.</p>
   <div class="trust-badges">
     <div class="badge">Fully accredited DEA</div>
+    <div class="badge">London route-fit check</div>
     <div class="badge">AM / PM booking windows</div>
-    <div class="badge">Secure booking request</div>
   </div>
 </div>
 
@@ -1104,13 +1155,13 @@ footer a {
   <div class="form-step" id="step-3">
     <div class="step-header">
       <h2>Choose your date and window</h2>
-      <p>The booking app checks the live calendar in Supabase before offering AM or PM windows.</p>
+      <p>The booking app checks live availability and shows whether each date fits the current route pattern.</p>
     </div>
 
     <div class="step-body">
       <div class="date-info">
         <strong>Capacity:</strong> AM has 5 spaces, PM has 3 spaces, with a maximum of 8 jobs per day.
-        AM is offered first where possible.
+        Route fit is shown for guidance only at this stage.
       </div>
 
       <div class="availability-status loading" id="availability-status">
@@ -1222,6 +1273,7 @@ footer a {
         <div class="confirm-block-label">Appointment</div>
         <div class="confirm-item"><span class="ci-label">Date</span><span class="ci-value" id="cf-date">—</span></div>
         <div class="confirm-item"><span class="ci-label">Window</span><span class="ci-value" id="cf-window">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Route fit</span><span class="ci-value" id="cf-route">—</span></div>
         <div class="confirm-item"><span class="ci-label">Duration</span><span class="ci-value" id="cf-duration">—</span></div>
       </div>
 
@@ -1333,6 +1385,7 @@ const state = {
   liveJobs: [],
   availabilityLoaded: false,
   availabilityError: '',
+  selectedRouteFit: null,
   reference: ''
 };
 
@@ -1384,10 +1437,7 @@ const commercialSubtypes = [
 ];
 
 function generateUUID() {
-  if (window.crypto && window.crypto.randomUUID) {
-    return window.crypto.randomUUID();
-  }
-
+  if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     const r = Math.random() * 16 | 0;
     const v = c === 'x' ? r : (r & 0x3 | 0x8);
@@ -1397,16 +1447,11 @@ function generateUUID() {
 
 function getZone(pc) {
   const clean = String(pc || '').replace(/\s/g, '').toUpperCase();
-
   for (const prefix of londonPrefixes) {
     if (clean.startsWith(prefix)) {
-      return {
-        code: prefix,
-        name: zones[prefix] || 'London'
-      };
+      return { code: prefix, name: zones[prefix] || 'London' };
     }
   }
-
   return null;
 }
 
@@ -1417,12 +1462,7 @@ function isClosedStatus(status) {
 function safeDocuments(row) {
   if (!row || !row.documents) return {};
   if (typeof row.documents === 'object') return row.documents;
-
-  try {
-    return JSON.parse(row.documents);
-  } catch {
-    return {};
-  }
+  try { return JSON.parse(row.documents); } catch { return {}; }
 }
 
 function firstPresent(...values) {
@@ -1442,6 +1482,32 @@ function getJobBookingWindow(job) {
   return String(firstPresent(job.booking_window, docs.booking_window, docs.appointment_window, '') || '').toUpperCase();
 }
 
+function getJobZone(job) {
+  const docs = safeDocuments(job);
+
+  const zoneName = firstPresent(
+    docs.zone_name,
+    docs.area,
+    docs.route_area,
+    job.zone_name
+  );
+
+  if (zoneName) return String(zoneName);
+
+  const postcode = firstPresent(
+    docs.postcode,
+    docs.property_postcode,
+    job.postcode
+  );
+
+  if (postcode) {
+    const zone = getZone(postcode);
+    if (zone) return zone.name;
+  }
+
+  return '';
+}
+
 function getActiveJobsForDate(dateISO) {
   return state.liveJobs.filter(job => {
     const bookingDate = getJobBookingDate(job);
@@ -1457,6 +1523,7 @@ function getAvailabilityForDate(dateISO) {
   const dayBooked = amBooked + pmBooked;
 
   return {
+    jobs,
     amBooked,
     pmBooked,
     dayBooked,
@@ -1467,6 +1534,82 @@ function getAvailabilityForDate(dateISO) {
     pmAvailable: pmBooked < PM_CAPACITY && dayBooked < DAY_CAPACITY,
     dayAvailable: dayBooked < DAY_CAPACITY
   };
+}
+
+function getRouteFitForDate(dateISO) {
+  const jobs = getActiveJobsForDate(dateISO);
+  const customerZone = state.zoneName || '';
+
+  if (!customerZone) {
+    return {
+      code: 'unknown',
+      label: 'Route fit unknown',
+      title: 'ROUTE FIT: Unknown',
+      message: 'Enter a valid London postcode first so the route area can be checked.',
+      reviewRequired: false,
+      existingAreas: []
+    };
+  }
+
+  if (jobs.length === 0) {
+    return {
+      code: 'open',
+      label: 'Open route day',
+      title: 'ROUTE FIT: Open route day',
+      message: `No bookings are set for this date yet. This can work for ${customerZone}.`,
+      reviewRequired: false,
+      existingAreas: []
+    };
+  }
+
+  const existingAreas = [...new Set(jobs.map(getJobZone).filter(Boolean))];
+
+  if (existingAreas.length === 0) {
+    return {
+      code: 'unknown',
+      label: 'Route fit unknown',
+      title: 'ROUTE FIT: Area data missing',
+      message: 'This date has existing bookings, but their area data is missing. Booking can continue, but route should be checked manually.',
+      reviewRequired: true,
+      existingAreas: []
+    };
+  }
+
+  if (existingAreas.includes(customerZone)) {
+    return {
+      code: 'good',
+      label: 'Good route fit',
+      title: 'ROUTE FIT: Good route fit',
+      message: `This date already has ${customerZone} bookings.`,
+      reviewRequired: false,
+      existingAreas
+    };
+  }
+
+  return {
+    code: 'poor',
+    label: 'Route review needed',
+    title: 'ROUTE FIT: Route review needed',
+    message: `This date already has bookings in ${existingAreas.join(', ')}. Booking is allowed for now, but should be reviewed.`,
+    reviewRequired: true,
+    existingAreas
+  };
+}
+
+function getDayMessage(availability) {
+  if (!availability.amAvailable && !availability.pmAvailable) {
+    return { className: 'full', text: 'This date is fully booked. Please choose another date.' };
+  }
+
+  if (!availability.amAvailable && availability.pmAvailable) {
+    return { className: 'warning', text: 'AM is full. PM is still available for this date.' };
+  }
+
+  if (availability.amAvailable && !availability.pmAvailable) {
+    return { className: 'warning', text: 'PM is full. AM is still available for this date.' };
+  }
+
+  return { className: 'ok', text: 'AM is available and is preferred first where possible. PM is also available as a backup option.' };
 }
 
 function formatPrice(value) {
@@ -1481,7 +1624,6 @@ function generateReference() {
 function setSubtypeOptions(type) {
   const select = document.getElementById('prop-subtype');
   const options = type === 'Commercial' ? commercialSubtypes : domesticSubtypes;
-
   select.innerHTML = '';
 
   options.forEach(([value, label]) => {
@@ -1519,7 +1661,6 @@ function resetPricing() {
 function selectType(type) {
   state.type = type;
   state.subtype = '';
-
   resetPricing();
 
   document.getElementById('card-domestic').classList.toggle('selected', type === 'Domestic');
@@ -1592,7 +1733,6 @@ function handleDomesticValueChange() {
 
 function handleDomesticSqmChange() {
   const value = document.getElementById('domestic-property-value').value;
-
   if (value !== '4000000') return;
 
   const sqm = Number(document.getElementById('domestic-sqm').value || 0);
@@ -1789,13 +1929,14 @@ function buildDateGrid() {
       const iso = d.toISOString().split('T')[0];
       const dateStr = `${days[dow]} ${d.getDate()} ${months[d.getMonth()]}`;
       const availability = getAvailabilityForDate(iso);
-      const dayCard = document.createElement('div');
+      const capacityMessage = getDayMessage(availability);
+      const routeFit = getRouteFitForDate(iso);
 
+      const dayCard = document.createElement('div');
       dayCard.className = 'day-card' + (!availability.dayAvailable ? ' full' : '');
 
       const amDisabled = !availability.amAvailable;
       const pmDisabled = !availability.pmAvailable;
-      const showPmAsSecondary = availability.amAvailable && availability.pmAvailable;
 
       dayCard.innerHTML = `
         <div class="day-top">
@@ -1807,6 +1948,11 @@ function buildDateGrid() {
             Day spaces left: ${availability.dayLeft}/${DAY_CAPACITY}<br>
             Existing bookings: ${availability.dayBooked}
           </div>
+        </div>
+
+        <div class="route-message ${routeFit.code}">
+          <strong>${routeFit.title}</strong>
+          ${routeFit.message}
         </div>
 
         <div class="window-options">
@@ -1823,8 +1969,8 @@ function buildDateGrid() {
           </div>
         </div>
 
-        <div class="am-first-note ${showPmAsSecondary ? 'show' : ''}">
-          AM is available and is preferred first where possible. PM is still shown as a backup option.
+        <div class="day-message ${capacityMessage.className}">
+          ${capacityMessage.text}
         </div>
       `;
 
@@ -1852,6 +1998,7 @@ function selectWindow(el, iso, str, windowName) {
   state.date = iso;
   state.dateStr = str;
   state.bookingWindow = windowName;
+  state.selectedRouteFit = getRouteFitForDate(iso);
 
   const err = document.getElementById('err-date-window');
   if (err) err.classList.remove('show');
@@ -1860,6 +2007,7 @@ function selectWindow(el, iso, str, windowName) {
 function populateConfirm() {
   const fname = document.getElementById('fname').value.trim();
   const lname = document.getElementById('lname').value.trim();
+  const routeFit = state.selectedRouteFit || getRouteFitForDate(state.date);
 
   document.getElementById('cf-address').textContent = state.address;
   document.getElementById('cf-postcode').textContent = state.postcode.toUpperCase();
@@ -1868,6 +2016,7 @@ function populateConfirm() {
   document.getElementById('cf-band').textContent = state.band;
   document.getElementById('cf-date').textContent = state.dateStr;
   document.getElementById('cf-window').textContent = state.bookingWindow === 'AM' ? 'AM — 08:00 to 13:00' : 'PM — 13:00 to 17:00';
+  document.getElementById('cf-route').textContent = routeFit.label + ' — ' + routeFit.message;
   document.getElementById('cf-duration').textContent = state.duration ? state.duration + ' minutes' : 'Review required';
   document.getElementById('cf-name').textContent = `${fname} ${lname}`.trim();
   document.getElementById('cf-email').textContent = document.getElementById('email').value.trim();
@@ -1933,7 +2082,6 @@ function goToStep(n) {
 
         if (domesticValue === '4000000') {
           const sqm = Number(document.getElementById('domestic-sqm').value || 0);
-
           if (!sqm || sqm <= 0) {
             showErr('err-domestic-sqm', 'domestic-sqm');
             return;
@@ -1957,6 +2105,10 @@ function goToStep(n) {
       state.address = addr;
       state.postcode = pc;
       state.subtype = subtype;
+
+      const zone = getZone(pc);
+      state.zone = zone ? zone.code : '';
+      state.zoneName = zone ? zone.name : '';
 
       loadLiveAvailability();
     }
@@ -2028,9 +2180,7 @@ function goToStep(n) {
     setSubtypeOptions(state.type);
   }
 
-  if (n === 3) {
-    updatePriceSummary();
-  }
+  if (n === 3) updatePriceSummary();
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -2120,6 +2270,7 @@ async function submitBooking() {
 
     const reference = generateReference();
     const jobId = generateUUID();
+    const routeFit = state.selectedRouteFit || getRouteFitForDate(state.date);
 
     state.reference = reference;
 
@@ -2155,6 +2306,11 @@ async function submitBooking() {
       booking_date: state.date,
       booking_window: state.bookingWindow,
       booking_window_label: state.bookingWindow === 'AM' ? '08:00 - 13:00' : '13:00 - 17:00',
+      route_fit: routeFit.code,
+      route_fit_label: routeFit.label,
+      route_message: routeFit.message,
+      route_review_required: routeFit.reviewRequired,
+      existing_route_areas: routeFit.existingAreas || [],
       access_instructions: access,
       source: referral,
       created_from: 'booking_app',
@@ -2220,10 +2376,8 @@ async function submitBooking() {
       field_status: null
     };
 
-    let job;
-
     try {
-      job = await insertJob(jobPayload);
+      await insertJob(jobPayload);
     } catch (jobErr) {
       console.warn('Full job insert failed. Retrying minimal job payload:', jobErr.message);
 
@@ -2245,7 +2399,7 @@ async function submitBooking() {
         field_status: null
       };
 
-      job = await insertJob(minimalJobPayload);
+      await insertJob(minimalJobPayload);
     }
 
     document.getElementById('booking-ref-num').textContent = reference;
