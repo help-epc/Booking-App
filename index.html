@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Book an EPC Assessment — The EPC Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -16,17 +16,18 @@
   --ink3: #5a6a7e;
   --accent: #e07b10;
   --accent-dark: #b85e05;
-  --navy: #153047;
-  --navy2: #1a3d5c;
+  --accent-light: #fff4e6;
+  --accent-mid: #fdd9a8;
   --surface: #f4f6f9;
   --white: #ffffff;
   --border: #e2e8f0;
-  --success: #128C7E;
-  --success-bg: #e8f7f2;
-  --warning: #92400e;
-  --warning-bg: #fffbeb;
   --error: #c0392b;
   --error-bg: #fdf0ee;
+  --success: #12805c;
+  --success-bg: #ecfdf5;
+  --warning-bg: #fffbeb;
+  --warning-border: #fde68a;
+  --warning-text: #92400e;
   --shadow: 0 4px 24px rgba(17,24,39,0.10);
   --radius: 14px;
   --radius-sm: 8px;
@@ -42,14 +43,19 @@ body {
 }
 
 header {
-  background: var(--navy2);
+  background: #1a3d5c;
   padding: 18px 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
 
 .logo-mark {
   width: 38px;
@@ -63,14 +69,28 @@ header {
 
 .logo-mark svg { width: 22px; height: 22px; }
 
-.logo-text { color: white; font-size: 17px; font-weight: 700; }
+.logo-text {
+  color: white;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
 .logo-text span { color: #f5a623; }
 
-.header-contact { color: rgba(255,255,255,0.65); font-size: 13px; }
-.header-contact a { color: #f5a623; text-decoration: none; font-weight: 600; }
+.header-contact {
+  color: rgba(255,255,255,0.6);
+  font-size: 13px;
+}
+
+.header-contact a {
+  color: #f5a623;
+  text-decoration: none;
+  font-weight: 500;
+}
 
 .hero {
-  background: var(--navy);
+  background: #153047;
   padding: 40px 32px 56px;
   text-align: center;
   position: relative;
@@ -83,26 +103,30 @@ header {
   top: -80px;
   left: 50%;
   transform: translateX(-50%);
-  width: 650px;
-  height: 320px;
-  background: radial-gradient(ellipse, rgba(224,123,16,0.24) 0%, transparent 70%);
+  width: 600px;
+  height: 300px;
+  background: radial-gradient(ellipse, rgba(224,123,16,0.25) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .hero h1 {
   font-family: 'DM Serif Display', serif;
-  font-size: clamp(28px, 5vw, 42px);
+  font-size: clamp(26px, 5vw, 40px);
   color: white;
-  line-height: 1.18;
+  line-height: 1.2;
   margin-bottom: 10px;
   position: relative;
 }
 
-.hero h1 em { color: #f5a623; }
+.hero h1 em {
+  color: #f5a623;
+  font-style: italic;
+}
 
 .hero p {
-  color: rgba(255,255,255,0.72);
+  color: rgba(255,255,255,0.65);
   font-size: 15px;
-  max-width: 610px;
+  max-width: 520px;
   margin: 0 auto;
   line-height: 1.6;
   position: relative;
@@ -110,47 +134,65 @@ header {
 
 .trust-badges {
   display: flex;
-  gap: 14px;
+  gap: 20px;
   justify-content: center;
   margin-top: 24px;
   flex-wrap: wrap;
   position: relative;
 }
 
-.trust-badge {
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 20px;
-  padding: 7px 14px;
+  padding: 6px 14px;
   font-size: 12px;
-  color: rgba(255,255,255,0.82);
+  color: rgba(255,255,255,0.75);
+}
+
+.badge svg {
+  width: 14px;
+  height: 14px;
+  color: #f5a623;
 }
 
 .progress-wrap {
   background: white;
   border-bottom: 1px solid var(--border);
-  padding: 0 24px;
+  padding: 0 32px;
   position: sticky;
   top: 0;
   z-index: 10;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
-.progress-steps { display: flex; max-width: 760px; margin: 0 auto; }
+.progress-steps {
+  display: flex;
+  max-width: 720px;
+  margin: 0 auto;
+}
 
 .step-tab {
   flex: 1;
   padding: 16px 8px;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
   font-size: 13px;
-  color: #9aa8b5;
+  color: #aab8b2;
   border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
 
-.step-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.step-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
 .step-tab.done { color: var(--ink3); }
 
 .step-num {
@@ -159,11 +201,12 @@ header {
   border-radius: 50%;
   background: #e8f0ed;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all 0.2s;
 }
 
 .step-tab.active .step-num,
@@ -172,13 +215,22 @@ header {
   color: white;
 }
 
-main { flex: 1; padding: 32px 16px 60px; }
+.step-label { display: none; }
+
+@media (min-width: 520px) {
+  .step-label { display: inline; }
+}
+
+main {
+  flex: 1;
+  padding: 32px 16px 60px;
+}
 
 .form-card {
   background: white;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  max-width: 760px;
+  max-width: 720px;
   margin: 0 auto;
   overflow: hidden;
 }
@@ -195,27 +247,43 @@ main { flex: 1; padding: 32px 16px 60px; }
   font-family: 'DM Serif Display', serif;
   font-size: 24px;
   color: var(--ink);
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 
-.step-header p { color: var(--ink3); font-size: 14px; line-height: 1.5; }
+.step-header p {
+  color: var(--ink3);
+  font-size: 14px;
+  line-height: 1.5;
+}
 
 .step-body { padding: 28px 32px; }
 
-.type-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.type-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 8px;
+}
 
 .type-card {
   border: 2px solid var(--border);
   border-radius: var(--radius);
   padding: 24px 20px;
   cursor: pointer;
+  transition: all 0.18s;
   text-align: center;
-  transition: 0.18s;
   position: relative;
 }
 
-.type-card:hover { border-color: #fdd9a8; background: #fff4e6; }
-.type-card.selected { border-color: var(--accent); background: #fff4e6; }
+.type-card:hover {
+  border-color: var(--accent-mid);
+  background: var(--accent-light);
+}
+
+.type-card.selected {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
 
 .type-card.selected::after {
   content: '✓';
@@ -234,21 +302,40 @@ main { flex: 1; padding: 32px 16px 60px; }
   font-weight: 700;
 }
 
-.type-icon { font-size: 34px; margin-bottom: 10px; display: block; }
-.type-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-.type-desc { font-size: 12px; color: var(--ink3); line-height: 1.45; }
+.type-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.type-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.type-desc {
+  font-size: 12px;
+  color: var(--ink3);
+  line-height: 1.4;
+}
 
 .field { margin-bottom: 20px; }
 
 .field label {
   display: block;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--ink2);
   margin-bottom: 7px;
+  letter-spacing: 0.01em;
 }
 
-.req { color: var(--accent); }
+.field label .req {
+  color: var(--accent);
+  margin-left: 2px;
+}
 
 .field input,
 .field select,
@@ -261,10 +348,9 @@ main { flex: 1; padding: 32px 16px 60px; }
   font-size: 15px;
   color: var(--ink);
   background: white;
+  transition: border-color 0.15s, box-shadow 0.15s;
   outline: none;
 }
-
-.field textarea { min-height: 84px; resize: vertical; }
 
 .field input:focus,
 .field select:focus,
@@ -274,9 +360,15 @@ main { flex: 1; padding: 32px 16px 60px; }
 }
 
 .field input.error,
-.field select.error { border-color: var(--error); }
+.field select.error {
+  border-color: var(--error);
+}
 
-.hint { font-size: 12px; color: var(--ink3); margin-top: 5px; line-height: 1.45; }
+.field .hint {
+  font-size: 12px;
+  color: var(--ink3);
+  margin-top: 5px;
+}
 
 .error-msg {
   font-size: 12px;
@@ -287,130 +379,315 @@ main { flex: 1; padding: 32px 16px 60px; }
 
 .error-msg.show { display: block; }
 
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-
-.price-panel {
-  background: #fff4e6;
-  border: 1.5px solid #fdd9a8;
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  margin-top: 10px;
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
 }
 
-.price-title {
+.price-bands { margin-bottom: 20px; }
+
+.price-band-label {
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
+  color: var(--ink2);
+  margin-bottom: 10px;
+  letter-spacing: 0.01em;
+}
+
+.bands-grid { display: grid; gap: 8px; }
+
+.band-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.band-option:hover {
+  border-color: var(--accent-mid);
+  background: var(--accent-light);
+}
+
+.band-option.selected {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.band-radio {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.band-option.selected .band-radio {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.band-option.selected .band-radio::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: white;
+}
+
+.band-info { flex: 1; }
+
+.band-range {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.band-duration {
+  font-size: 12px;
+  color: var(--ink3);
+}
+
+.band-price {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.price-summary {
+  background: var(--accent-light);
+  border: 1.5px solid var(--accent-mid);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+
+.price-summary-label {
+  font-size: 12px;
+  font-weight: 600;
   color: var(--accent);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 12px;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
 }
 
-.price-big { font-size: 32px; font-weight: 800; color: var(--accent); margin-bottom: 5px; }
-.price-note { font-size: 13px; color: var(--ink3); line-height: 1.45; }
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 16px;
+}
+
+.price-row:last-child {
+  margin-bottom: 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--accent-mid);
+}
+
+.price-row .label {
+  font-size: 14px;
+  color: var(--ink2);
+}
+
+.price-row .value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.price-row.total .label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.price-row.total .value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.postcode-status {
+  display: none;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.postcode-status.ok,
+.postcode-status.zone {
+  display: flex;
+  background: var(--success-bg);
+  color: var(--success);
+  gap: 6px;
+  align-items: center;
+}
+
+.postcode-status.err {
+  display: flex;
+  background: var(--error-bg);
+  color: var(--error);
+  gap: 6px;
+  align-items: center;
+}
 
 .date-info {
   background: var(--warning-bg);
-  border: 1px solid #fde68a;
+  border: 1px solid var(--warning-border);
   border-radius: var(--radius-sm);
   padding: 12px 16px;
   font-size: 13px;
-  color: var(--warning);
-  margin-bottom: 20px;
+  color: var(--warning-text);
+  margin-bottom: 18px;
   line-height: 1.5;
 }
 
-.calendar-status {
-  background: var(--success-bg);
-  border: 1px solid #a4ddcc;
-  color: var(--success);
+.date-info strong { font-weight: 600; }
+
+.availability-status {
+  padding: 12px 16px;
   border-radius: var(--radius-sm);
-  padding: 10px 14px;
   font-size: 13px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.availability-status.loading {
+  min-height: auto;
+  display: block;
+  text-align: left;
+  background: #eef2ff;
+  color: #3730a3;
+}
+
+.availability-status.ok {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid #bbf7d0;
+}
+
+.availability-status.err {
+  background: var(--error-bg);
+  color: var(--error);
+  border: 1px solid #f5c2c7;
+}
+
+.days-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.day-card {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  background: white;
+  transition: all 0.15s;
+}
+
+.day-card.full {
+  opacity: 0.68;
+  background: #f8fafc;
+}
+
+.day-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.day-title {
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.day-meta {
+  font-size: 12px;
+  color: var(--ink3);
+  margin-top: 2px;
+}
+
+.day-capacity {
+  font-size: 12px;
+  color: var(--ink3);
+  text-align: right;
+}
+
+.window-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.window-option {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: white;
+}
+
+.window-option:hover:not(.disabled) {
+  border-color: var(--accent-mid);
+  background: var(--accent-light);
+}
+
+.window-option.selected {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.window-option.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: #f1f5f9;
+}
+
+.window-name {
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.window-time {
+  color: var(--ink3);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.window-left {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.window-option.disabled .window-left { color: var(--error); }
+
+.am-first-note {
+  font-size: 12px;
+  color: var(--success);
+  margin-top: 10px;
   display: none;
 }
 
-.calendar-status.show { display: block; }
-
-.days-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-
-.day-slot {
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 8px;
-  text-align: center;
-  cursor: pointer;
-  transition: 0.15s;
-  position: relative;
-  min-height: 128px;
-}
-
-.day-slot:hover:not(.blocked) { border-color: #fdd9a8; background: #fff4e6; }
-.day-slot.selected { border-color: var(--accent); background: #fff4e6; }
-
-.day-slot.blocked {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: #f8fafc;
-}
-
-.day-name { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--ink3); }
-.day-date { font-size: 19px; font-weight: 800; color: var(--ink); margin: 3px 0; }
-.day-month { font-size: 11px; color: var(--ink3); }
-
-.route-chip {
-  display: inline-block;
-  margin-top: 6px;
-  padding: 3px 7px;
-  border-radius: 999px;
-  background: #f1f5f9;
-  color: var(--ink3);
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.route-chip.good { background: var(--success-bg); color: var(--success); }
-.route-chip.warn { background: var(--warning-bg); color: var(--warning); }
-
-.day-capacity { margin-top: 8px; font-size: 11px; color: var(--ink3); line-height: 1.4; }
-.day-full { margin-top: 6px; font-size: 11px; color: var(--error); font-weight: 700; }
-
-.window-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
-
-.window-card {
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 14px 12px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.window-card:hover:not(.disabled),
-.window-card.selected {
-  border-color: var(--accent);
-  background: #fff4e6;
-}
-
-.window-card.disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  background: #f8fafc;
-}
-
-.window-card strong { display: block; color: var(--ink); font-size: 15px; }
-.window-card span { display: block; color: var(--ink3); font-size: 12px; margin-top: 4px; }
-
-.recommended-label {
-  display: inline-block;
-  margin-left: 6px;
-  padding: 2px 6px;
-  border-radius: 999px;
-  background: var(--success-bg);
-  color: var(--success);
-  font-size: 10px;
-  font-weight: 800;
-}
+.am-first-note.show { display: block; }
 
 .confirm-block {
   background: var(--surface);
@@ -421,42 +698,62 @@ main { flex: 1; padding: 32px 16px 60px; }
 
 .confirm-block-label {
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
   color: var(--accent);
   margin-bottom: 12px;
 }
 
-.confirm-item { display: flex; gap: 10px; margin-bottom: 10px; font-size: 14px; }
+.confirm-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
 .confirm-item:last-child { margin-bottom: 0; }
 
-.ci-label { color: var(--ink3); min-width: 120px; flex-shrink: 0; }
-.ci-value { font-weight: 600; color: var(--ink); line-height: 1.4; }
+.confirm-item .ci-label {
+  color: var(--ink3);
+  min-width: 116px;
+  flex-shrink: 0;
+}
+
+.confirm-item .ci-value {
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.4;
+}
 
 .terms-check {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  margin: 20px 0;
+  margin-bottom: 20px;
   cursor: pointer;
 }
 
-.terms-check input { width: 18px; height: 18px; accent-color: var(--accent); margin-top: 2px; }
-.terms-check span { font-size: 13px; color: var(--ink3); line-height: 1.5; }
-
-.status-box {
-  display: none;
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  font-size: 13px;
-  line-height: 1.45;
-  margin-bottom: 16px;
+.terms-check input[type=checkbox] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+  margin-top: 2px;
+  cursor: pointer;
 }
 
-.status-box.show { display: block; }
-.status-box.error { background: var(--error-bg); border: 1px solid #f3bbb4; color: var(--error); }
-.status-box.success { background: var(--success-bg); border: 1px solid #a4ddcc; color: var(--success); }
+.terms-check span {
+  font-size: 13px;
+  color: var(--ink3);
+  line-height: 1.5;
+}
+
+.terms-check a {
+  color: var(--accent);
+  text-decoration: none;
+}
 
 .btn-row {
   display: flex;
@@ -467,45 +764,88 @@ main { flex: 1; padding: 32px 16px 60px; }
 }
 
 .btn {
-  padding: 14px 24px;
+  padding: 14px 28px;
   border-radius: var(--radius-sm);
   font-family: 'DM Sans', sans-serif;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 600;
   cursor: pointer;
   border: none;
-  transition: 0.15s;
+  transition: all 0.15s;
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 
-.btn-primary { background: var(--accent); color: white; flex: 1; justify-content: center; }
-.btn-primary:hover { background: var(--accent-dark); }
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  flex: 1;
+  justify-content: center;
+}
 
-.btn-back { background: transparent; color: var(--ink3); border: 1.5px solid var(--border); }
+.btn-primary:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-back {
+  background: transparent;
+  color: var(--ink3);
+  border: 1.5px solid var(--border);
+}
+
 .btn-back:hover { background: var(--surface); }
 
-.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-pay {
+  background: var(--accent);
+  color: white;
+  flex: 1;
+  justify-content: center;
+}
 
-.success-screen { padding: 48px 32px; text-align: center; }
+.btn-pay:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+}
+
+.btn-pay:disabled {
+  opacity: 0.55;
+  cursor: wait;
+  transform: none;
+}
+
+.success-screen {
+  padding: 48px 32px;
+  text-align: center;
+}
 
 .success-icon {
   width: 72px;
   height: 72px;
-  background: #fff4e6;
+  background: var(--accent-light);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 24px;
+}
+
+.success-icon svg {
+  width: 36px;
+  height: 36px;
   color: var(--accent);
-  font-size: 34px;
 }
 
 .success-screen h2 {
   font-family: 'DM Serif Display', serif;
-  font-size: 28px;
+  font-size: 26px;
   margin-bottom: 10px;
 }
 
@@ -513,13 +853,13 @@ main { flex: 1; padding: 32px 16px 60px; }
   color: var(--ink3);
   font-size: 15px;
   line-height: 1.6;
-  max-width: 460px;
+  max-width: 430px;
   margin: 0 auto 24px;
 }
 
 .booking-ref {
-  background: #fff4e6;
-  border: 1.5px solid #fdd9a8;
+  background: var(--accent-light);
+  border: 1.5px solid var(--accent-mid);
   border-radius: var(--radius-sm);
   padding: 16px 24px;
   display: inline-block;
@@ -528,7 +868,7 @@ main { flex: 1; padding: 32px 16px 60px; }
 
 .booking-ref-label {
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
   color: var(--accent);
@@ -537,37 +877,43 @@ main { flex: 1; padding: 32px 16px 60px; }
 
 .booking-ref-num {
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--ink);
   font-family: monospace;
   letter-spacing: 2px;
 }
 
 footer {
-  background: var(--navy2);
+  background: #1a3d5c;
   padding: 20px 32px;
   text-align: center;
-  color: rgba(255,255,255,0.48);
+  color: rgba(255,255,255,0.4);
   font-size: 12px;
   margin-top: auto;
 }
 
-footer a { color: #f5a623; text-decoration: none; }
+footer a {
+  color: #f5a623;
+  text-decoration: none;
+}
 
-@media(max-width:560px) {
+@media (max-width: 560px) {
   header { padding: 14px 16px; }
   .header-contact { display: none; }
   .hero { padding: 28px 16px 40px; }
   .step-body, .step-header { padding: 20px 16px; }
   .btn-row { padding: 16px; }
-  .type-cards, .field-row, .window-grid { grid-template-columns: 1fr; }
-  .days-grid { grid-template-columns: repeat(2, 1fr); }
-  .step-label { display: none; }
+  .type-cards { grid-template-columns: 1fr; }
+  .field-row { grid-template-columns: 1fr; }
+  .window-options { grid-template-columns: 1fr; }
+  .confirm-item { flex-direction: column; gap: 2px; }
+  .confirm-item .ci-label { min-width: unset; }
 }
 </style>
 </head>
 
 <body>
+
 <header>
   <a href="https://theepc.pro" class="logo">
     <div class="logo-mark">
@@ -583,21 +929,45 @@ footer a { color: #f5a623; text-decoration: none; }
 
 <div class="hero">
   <h1>Book your EPC<br><em>assessment online</em></h1>
-  <p>Fast, professional energy performance certificates for London properties. Available appointment windows are based on your postcode area and current route availability.</p>
+  <p>Fast, professional energy performance certificates for London properties. Accredited assessor, certificates issued promptly after assessment and payment.</p>
   <div class="trust-badges">
-    <div class="trust-badge">Fully accredited DEA</div>
-    <div class="trust-badge">London routing logic</div>
-    <div class="trust-badge">AM/PM booking windows</div>
+    <div class="badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      Fully accredited DEA
+    </div>
+    <div class="badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      AM / PM booking windows
+    </div>
+    <div class="badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      Secure booking request
+    </div>
   </div>
 </div>
 
-<div class="progress-wrap" id="progress-wrap">
+<div class="progress-wrap">
   <div class="progress-steps">
-    <div class="step-tab active" id="tab-1"><div class="step-num">1</div><span class="step-label">Service</span></div>
-    <div class="step-tab" id="tab-2"><div class="step-num">2</div><span class="step-label">Property</span></div>
-    <div class="step-tab" id="tab-3"><div class="step-num">3</div><span class="step-label">Date</span></div>
-    <div class="step-tab" id="tab-4"><div class="step-num">4</div><span class="step-label">Contact</span></div>
-    <div class="step-tab" id="tab-5"><div class="step-num">5</div><span class="step-label">Confirm</span></div>
+    <div class="step-tab active" id="tab-1">
+      <div class="step-num">1</div>
+      <span class="step-label">Property</span>
+    </div>
+    <div class="step-tab" id="tab-2">
+      <div class="step-num">2</div>
+      <span class="step-label">Details</span>
+    </div>
+    <div class="step-tab" id="tab-3">
+      <div class="step-num">3</div>
+      <span class="step-label">Calendar</span>
+    </div>
+    <div class="step-tab" id="tab-4">
+      <div class="step-num">4</div>
+      <span class="step-label">Contact</span>
+    </div>
+    <div class="step-tab" id="tab-5">
+      <div class="step-num">5</div>
+      <span class="step-label">Confirm</span>
+    </div>
   </div>
 </div>
 
@@ -606,20 +976,20 @@ footer a { color: #f5a623; text-decoration: none; }
 
   <div class="form-step active" id="step-1">
     <div class="step-header">
-      <h2>What type of EPC do you need?</h2>
-      <p>Choose domestic or commercial so we can route the enquiry correctly.</p>
+      <h2>What type of property?</h2>
+      <p>Select the type of EPC assessment you need.</p>
     </div>
     <div class="step-body">
       <div class="type-cards">
         <div class="type-card" id="card-domestic" onclick="selectType('Domestic')">
           <span class="type-icon">🏠</span>
-          <div class="type-name">Domestic EPC</div>
-          <div class="type-desc">Houses, flats, landlords, homeowners and estate agents. From £60.</div>
+          <div class="type-name">Domestic</div>
+          <div class="type-desc">Houses, flats, apartments and residential properties. From £60.</div>
         </div>
         <div class="type-card" id="card-commercial" onclick="selectType('Commercial')">
           <span class="type-icon">🏢</span>
-          <div class="type-name">Commercial EPC</div>
-          <div class="type-desc">Shops, offices, warehouses and non-domestic premises. Review before booking.</div>
+          <div class="type-name">Commercial</div>
+          <div class="type-desc">Offices, shops, warehouses and commercial buildings. From £180.</div>
         </div>
       </div>
     </div>
@@ -631,71 +1001,223 @@ footer a { color: #f5a623; text-decoration: none; }
   <div class="form-step" id="step-2">
     <div class="step-header">
       <h2>Property details</h2>
-      <p>We use this to calculate your quote and match the booking to a sensible route.</p>
+      <p>We use this to calculate your quote and check that the property is in our service area.</p>
     </div>
+
     <div class="step-body">
       <div class="field">
         <label>Property address <span class="req">*</span></label>
-        <input type="text" id="address" placeholder="e.g. 14 Highbury Grove">
-        <div class="error-msg" id="err-address">Please enter the property address</div>
+        <input type="text" id="address" placeholder="e.g. 14 Highbury Grove, London">
+        <div class="error-msg" id="err-address">Please enter the property address.</div>
       </div>
 
       <div class="field-row">
         <div class="field">
           <label>Postcode <span class="req">*</span></label>
           <input type="text" id="postcode" placeholder="e.g. N5 1PF" oninput="checkPostcode()" style="text-transform:uppercase">
-          <div class="error-msg" id="err-postcode">Please enter a postcode</div>
-          <div class="hint" id="postcode-hint">Enter a London postcode. The calendar will prioritise route-compatible days.</div>
+          <div class="error-msg" id="err-postcode">Please enter a valid London postcode.</div>
+          <div class="postcode-status" id="postcode-status"></div>
         </div>
 
         <div class="field">
-          <label>Property type</label>
-          <select id="property_type">
-            <option value="">— Select —</option>
-          </select>
+          <label>Property type <span class="req">*</span></label>
+          <select id="prop-subtype"></select>
+          <div class="error-msg" id="err-subtype">Please select the property type.</div>
         </div>
       </div>
 
-      <div id="domestic-fields" style="display:none">
-        <div class="field">
-          <label>Estimated property value <span class="req">*</span></label>
-          <select id="property_value" onchange="refreshQuote()">
-            <option value="">— Select —</option>
-            <option value="999000">Up to £999,000</option>
-            <option value="1500000">£1,000,000 to £1,999,999</option>
-            <option value="2500000">£2,000,000 to £2,999,999</option>
-            <option value="3500000">£3,000,000 to £3,999,999</option>
-            <option value="4000001">Over £4,000,000</option>
-          </select>
-          <div class="error-msg" id="err-property-value">Please select the property value band</div>
-        </div>
+      <div id="domestic-pricing" style="display:none">
+        <div class="price-bands">
+          <div class="price-band-label">Estimated property value <span class="req">*</span></div>
+          <div class="bands-grid">
+            <div class="band-option" onclick="selectBand(this, 60, 'Up to £999,000', 45, 'domestic_value')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">Up to £999,000</div>
+                <div class="band-duration">Typical residential EPC</div>
+              </div>
+              <div class="band-price">£60</div>
+            </div>
 
-        <div class="field" id="domestic-size-field" style="display:none">
-          <label>Approximate floor area m² <span class="req">*</span></label>
-          <input type="number" min="1" id="domestic_sqm" placeholder="e.g. 180" oninput="refreshQuote()">
-          <div class="hint">Required for properties over £4,000,000.</div>
-          <div class="error-msg" id="err-domestic-sqm">Please enter approximate square meterage</div>
+            <div class="band-option" onclick="selectBand(this, 80, '£1,000,000 to £1,999,999', 60, 'domestic_value')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">£1,000,000 to £1,999,999</div>
+                <div class="band-duration">Higher value residential property</div>
+              </div>
+              <div class="band-price">£80</div>
+            </div>
+
+            <div class="band-option" onclick="selectBand(this, 110, '£2,000,000 to £2,999,999', 75, 'domestic_value')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">£2,000,000 to £2,999,999</div>
+                <div class="band-duration">Larger / higher value residential property</div>
+              </div>
+              <div class="band-price">£110</div>
+            </div>
+
+            <div class="band-option" onclick="selectBand(this, 150, '£3,000,000 to £3,999,999', 90, 'domestic_value')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">£3,000,000 to £3,999,999</div>
+                <div class="band-duration">Large high-value residential property</div>
+              </div>
+              <div class="band-price">£150</div>
+            </div>
+
+            <div class="band-option" onclick="selectBand(this, 180, 'Over £4,000,000 / 100 to 150 m²', 105, 'domestic_sqm')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">Over £4,000,000 / 100 to 150 m²</div>
+                <div class="band-duration">Large high-value residential property</div>
+              </div>
+              <div class="band-price">£180</div>
+            </div>
+
+            <div class="band-option" onclick="selectBand(this, 240, 'Over £4,000,000 / 151 to 300 m²', 120, 'domestic_sqm')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">Over £4,000,000 / 151 to 300 m²</div>
+                <div class="band-duration">Extended large residential property</div>
+              </div>
+              <div class="band-price">£240</div>
+            </div>
+
+            <div class="band-option" onclick="selectBand(this, 400, 'Over £4,000,000 / 301 to 500 m²', 150, 'domestic_sqm')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">Over £4,000,000 / 301 to 500 m²</div>
+                <div class="band-duration">Very large residential property</div>
+              </div>
+              <div class="band-price">£400</div>
+            </div>
+
+            <div class="band-option" onclick="selectBand(this, 450, 'Over £4,000,000 / 501 to 10,000 m²', 180, 'domestic_sqm')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">Over £4,000,000 / 501 to 10,000 m²</div>
+                <div class="band-duration">Estate / very large dwelling</div>
+              </div>
+              <div class="band-price">£450</div>
+            </div>
+          </div>
+          <div class="error-msg" id="err-band-domestic">Please select a domestic pricing band.</div>
         </div>
       </div>
 
-      <div id="commercial-fields" style="display:none">
-        <div class="field">
-          <label>Approximate commercial floor area m² <span class="req">*</span></label>
-          <input type="number" min="1" id="commercial_sqm" placeholder="e.g. 250" oninput="refreshQuote()">
-          <div class="error-msg" id="err-commercial-sqm">Please enter the commercial floor area</div>
-          <div class="hint">901 m² and above will be treated as a custom quote / review.</div>
+      <div id="commercial-pricing" style="display:none">
+        <div class="price-bands">
+          <div class="price-band-label">Approximate commercial floor area <span class="req">*</span></div>
+          <div class="bands-grid">
+            <div class="band-option" onclick="selectBand(this, 180, '0 to 100 m²', 60, 'commercial_sqm')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">0 to 100 m²</div>
+                <div class="band-duration">Small commercial premises</div>
+              </div>
+              <div class="band-price">£180</div>
+            </div>
+
+            <div class="band-option" onclick="selectBand(this, 215, '101 to 200 m²', 75, 'commercial_sqm')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">101 to 200 m²</div>
+                <div class="band-duration">Small to medium commercial premises</div>
+              </div>
+              <div class="band-price">£215</div>
+            </div>
+
+            <div class="band-option" onclick="selectBand(this, 255, '201 to 300 m²', 90, 'commercial_sqm')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">201 to 300 m²</div>
+                <div class="band-duration">Medium commercial premises</div>
+              </div>
+              <div class="band-price">£255</div>
+            </div>
+
+            <div class="band-option" onclick="selectBand(this, 305, '301 to 400 m²', 105, 'commercial_sqm')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">301 to 400 m²</div>
+                <div class="band-duration">Medium commercial premises</div>
+              </div>
+              <div class="band-price">£305</div>
+            </div>
+
+            <div class="band-option" onclick="selectBand(this, 355, '401 to 500 m²', 120, 'commercial_sqm')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">401 to 500 m²</div>
+                <div class="band-duration">Larger commercial premises</div>
+              </div>
+              <div class="band-price">£355</div>
+            </div>
+
+            <div class="band-option" onclick="selectBand(this, 410, '501 to 600 m²', 135, 'commercial_sqm')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">501 to 600 m²</div>
+                <div class="band-duration">Larger commercial premises</div>
+              </div>
+              <div class="band-price">£410</div>
+            </div>
+
+            <div class="band-option" onclick="selectBand(this, 455, '601 to 700 m²', 150, 'commercial_sqm')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">601 to 700 m²</div>
+                <div class="band-duration">Large commercial premises</div>
+              </div>
+              <div class="band-price">£455</div>
+            </div>
+
+            <div class="band-option" onclick="selectBand(this, 495, '701 to 800 m²', 165, 'commercial_sqm')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">701 to 800 m²</div>
+                <div class="band-duration">Large commercial premises</div>
+              </div>
+              <div class="band-price">£495</div>
+            </div>
+
+            <div class="band-option" onclick="selectBand(this, 535, '801 to 900 m²', 180, 'commercial_sqm')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">801 to 900 m²</div>
+                <div class="band-duration">Very large commercial premises</div>
+              </div>
+              <div class="band-price">£535</div>
+            </div>
+
+            <div class="band-option" onclick="selectBand(this, 0, '901 m² to 10,000 m² — Custom quote', 0, 'commercial_custom')">
+              <div class="band-radio"></div>
+              <div class="band-info">
+                <div class="band-range">901 m² to 10,000 m²</div>
+                <div class="band-duration">Custom quote required</div>
+              </div>
+              <div class="band-price">POA</div>
+            </div>
+          </div>
+          <div class="error-msg" id="err-band-commercial">Please select a commercial floor area band.</div>
         </div>
       </div>
 
-      <div class="field">
-        <label>Notes / access information</label>
-        <textarea id="notes" placeholder="Tenant details, parking, agent details, preferred times, special access notes"></textarea>
-      </div>
-
-      <div class="price-panel" id="quote-panel">
-        <div class="price-title">Quote</div>
-        <div class="price-big" id="quote-price">—</div>
-        <div class="price-note" id="quote-note">Complete the property details to calculate the quote.</div>
+      <div class="price-summary" id="price-summary-step2" style="display:none">
+        <div class="price-summary-label">Your quote</div>
+        <div class="price-row">
+          <span class="label">Assessment fee</span>
+          <span class="value" id="quote-fee-step2">—</span>
+        </div>
+        <div class="price-row" id="quote-deposit-row-step2">
+          <span class="label">Deposit due today</span>
+          <span class="value" id="quote-deposit-step2">—</span>
+        </div>
+        <div class="price-row total" id="quote-balance-row-step2">
+          <span class="label">Balance after assessment</span>
+          <span class="value" id="quote-balance-step2">—</span>
+        </div>
       </div>
     </div>
 
@@ -707,90 +1229,94 @@ footer a { color: #f5a623; text-decoration: none; }
 
   <div class="form-step" id="step-3">
     <div class="step-header">
-      <h2 id="date-heading">Choose a booking window</h2>
-      <p id="date-subtitle">Available dates are prioritised by postcode route and current dashboard bookings.</p>
+      <h2>Choose your date and window</h2>
+      <p>The booking app now checks the live calendar in Supabase before offering AM or PM windows.</p>
     </div>
+
     <div class="step-body">
       <div class="date-info">
-        <strong>Capacity:</strong> 5 AM jobs and 3 PM jobs per day. &nbsp;|&nbsp;
-        <strong>Routing:</strong> <span id="route-message">Route will be calculated from your postcode.</span>
+        <strong>Capacity:</strong> AM has 5 spaces, PM has 3 spaces, with a maximum of 8 jobs per day.
+        AM is offered first where possible.
       </div>
 
-      <div class="calendar-status" id="calendar-status">Checking live route availability...</div>
+      <div class="availability-status loading" id="availability-status">
+        Checking live availability...
+      </div>
+
+      <div class="price-summary" id="price-summary-step3">
+        <div class="price-summary-label">Your quote</div>
+        <div class="price-row">
+          <span class="label">Assessment fee</span>
+          <span class="value" id="quote-fee-step3">—</span>
+        </div>
+        <div class="price-row" id="quote-deposit-row-step3">
+          <span class="label">Deposit due today</span>
+          <span class="value" id="quote-deposit-step3">—</span>
+        </div>
+        <div class="price-row total" id="quote-balance-row-step3">
+          <span class="label">Balance after assessment</span>
+          <span class="value" id="quote-balance-step3">—</span>
+        </div>
+      </div>
 
       <div class="days-grid" id="days-grid"></div>
-
-      <div class="window-grid" id="window-grid">
-        <div class="window-card" id="window-AM" onclick="selectWindow('AM')">
-          <strong>AM <span class="recommended-label" id="am-recommended" style="display:none">Preferred</span></strong>
-          <span id="window-am-text">08:00 to 13:00 · 5 spaces</span>
-        </div>
-        <div class="window-card" id="window-PM" onclick="selectWindow('PM')">
-          <strong>PM</strong>
-          <span id="window-pm-text">13:00 to 17:00 · 3 spaces</span>
-        </div>
-      </div>
-
-      <div class="error-msg" id="err-date">Please select a date</div>
-      <div class="error-msg" id="err-window">Please select an available AM or PM window</div>
+      <div class="error-msg" id="err-date-window">Please select an available date and AM/PM window.</div>
     </div>
 
     <div class="btn-row">
       <button class="btn btn-back" onclick="goToStep(2)">← Back</button>
-      <button class="btn btn-primary" onclick="goToStep(4)">Continue →</button>
+      <button class="btn btn-primary" id="calendar-continue-btn" onclick="goToStep(4)">Continue →</button>
     </div>
   </div>
 
   <div class="form-step" id="step-4">
     <div class="step-header">
       <h2>Your contact details</h2>
-      <p>These details will be saved into the EPC Pro dashboard with the enquiry.</p>
+      <p>We will send your booking reference and appointment details to this email address.</p>
     </div>
+
     <div class="step-body">
       <div class="field-row">
         <div class="field">
           <label>First name <span class="req">*</span></label>
-          <input type="text" id="fname">
-          <div class="error-msg" id="err-fname">Required</div>
+          <input type="text" id="fname" placeholder="John">
+          <div class="error-msg" id="err-fname">Required.</div>
         </div>
+
         <div class="field">
           <label>Last name <span class="req">*</span></label>
-          <input type="text" id="lname">
-          <div class="error-msg" id="err-lname">Required</div>
+          <input type="text" id="lname" placeholder="Smith">
+          <div class="error-msg" id="err-lname">Required.</div>
         </div>
       </div>
 
       <div class="field">
-        <label>Email <span class="req">*</span></label>
-        <input type="email" id="email">
-        <div class="error-msg" id="err-email">Please enter a valid email</div>
+        <label>Email address <span class="req">*</span></label>
+        <input type="email" id="email" placeholder="john@example.com">
+        <div class="error-msg" id="err-email">Please enter a valid email address.</div>
       </div>
 
       <div class="field">
-        <label>Phone <span class="req">*</span></label>
-        <input type="tel" id="phone">
-        <div class="error-msg" id="err-phone">Please enter a phone number</div>
+        <label>Phone number <span class="req">*</span></label>
+        <input type="tel" id="phone" placeholder="07xxx xxx xxx">
+        <div class="error-msg" id="err-phone">Please enter a phone number.</div>
       </div>
 
       <div class="field">
-        <label>I am a...</label>
-        <select id="client_type">
-          <option value="Client">Homeowner / private client</option>
-          <option value="Landlord">Landlord</option>
-          <option value="Estate Agent">Estate agent</option>
-          <option value="Business">Business</option>
-          <option value="Other">Other</option>
-        </select>
+        <label>Access instructions <span style="color:var(--ink3);font-weight:400">(optional)</span></label>
+        <input type="text" id="access" placeholder="e.g. Tenant will be present, key with agent, ring doorbell">
+        <div class="hint">Any information that helps the assessor access the property.</div>
       </div>
 
       <div class="field">
         <label>How did you hear about us?</label>
-        <select id="source">
-          <option value="Website">Website</option>
-          <option value="Google">Google search</option>
+        <select id="referral">
+          <option value="">— Select —</option>
+          <option value="Google search">Google search</option>
           <option value="Local Surveyors Direct">Local Surveyors Direct</option>
-          <option value="Estate Agent">Estate agent</option>
-          <option value="Referral">Referral</option>
+          <option value="Estate agent">Estate agent</option>
+          <option value="Personal referral">Personal referral</option>
+          <option value="Social media">Social media</option>
           <option value="Other">Other</option>
         </select>
       </div>
@@ -798,33 +1324,31 @@ footer a { color: #f5a623; text-decoration: none; }
 
     <div class="btn-row">
       <button class="btn btn-back" onclick="goToStep(3)">← Back</button>
-      <button class="btn btn-primary" onclick="goToStep(5)">Review →</button>
+      <button class="btn btn-primary" onclick="goToStep(5)">Review booking →</button>
     </div>
   </div>
 
   <div class="form-step" id="step-5">
     <div class="step-header">
-      <h2>Review and submit</h2>
-      <p id="confirm-subtitle">Check the details before sending this to EPC Pro.</p>
+      <h2>Review and confirm</h2>
+      <p>Please check your details before sending the booking request.</p>
     </div>
-    <div class="step-body">
-      <div class="status-box" id="submit-status"></div>
 
+    <div class="step-body">
       <div class="confirm-block">
         <div class="confirm-block-label">Property</div>
         <div class="confirm-item"><span class="ci-label">Address</span><span class="ci-value" id="cf-address">—</span></div>
         <div class="confirm-item"><span class="ci-label">Postcode</span><span class="ci-value" id="cf-postcode">—</span></div>
-        <div class="confirm-item"><span class="ci-label">Route group</span><span class="ci-value" id="cf-route">—</span></div>
         <div class="confirm-item"><span class="ci-label">Service</span><span class="ci-value" id="cf-service">—</span></div>
-        <div class="confirm-item"><span class="ci-label">Quote</span><span class="ci-value" id="cf-quote">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Property type</span><span class="ci-value" id="cf-subtype">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Pricing band</span><span class="ci-value" id="cf-band">—</span></div>
       </div>
 
       <div class="confirm-block">
-        <div class="confirm-block-label">Requested appointment</div>
+        <div class="confirm-block-label">Appointment</div>
         <div class="confirm-item"><span class="ci-label">Date</span><span class="ci-value" id="cf-date">—</span></div>
         <div class="confirm-item"><span class="ci-label">Window</span><span class="ci-value" id="cf-window">—</span></div>
-        <div class="confirm-item"><span class="ci-label">Route fit</span><span class="ci-value" id="cf-route-fit">—</span></div>
-        <div class="confirm-item"><span class="ci-label">Availability</span><span class="ci-value" id="cf-availability">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Duration</span><span class="ci-value" id="cf-duration">—</span></div>
       </div>
 
       <div class="confirm-block">
@@ -834,33 +1358,55 @@ footer a { color: #f5a623; text-decoration: none; }
         <div class="confirm-item"><span class="ci-label">Phone</span><span class="ci-value" id="cf-phone">—</span></div>
       </div>
 
+      <div class="price-summary">
+        <div class="price-summary-label">Payment summary</div>
+        <div class="price-row">
+          <span class="label">Total assessment fee</span>
+          <span class="value" id="cf-total">—</span>
+        </div>
+        <div class="price-row" id="cf-deposit-row">
+          <span class="label">Deposit due today</span>
+          <span class="value" id="cf-deposit">—</span>
+        </div>
+        <div class="price-row total" id="cf-balance-row">
+          <span class="label">Balance after assessment</span>
+          <span class="value" id="cf-balance">—</span>
+        </div>
+      </div>
+
       <label class="terms-check">
         <input type="checkbox" id="terms">
-        <span>I confirm the details are correct. Domestic online bookings are booking requests pending deposit/payment integration; commercial enquiries are review/quote requests and are not automatically confirmed.</span>
+        <span>
+          I confirm the information provided is correct. I understand this creates a booking request in EPC Pro's system.
+          The appointment is subject to confirmation, payment status and operational routing.
+        </span>
       </label>
     </div>
 
     <div class="btn-row">
       <button class="btn btn-back" onclick="goToStep(4)">← Back</button>
-      <button class="btn btn-primary" id="submit-btn" onclick="submitBooking()">Submit to EPC Pro</button>
+      <button class="btn btn-pay" id="submit-btn" onclick="submitBooking()">
+        <span id="submit-btn-label">Confirm booking request</span>
+      </button>
     </div>
   </div>
 
   <div class="form-step" id="step-success">
     <div class="success-screen">
-      <div class="success-icon">✓</div>
-      <h2 id="success-title">Request received</h2>
-      <p id="success-text">Your details have been sent to EPC Pro and will now appear in the dashboard.</p>
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+        </svg>
+      </div>
+      <h2>Booking request received</h2>
+      <p>Your EPC booking request has been saved. Please keep your reference number in case you need to contact us about this job.</p>
       <div class="booking-ref">
         <div class="booking-ref-label">Your EPC Pro reference</div>
         <div class="booking-ref-num" id="booking-ref-num">—</div>
       </div>
-      <p style="font-size:13px">
-        Please quote this reference if you email, WhatsApp or send documents afterwards.
-      </p>
-      <p style="font-size:13px;margin-top:12px">
-        Questions? Call <a href="tel:07831363622" style="color:var(--accent);font-weight:700">07831 363 622</a>
-        or email <a href="mailto:help@theepc.pro" style="color:var(--accent);font-weight:700">help@theepc.pro</a>
+      <p style="font-size:13px;color:var(--ink3)">
+        Questions? Call <a href="tel:07831363622" style="color:var(--accent);font-weight:600">07831 363 622</a>
+        or email <a href="mailto:help@theepc.pro" style="color:var(--accent);font-weight:600">help@theepc.pro</a>
       </p>
     </div>
   </div>
@@ -869,123 +1415,131 @@ footer a { color: #f5a623; text-decoration: none; }
 </main>
 
 <footer>
-  The EPC Pro · Accreditation No. EES/026824 ·
-  <a href="tel:07831363622">07831 363 622</a> ·
-  <a href="mailto:help@theepc.pro">help@theepc.pro</a> ·
+  The EPC Pro &nbsp;·&nbsp; Accreditation No. EES/026824 &nbsp;·&nbsp;
+  <a href="tel:07831363622">07831 363 622</a> &nbsp;·&nbsp;
+  <a href="mailto:help@theepc.pro">help@theepc.pro</a> &nbsp;·&nbsp;
   <a href="https://theepc.pro">theepc.pro</a>
 </footer>
 
 <script>
+// ============================================================================
+// SUPABASE CONFIGURATION
+// ============================================================================
 const SUPABASE_URL = 'https://lokyeggbiusgrrxbvnho.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxva3llZ2diaXVzZ3JyeGJ2bmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMjA1NzIsImV4cCI6MjA5MjU5NjU3Mn0.c9OAP7QnOYA9sB-0afDnUDnu-9SNXyRqgoggTWUiJhQ';
 
-const supabaseClient = window.supabase
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  : null;
-
 const AM_CAPACITY = 5;
 const PM_CAPACITY = 3;
-const DAILY_CAPACITY = 8;
+const DAY_CAPACITY = 8;
 
-const CLOSED_STATUSES = ['Closed', 'EPC served', 'Cancelled', 'Lost'];
+let supabaseClient = null;
 
-const ENGLAND_WALES_BANK_HOLIDAYS = {
-  '2026-01-01': "New Year's Day",
-  '2026-04-03': 'Good Friday',
-  '2026-04-06': 'Easter Monday',
-  '2026-05-04': 'Early May bank holiday',
-  '2026-05-25': 'Spring bank holiday',
-  '2026-08-31': 'Summer bank holiday',
-  '2026-12-25': 'Christmas Day',
-  '2026-12-28': 'Boxing Day substitute',
-  '2027-01-01': "New Year's Day",
-  '2027-03-26': 'Good Friday',
-  '2027-03-29': 'Easter Monday',
-  '2027-05-03': 'Early May bank holiday',
-  '2027-05-31': 'Spring bank holiday',
-  '2027-08-30': 'Summer bank holiday',
-  '2027-12-27': 'Christmas Day substitute',
-  '2027-12-28': 'Boxing Day substitute',
-  '2028-01-03': "New Year's Day substitute"
-};
-
-const ROUTE_GROUPS = {
-  NORTH_NW: {
-    label: 'North / North West',
-    prefixes: ['N', 'NW', 'EN', 'HA']
-  },
-  EAST: {
-    label: 'East',
-    prefixes: ['E', 'IG', 'RM']
-  },
-  WEST_SW: {
-    label: 'West / South West',
-    prefixes: ['W', 'SW', 'TW', 'KT', 'UB']
-  },
-  SOUTH_EAST: {
-    label: 'South East',
-    prefixes: ['SE', 'BR', 'CR', 'DA']
-  },
-  CENTRAL: {
-    label: 'Central / Flexible',
-    prefixes: ['EC', 'WC']
+try {
+  if (window.supabase && window.supabase.createClient) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('Supabase connected');
+  } else {
+    console.error('Supabase library not loaded');
   }
-};
+} catch (error) {
+  console.error('Supabase setup error:', error);
+}
 
-const CENTRAL_DISTRICTS = ['W1', 'N1', 'E1', 'SE1', 'SW1'];
-
+// ============================================================================
+// STATE
+// ============================================================================
 const state = {
   type: null,
-  price: null,
-  pricingStatus: '',
-  quoteLabel: '',
+  price: 0,
+  band: '',
+  pricingBasis: '',
+  duration: 0,
+  deposit: 0,
+  balance: 0,
   address: '',
   postcode: '',
-  routeGroupCode: '',
-  routeGroupLabel: '',
-  date: null,
+  zone: '',
+  zoneName: '',
+  subtype: '',
+  date: '',
   dateStr: '',
-  window: null,
-  selectedDayAvailability: null,
-  selectedDayRouteFit: '',
-  reviewRequired: false,
-  availabilityByDate: {},
+  bookingWindow: '',
+  liveJobs: [],
   availabilityLoaded: false,
-  jobsByDate: {}
+  availabilityError: '',
+  contact: {},
+  reference: ''
 };
 
-function generateDatabaseId() {
-  if (window.crypto && crypto.randomUUID) {
-    return crypto.randomUUID();
+const londonPrefixes = [
+  'NW','SW','SE','WC','EC',
+  'N','E','W',
+  'EN','HA','IG','RM','TW','KT','BR','CR','SM','UB','DA'
+];
+
+const zones = {
+  N: 'North London',
+  NW: 'North West London',
+  E: 'East London',
+  W: 'West London',
+  EC: 'Central London',
+  WC: 'Central London',
+  SW: 'South West London',
+  SE: 'South East London',
+  EN: 'North London',
+  HA: 'North West London',
+  IG: 'East London',
+  RM: 'East London',
+  TW: 'South West London',
+  KT: 'South West London',
+  BR: 'South East London',
+  CR: 'South East London',
+  SM: 'South London',
+  UB: 'West London',
+  DA: 'South East London'
+};
+
+const domesticSubtypes = [
+  ['', '— Select —'],
+  ['Flat / Apartment', 'Flat / Apartment'],
+  ['Terraced house', 'Terraced house'],
+  ['Semi-detached house', 'Semi-detached house'],
+  ['Detached house', 'Detached house'],
+  ['Bungalow', 'Bungalow'],
+  ['Maisonette', 'Maisonette'],
+  ['Other residential', 'Other residential']
+];
+
+const commercialSubtypes = [
+  ['', '— Select —'],
+  ['Office', 'Office'],
+  ['Retail shop', 'Retail shop'],
+  ['Restaurant / cafe', 'Restaurant / cafe'],
+  ['Warehouse / industrial unit', 'Warehouse / industrial unit'],
+  ['Mixed-use commercial', 'Mixed-use commercial'],
+  ['Medical / clinic', 'Medical / clinic'],
+  ['Community / leisure building', 'Community / leisure building'],
+  ['Other commercial', 'Other commercial']
+];
+
+function getZone(pc) {
+  const clean = String(pc || '').replace(/\s/g, '').toUpperCase();
+  for (const prefix of londonPrefixes) {
+    if (clean.startsWith(prefix)) {
+      return {
+        code: prefix,
+        name: zones[prefix] || 'London'
+      };
+    }
   }
-
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
+  return null;
 }
 
-function makeReference() {
-  return 'EPC-' + Date.now().toString(36).toUpperCase().slice(-6);
+function isClosedStatus(status) {
+  return ['EPC served', 'Closed', 'Cancelled', 'Lost'].includes(String(status || ''));
 }
 
-function localISODate(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-
-function formatDisplayDate(date) {
-  return date.toLocaleDateString('en-GB', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short'
-  });
-}
-
-function parseDocuments(row) {
+function safeDocuments(row) {
   if (!row || !row.documents) return {};
   if (typeof row.documents === 'object') return row.documents;
   try {
@@ -995,1002 +1549,770 @@ function parseDocuments(row) {
   }
 }
 
-function getPostcodeParts(pc) {
-  const clean = String(pc || '').replace(/\s/g, '').toUpperCase();
-  const areaMatch = clean.match(/^[A-Z]+/);
-  const districtMatch = clean.match(/^[A-Z]+(\d+)/);
+function firstPresent(...values) {
+  for (const value of values) {
+    if (value !== null && value !== undefined && value !== '') return value;
+  }
+  return null;
+}
+
+function getJobBookingDate(job) {
+  const docs = safeDocuments(job);
+  return firstPresent(job.booking_date, docs.booking_date, docs.appointment_date, '');
+}
+
+function getJobBookingWindow(job) {
+  const docs = safeDocuments(job);
+  return String(firstPresent(job.booking_window, docs.booking_window, docs.appointment_window, '') || '').toUpperCase();
+}
+
+function getActiveJobsForDate(dateISO) {
+  return state.liveJobs.filter(job => {
+    const bookingDate = getJobBookingDate(job);
+    const status = firstPresent(job.status, safeDocuments(job).status, '');
+    return bookingDate === dateISO && !isClosedStatus(status);
+  });
+}
+
+function getAvailabilityForDate(dateISO) {
+  const jobs = getActiveJobsForDate(dateISO);
+  const amBooked = jobs.filter(job => getJobBookingWindow(job) === 'AM').length;
+  const pmBooked = jobs.filter(job => getJobBookingWindow(job) === 'PM').length;
+  const dayBooked = amBooked + pmBooked;
 
   return {
-    clean,
-    area: areaMatch ? areaMatch[0] : '',
-    district: districtMatch ? districtMatch[1] : '',
-    areaDistrict: areaMatch && districtMatch ? areaMatch[0] + districtMatch[1] : areaMatch ? areaMatch[0] : ''
+    amBooked,
+    pmBooked,
+    dayBooked,
+    amLeft: Math.max(0, AM_CAPACITY - amBooked),
+    pmLeft: Math.max(0, PM_CAPACITY - pmBooked),
+    dayLeft: Math.max(0, DAY_CAPACITY - dayBooked),
+    amAvailable: amBooked < AM_CAPACITY && dayBooked < DAY_CAPACITY,
+    pmAvailable: pmBooked < PM_CAPACITY && dayBooked < DAY_CAPACITY,
+    dayAvailable: dayBooked < DAY_CAPACITY
   };
 }
 
-function getRouteGroupFromPostcode(pc) {
-  const parts = getPostcodeParts(pc);
-
-  if (!parts.area) {
-    return { code: 'UNKNOWN', label: 'Unknown route' };
-  }
-
-  if (CENTRAL_DISTRICTS.includes(parts.areaDistrict)) {
-    return { code: 'CENTRAL', label: ROUTE_GROUPS.CENTRAL.label };
-  }
-
-  for (const [code, group] of Object.entries(ROUTE_GROUPS)) {
-    if (group.prefixes.includes(parts.area)) {
-      return { code, label: group.label };
-    }
-  }
-
-  return { code: 'UNKNOWN', label: 'Manual review route' };
+function formatPrice(value) {
+  if (!value || Number(value) === 0) return 'POA';
+  return '£' + Number(value).toFixed(2);
 }
 
-function routeGroupsCompatible(dayRouteCode, customerRouteCode) {
-  if (!dayRouteCode || dayRouteCode === 'OPEN') return true;
-  if (!customerRouteCode || customerRouteCode === 'UNKNOWN') return true;
-  if (dayRouteCode === customerRouteCode) return true;
-  if (dayRouteCode === 'CENTRAL' || customerRouteCode === 'CENTRAL') return true;
-  return false;
+function generateReference() {
+  return 'EPC-' + Date.now().toString(36).toUpperCase().slice(-6);
 }
 
-function getRouteFitLabel(dayRouteCode, customerRouteCode) {
-  if (!dayRouteCode || dayRouteCode === 'OPEN') return 'Open day';
-  if (dayRouteCode === 'MIXED') return 'Mixed route day';
-  if (dayRouteCode === customerRouteCode) return 'Same route';
-  if (dayRouteCode === 'CENTRAL' || customerRouteCode === 'CENTRAL') return 'Central / flexible fit';
-  return 'Different route';
-}
+function setSubtypeOptions(type) {
+  const select = document.getElementById('prop-subtype');
+  const options = type === 'Commercial' ? commercialSubtypes : domesticSubtypes;
 
-function toNumber(value) {
-  if (value === null || value === undefined || value === '') return 0;
-  const number = Number(String(value).replace(/[^0-9.]/g, ''));
-  return Number.isFinite(number) ? number : 0;
-}
+  select.innerHTML = '';
 
-function calculateDomesticPrice(propertyValue, sqm) {
-  const value = Number(propertyValue || 0);
-  const area = Number(sqm || 0);
-
-  if (value <= 0) return { price: null, status: 'missing', label: 'Select property value', reviewRequired: false };
-  if (value <= 999000) return { price: 60, status: 'priced', label: 'Up to £999,000', reviewRequired: false };
-  if (value <= 1999999) return { price: 80, status: 'priced', label: '£1,000,000 to £1,999,999', reviewRequired: false };
-  if (value <= 2999999) return { price: 110, status: 'priced', label: '£2,000,000 to £2,999,999', reviewRequired: false };
-  if (value <= 3999999) return { price: 150, status: 'priced', label: '£3,000,000 to £3,999,999', reviewRequired: false };
-
-  if (!area) {
-    return { price: null, status: 'review', label: 'Over £4,000,000 — square meterage required', reviewRequired: true };
-  }
-
-  if (area <= 150) return { price: 180, status: 'priced', label: 'Over £4,000,000, 100–150 m²', reviewRequired: false };
-  if (area <= 300) return { price: 240, status: 'priced', label: 'Over £4,000,000, 151–300 m²', reviewRequired: false };
-  if (area <= 500) return { price: 400, status: 'priced', label: 'Over £4,000,000, 301–500 m²', reviewRequired: false };
-  if (area <= 750) return { price: 450, status: 'priced', label: 'Over £4,000,000, 501–750 m²', reviewRequired: false };
-  if (area <= 10000) return { price: 450, status: 'priced', label: 'Over £4,000,000, 751–10,000 m²', reviewRequired: false };
-
-  return { price: null, status: 'review', label: 'Large residential property — review required', reviewRequired: true };
-}
-
-function calculateCommercialPrice(sqm) {
-  const area = Number(sqm || 0);
-
-  if (!area) return { price: null, status: 'missing', label: 'Enter commercial floor area', reviewRequired: true };
-  if (area <= 100) return { price: 180, status: 'priced', label: '0–100 m²', reviewRequired: false };
-  if (area <= 200) return { price: 215, status: 'priced', label: '101–200 m²', reviewRequired: false };
-  if (area <= 300) return { price: 255, status: 'priced', label: '201–300 m²', reviewRequired: false };
-  if (area <= 400) return { price: 305, status: 'priced', label: '301–400 m²', reviewRequired: false };
-  if (area <= 500) return { price: 355, status: 'priced', label: '401–500 m²', reviewRequired: false };
-  if (area <= 600) return { price: 410, status: 'priced', label: '501–600 m²', reviewRequired: false };
-  if (area <= 700) return { price: 455, status: 'priced', label: '601–700 m²', reviewRequired: false };
-  if (area <= 800) return { price: 495, status: 'priced', label: '701–800 m²', reviewRequired: false };
-  if (area <= 900) return { price: 535, status: 'priced', label: '801–900 m²', reviewRequired: false };
-  if (area <= 10000) return { price: null, status: 'review', label: '901 m² to 10,000 m² — custom quote / review required', reviewRequired: true };
-
-  return { price: null, status: 'review', label: 'Large commercial property — custom quote required', reviewRequired: true };
-}
-
-function checkPostcode() {
-  const val = document.getElementById('postcode').value.toUpperCase().trim();
-  const hint = document.getElementById('postcode-hint');
-
-  if (!val) {
-    hint.textContent = 'Enter a London postcode. The calendar will prioritise route-compatible days.';
-    hint.style.color = 'var(--ink3)';
-    return;
-  }
-
-  const route = getRouteGroupFromPostcode(val);
-  state.routeGroupCode = route.code;
-  state.routeGroupLabel = route.label;
-
-  if (route.code === 'UNKNOWN') {
-    hint.textContent = 'Postcode recorded. Route may need manual review.';
-    hint.style.color = 'var(--warning)';
-  } else {
-    hint.textContent = `✓ Route group: ${route.label}. The calendar will prioritise suitable route days.`;
-    hint.style.color = 'var(--success)';
-  }
-}
-
-function updatePropertyTypeOptions(type) {
-  const select = document.getElementById('property_type');
-
-  const domesticOptions = [
-    'Flat / Apartment',
-    'Terraced house',
-    'Semi-detached house',
-    'Detached house',
-    'Bungalow',
-    'Maisonette',
-    'Other residential property'
-  ];
-
-  const commercialOptions = [
-    'Shop / Retail unit',
-    'Office',
-    'Restaurant / Café',
-    'Warehouse / Industrial unit',
-    'Workshop',
-    'Mixed-use commercial premises',
-    'Community / Public building',
-    'Medical / Dental / Clinic',
-    'School / Nursery / Education',
-    'Hotel / Guest accommodation',
-    'Storage unit',
-    'Other commercial premises'
-  ];
-
-  const options = type === 'Commercial' ? commercialOptions : domesticOptions;
-  select.innerHTML = '<option value="">— Select —</option>';
-
-  options.forEach(optionText => {
+  options.forEach(([value, label]) => {
     const option = document.createElement('option');
-    option.value = optionText;
-    option.textContent = optionText;
+    option.value = value;
+    option.textContent = label;
     select.appendChild(option);
   });
 }
 
 function selectType(type) {
   state.type = type;
-  state.price = null;
-  state.reviewRequired = false;
-  state.window = null;
-  state.date = null;
+  state.price = 0;
+  state.band = '';
+  state.pricingBasis = '';
+  state.duration = 0;
+  state.deposit = 0;
+  state.balance = 0;
+  state.subtype = '';
 
   document.getElementById('card-domestic').classList.toggle('selected', type === 'Domestic');
   document.getElementById('card-commercial').classList.toggle('selected', type === 'Commercial');
 
-  document.getElementById('domestic-fields').style.display = type === 'Domestic' ? 'block' : 'none';
-  document.getElementById('commercial-fields').style.display = type === 'Commercial' ? 'block' : 'none';
+  setSubtypeOptions(type);
 
-  updatePropertyTypeOptions(type);
-  refreshQuote();
+  document.querySelectorAll('.band-option').forEach(option => option.classList.remove('selected'));
+  updatePriceSummary();
 }
 
-function refreshQuote() {
-  let result = { price: null, status: 'missing', label: 'Complete details', reviewRequired: false };
+function selectBand(el, price, bandName, duration, pricingBasis) {
+  document.querySelectorAll('.band-option').forEach(option => option.classList.remove('selected'));
+  el.classList.add('selected');
 
-  if (state.type === 'Domestic') {
-    const value = document.getElementById('property_value')?.value;
-    const sqm = document.getElementById('domestic_sqm')?.value;
-
-    document.getElementById('domestic-size-field').style.display =
-      Number(value) > 4000000 ? 'block' : 'none';
-
-    result = calculateDomesticPrice(value, sqm);
-  }
+  state.price = Number(price) || 0;
+  state.band = bandName;
+  state.duration = Number(duration) || 0;
+  state.pricingBasis = pricingBasis;
 
   if (state.type === 'Commercial') {
-    result = calculateCommercialPrice(document.getElementById('commercial_sqm')?.value);
-  }
-
-  state.price = result.price;
-  state.pricingStatus = result.status;
-  state.quoteLabel = result.label;
-  state.reviewRequired = result.reviewRequired || result.status === 'review';
-
-  const qp = document.getElementById('quote-price');
-  const qn = document.getElementById('quote-note');
-
-  if (result.price) {
-    qp.textContent = '£' + Number(result.price).toFixed(2);
-    qn.textContent =
-      result.label +
-      (state.type === 'Domestic'
-        ? ' · 50% deposit requested before appointment confirmation.'
-        : ' · Commercial quote/review workflow.');
-  } else if (result.status === 'review') {
-    qp.textContent = 'Review required';
-    qn.textContent = result.label;
+    state.deposit = 0;
+    state.balance = state.price;
   } else {
-    qp.textContent = '—';
-    qn.textContent = 'Complete the property details to calculate the quote.';
+    state.deposit = Math.round(state.price * 0.5 * 100) / 100;
+    state.balance = Math.round((state.price - state.deposit) * 100) / 100;
   }
+
+  updatePriceSummary();
 }
 
-function isClosedStatus(status) {
-  return CLOSED_STATUSES.includes(status);
+function updatePriceSummary() {
+  const summary2 = document.getElementById('price-summary-step2');
+  const isCommercial = state.type === 'Commercial';
+  const isCustom = state.price === 0;
+
+  summary2.style.display = state.band ? 'block' : 'none';
+
+  ['step2', 'step3'].forEach(step => {
+    const fee = document.getElementById(`quote-fee-${step}`);
+    const depRow = document.getElementById(`quote-deposit-row-${step}`);
+    const balRow = document.getElementById(`quote-balance-row-${step}`);
+    const dep = document.getElementById(`quote-deposit-${step}`);
+    const bal = document.getElementById(`quote-balance-${step}`);
+
+    if (fee) fee.textContent = state.band ? formatPrice(state.price) : '—';
+
+    if (isCommercial) {
+      if (depRow) depRow.style.display = 'none';
+      if (balRow) {
+        balRow.style.display = 'flex';
+        balRow.innerHTML = '<span class="label">Commercial payment terms</span><span class="value">Review / invoice</span>';
+      }
+    } else {
+      if (depRow) depRow.style.display = 'flex';
+      if (balRow) balRow.style.display = 'flex';
+      if (dep) dep.textContent = isCustom ? '—' : formatPrice(state.deposit);
+      if (bal) bal.textContent = isCustom ? '—' : formatPrice(state.balance);
+    }
+  });
 }
 
-function getEmptyAvailability() {
-  return { AM: 0, PM: 0, total: 0 };
-}
+function checkPostcode() {
+  const val = document.getElementById('postcode').value.toUpperCase().trim();
+  const el = document.getElementById('postcode-status');
 
-function extractJobPostcode(job) {
-  const docs = parseDocuments(job);
-  return job.postcode || docs.postcode || docs.property_postcode || docs.propertyPostcode || '';
-}
-
-async function loadExistingAvailability() {
-  const statusBox = document.getElementById('calendar-status');
-  statusBox.className = 'calendar-status show';
-  statusBox.textContent = 'Checking live route availability from the dashboard...';
-
-  state.availabilityByDate = {};
-  state.jobsByDate = {};
-  state.availabilityLoaded = false;
-
-  if (!supabaseClient) {
-    statusBox.textContent = 'Live calendar could not connect. Showing availability without existing bookings.';
-    buildDateGrid();
+  if (!val || val.length < 2) {
+    el.className = 'postcode-status';
+    el.textContent = '';
+    state.zone = '';
+    state.zoneName = '';
     return;
   }
 
-  const today = new Date();
-  const startDate = localISODate(today);
-  const endDateObj = new Date(today);
-  endDateObj.setDate(today.getDate() + 120);
-  const endDate = localISODate(endDateObj);
+  const zone = getZone(val);
+
+  if (zone) {
+    el.className = 'postcode-status zone';
+    el.innerHTML = `✓ &nbsp;${zone.name} — we cover this area`;
+    state.zone = zone.code;
+    state.zoneName = zone.name;
+  } else {
+    el.className = 'postcode-status err';
+    el.innerHTML = `✗ &nbsp;Sorry, this postcode is not currently recognised as a covered London area.`;
+    state.zone = '';
+    state.zoneName = '';
+  }
+}
+
+function showErr(errId, fieldId) {
+  const err = document.getElementById(errId);
+  const field = fieldId ? document.getElementById(fieldId) : null;
+
+  if (err) err.classList.add('show');
+  if (field) {
+    field.classList.add('error');
+    field.focus();
+  }
+
+  setTimeout(() => {
+    if (err) err.classList.remove('show');
+    if (field) field.classList.remove('error');
+  }, 3500);
+}
+
+function clearBandErrors() {
+  const d = document.getElementById('err-band-domestic');
+  const c = document.getElementById('err-band-commercial');
+  if (d) d.classList.remove('show');
+  if (c) c.classList.remove('show');
+}
+
+async function loadLiveAvailability() {
+  const status = document.getElementById('availability-status');
+  const continueBtn = document.getElementById('calendar-continue-btn');
+
+  state.availabilityLoaded = false;
+  state.availabilityError = '';
+  state.liveJobs = [];
+
+  if (continueBtn) continueBtn.disabled = true;
+
+  status.className = 'availability-status loading';
+  status.textContent = 'Checking live availability from Supabase...';
+
+  if (!supabaseClient) {
+    state.availabilityError = 'Supabase is not connected.';
+    status.className = 'availability-status err';
+    status.textContent = 'Could not check live availability. Please call 07831 363 622 to book.';
+    return;
+  }
 
   try {
+    const today = new Date();
+    const fromDate = today.toISOString().split('T')[0];
+
+    const future = new Date(today);
+    future.setDate(today.getDate() + 45);
+    const toDate = future.toISOString().split('T')[0];
+
     const { data, error } = await supabaseClient
       .from('jobs')
-      .select('*')
-      .gte('booking_date', startDate)
-      .lte('booking_date', endDate);
+      .select('id, reference, status, booking_date, booking_window, epc_type, documents')
+      .gte('booking_date', fromDate)
+      .lte('booking_date', toDate);
 
     if (error) throw error;
 
-    (data || []).forEach(job => {
-      if (!job.booking_date) return;
-      if (isClosedStatus(job.status)) return;
-
-      const dateKey = job.booking_date;
-      const windowKey = String(job.booking_window || '').toUpperCase();
-
-      if (!state.availabilityByDate[dateKey]) {
-        state.availabilityByDate[dateKey] = getEmptyAvailability();
-      }
-
-      if (!state.jobsByDate[dateKey]) {
-        state.jobsByDate[dateKey] = [];
-      }
-
-      state.jobsByDate[dateKey].push(job);
-
-      if (windowKey === 'AM') {
-        state.availabilityByDate[dateKey].AM += 1;
-        state.availabilityByDate[dateKey].total += 1;
-      }
-
-      if (windowKey === 'PM') {
-        state.availabilityByDate[dateKey].PM += 1;
-        state.availabilityByDate[dateKey].total += 1;
-      }
-    });
-
+    state.liveJobs = data || [];
     state.availabilityLoaded = true;
-    statusBox.textContent = 'Live route availability loaded from the dashboard.';
-    buildDateGrid();
 
+    status.className = 'availability-status ok';
+    status.textContent = `Live availability loaded. Existing future jobs checked: ${state.liveJobs.length}.`;
+
+    if (continueBtn) continueBtn.disabled = false;
+
+    buildDateGrid();
   } catch (err) {
-    console.error(err);
-    statusBox.textContent = 'Could not read existing jobs. Showing availability without existing bookings.';
-    buildDateGrid();
+    console.error('Availability load error:', err);
+    state.availabilityError = err.message || String(err);
+    status.className = 'availability-status err';
+    status.textContent = 'Could not check live availability. Please call 07831 363 622 to book.';
   }
-}
-
-function getAvailabilityForDate(dateKey) {
-  const existing = state.availabilityByDate[dateKey] || getEmptyAvailability();
-
-  return {
-    AMBooked: existing.AM || 0,
-    PMBooked: existing.PM || 0,
-    totalBooked: existing.total || 0,
-    AMLeft: Math.max(0, AM_CAPACITY - (existing.AM || 0)),
-    PMLeft: Math.max(0, PM_CAPACITY - (existing.PM || 0)),
-    totalLeft: Math.max(0, DAILY_CAPACITY - (existing.total || 0))
-  };
-}
-
-function getDayRouteSummary(dateKey) {
-  const jobs = state.jobsByDate[dateKey] || [];
-  const counts = {};
-
-  jobs.forEach(job => {
-    const docs = parseDocuments(job);
-    let code = docs.route_group_code;
-
-    if (!code) {
-      const pc = extractJobPostcode(job);
-      code = getRouteGroupFromPostcode(pc).code;
-    }
-
-    if (!code || code === 'UNKNOWN') code = 'UNKNOWN';
-    counts[code] = (counts[code] || 0) + 1;
-  });
-
-  const routeCodes = Object.keys(counts).filter(code => code !== 'UNKNOWN');
-
-  if (routeCodes.length === 0) {
-    return {
-      code: jobs.length > 0 ? 'UNKNOWN' : 'OPEN',
-      label: jobs.length > 0 ? 'Unknown route' : 'Open day',
-      counts,
-      mixed: false
-    };
-  }
-
-  if (routeCodes.length === 1) {
-    const code = routeCodes[0];
-    return {
-      code,
-      label: ROUTE_GROUPS[code]?.label || 'Unknown route',
-      counts,
-      mixed: false
-    };
-  }
-
-  return {
-    code: 'MIXED',
-    label: 'Mixed route day',
-    counts,
-    mixed: true
-  };
-}
-
-function scoreDate(dateKey, availability) {
-  const dayRoute = getDayRouteSummary(dateKey);
-  const customerRoute = state.routeGroupCode || 'UNKNOWN';
-  let score = 0;
-  let compatible = false;
-  let routeFit = getRouteFitLabel(dayRoute.code, customerRoute);
-
-  if (availability.totalLeft <= 0) {
-    return { score: -1000, compatible: false, routeFit: 'Full day', dayRoute };
-  }
-
-  if (dayRoute.code === 'OPEN') {
-    score += 40;
-    compatible = true;
-  } else if (dayRoute.code === customerRoute) {
-    score += 70;
-    compatible = true;
-  } else if (dayRoute.code === 'CENTRAL' || customerRoute === 'CENTRAL') {
-    score += 30;
-    compatible = true;
-  } else if (dayRoute.code === 'MIXED') {
-    if (dayRoute.counts[customerRoute]) {
-      score += 20;
-      compatible = true;
-      routeFit = 'Mixed day with matching route';
-    } else {
-      score -= 40;
-      compatible = false;
-    }
-  } else {
-    score -= 80;
-    compatible = false;
-  }
-
-  if (availability.AMLeft > 0) score += 25;
-  if (availability.PMLeft > 0) score += 10;
-
-  return { score, compatible, routeFit, dayRoute };
-}
-
-function isWorkingDay(date) {
-  const dow = date.getDay();
-  return dow >= 1 && dow <= 5;
-}
-
-function isBankHoliday(dateKey) {
-  return Boolean(ENGLAND_WALES_BANK_HOLIDAYS[dateKey]);
 }
 
 function buildDateGrid() {
   const grid = document.getElementById('days-grid');
   grid.innerHTML = '';
 
-  state.date = null;
-  state.dateStr = '';
-  state.window = null;
-  state.selectedDayAvailability = null;
-  state.selectedDayRouteFit = '';
-  refreshWindowCards();
-
   const today = new Date();
-  let d = new Date(today);
-  d.setDate(d.getDate() + 1);
+  let count = 0;
+  let offset = 1;
 
-  const candidates = [];
-  let safety = 0;
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-  while (safety < 140) {
-    const dateKey = localISODate(d);
-    const bankHolidayName = ENGLAND_WALES_BANK_HOLIDAYS[dateKey];
-    const workingDay = isWorkingDay(d);
-    const bankHoliday = isBankHoliday(dateKey);
+  while (count < 14 && offset < 45) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + offset);
 
-    if (workingDay || bankHoliday) {
-      const availability = getAvailabilityForDate(dateKey);
-      const isFull = availability.AMLeft === 0 && availability.PMLeft === 0;
-      const scoring = scoreDate(dateKey, availability);
+    const dow = d.getDay();
 
-      candidates.push({
-        date: new Date(d),
-        dateKey,
-        bankHolidayName,
-        workingDay,
-        bankHoliday,
-        isFull,
-        availability,
-        ...scoring
-      });
-    }
+    // Monday to Friday only for now. Weekend booking can be added later if needed.
+    if (dow !== 0 && dow !== 6) {
+      const iso = d.toISOString().split('T')[0];
+      const dateStr = `${days[dow]} ${d.getDate()} ${months[d.getMonth()]}`;
+      const availability = getAvailabilityForDate(iso);
+      const dayCard = document.createElement('div');
 
-    d.setDate(d.getDate() + 1);
-    safety++;
-  }
+      dayCard.className = 'day-card' + (!availability.dayAvailable ? ' full' : '');
 
-  const usable = candidates.filter(c => c.workingDay && !c.bankHoliday && !c.isFull);
-  const preferred = usable.filter(c => c.compatible);
-  const fallback = usable.filter(c => !c.compatible);
+      const amDisabled = !availability.amAvailable;
+      const pmDisabled = !availability.pmAvailable;
+      const showPmAsSecondary = availability.amAvailable && availability.pmAvailable;
 
-  let displayCandidates = [];
+      dayCard.innerHTML = `
+        <div class="day-top">
+          <div>
+            <div class="day-title">${dateStr}</div>
+            <div class="day-meta">${iso}</div>
+          </div>
+          <div class="day-capacity">
+            Day spaces left: ${availability.dayLeft}/${DAY_CAPACITY}<br>
+            Existing bookings: ${availability.dayBooked}
+          </div>
+        </div>
 
-  if (preferred.length >= 8) {
-    displayCandidates = preferred;
-  } else {
-    displayCandidates = preferred.concat(fallback.slice(0, 8));
-  }
+        <div class="window-options">
+          <div class="window-option ${amDisabled ? 'disabled' : ''}" data-date="${iso}" data-datestr="${dateStr}" data-window="AM">
+            <div class="window-name">AM window</div>
+            <div class="window-time">08:00 - 13:00</div>
+            <div class="window-left">${amDisabled ? 'AM full' : availability.amLeft + ' AM spaces left'}</div>
+          </div>
 
-  displayCandidates = displayCandidates
-    .sort((a, b) => b.score - a.score || a.date - b.date)
-    .slice(0, 18);
+          <div class="window-option ${pmDisabled ? 'disabled' : ''}" data-date="${iso}" data-datestr="${dateStr}" data-window="PM">
+            <div class="window-name">PM window</div>
+            <div class="window-time">13:00 - 17:00</div>
+            <div class="window-left">${pmDisabled ? 'PM full' : availability.pmLeft + ' PM spaces left'}</div>
+          </div>
+        </div>
 
-  const blockedBankHolidays = candidates
-    .filter(c => c.bankHoliday)
-    .slice(0, 3);
+        <div class="am-first-note ${showPmAsSecondary ? 'show' : ''}">
+          AM is available and is preferred first where possible. PM is still shown as a backup option.
+        </div>
+      `;
 
-  displayCandidates = displayCandidates.concat(blockedBankHolidays);
+      grid.appendChild(dayCard);
 
-  displayCandidates.forEach(candidate => {
-    const slot = document.createElement('div');
-    const isBlocked = candidate.bankHoliday || candidate.isFull;
-
-    slot.className = 'day-slot' + (isBlocked ? ' blocked' : '');
-    slot.setAttribute('data-date', candidate.dateKey);
-
-    const display = formatDisplayDate(candidate.date);
-    const displayParts = display.split(' ');
-
-    let chipClass = 'route-chip';
-    if (candidate.compatible) chipClass += ' good';
-    if (!candidate.compatible) chipClass += ' warn';
-
-    const routeLabel = candidate.bankHoliday
-      ? candidate.bankHolidayName
-      : candidate.routeFit;
-
-    slot.innerHTML = `
-      <div class="day-name">${displayParts[0] || ''}</div>
-      <div class="day-date">${displayParts[1] || candidate.date.getDate()}</div>
-      <div class="day-month">${displayParts[2] || ''}</div>
-      <div class="${chipClass}">${routeLabel}</div>
-      ${
-        candidate.bankHoliday
-          ? `<div class="day-full">${candidate.bankHolidayName}</div>`
-          : `<div class="day-capacity">AM ${candidate.availability.AMLeft}/${AM_CAPACITY}<br>PM ${candidate.availability.PMLeft}/${PM_CAPACITY}</div>`
-      }
-      ${
-        candidate.isFull && !candidate.bankHoliday
-          ? `<div class="day-full">Full</div>`
-          : ''
-      }
-    `;
-
-    if (!isBlocked) {
-      const dateLabel = candidate.date.toLocaleDateString('en-GB', {
-        weekday: 'short',
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
+      dayCard.querySelectorAll('.window-option').forEach(option => {
+        if (!option.classList.contains('disabled')) {
+          option.addEventListener('click', () => {
+            selectWindow(option, option.dataset.date, option.dataset.datestr, option.dataset.window);
+          });
+        }
       });
 
-      slot.onclick = () => selectDate(slot, candidate.dateKey, dateLabel, candidate.availability, candidate.routeFit);
+      count++;
     }
 
-    grid.appendChild(slot);
-  });
-
-  const routeMessage = document.getElementById('route-message');
-  routeMessage.textContent = state.routeGroupLabel
-    ? `${state.routeGroupLabel} route. Best matching days are shown first.`
-    : 'Best matching route days are shown first.';
+    offset++;
+  }
 }
 
-function selectDate(el, iso, str, availability, routeFit) {
-  document.querySelectorAll('.day-slot').forEach(s => s.classList.remove('selected'));
+function selectWindow(el, iso, str, windowName) {
+  document.querySelectorAll('.window-option').forEach(option => option.classList.remove('selected'));
   el.classList.add('selected');
 
   state.date = iso;
   state.dateStr = str;
-  state.window = null;
-  state.selectedDayAvailability = availability;
-  state.selectedDayRouteFit = routeFit;
+  state.bookingWindow = windowName;
 
-  document.getElementById('err-date').classList.remove('show');
-  document.getElementById('err-window').classList.remove('show');
-
-  refreshWindowCards();
-
-  if (availability && availability.AMLeft > 0) {
-    selectWindow('AM', true);
-  } else if (availability && availability.PMLeft > 0) {
-    selectWindow('PM', true);
-  }
+  const err = document.getElementById('err-date-window');
+  if (err) err.classList.remove('show');
 }
 
-function refreshWindowCards() {
-  const amCard = document.getElementById('window-AM');
-  const pmCard = document.getElementById('window-PM');
-  const amText = document.getElementById('window-am-text');
-  const pmText = document.getElementById('window-pm-text');
-  const amRec = document.getElementById('am-recommended');
-
-  amCard.classList.remove('selected', 'disabled');
-  pmCard.classList.remove('selected', 'disabled');
-  amRec.style.display = 'none';
-
-  const availability = state.selectedDayAvailability;
-
-  if (!availability) {
-    amText.textContent = '08:00 to 13:00 · select date first';
-    pmText.textContent = '13:00 to 17:00 · select date first';
-    return;
-  }
-
-  amText.textContent = `08:00 to 13:00 · ${availability.AMLeft} of ${AM_CAPACITY} left`;
-  pmText.textContent = `13:00 to 17:00 · ${availability.PMLeft} of ${PM_CAPACITY} left`;
-
-  if (availability.AMLeft > 0) {
-    amRec.style.display = 'inline-block';
-  }
-
-  if (availability.AMLeft <= 0) amCard.classList.add('disabled');
-  if (availability.PMLeft <= 0) pmCard.classList.add('disabled');
+function getSelectedSubtypeLabel() {
+  const select = document.getElementById('prop-subtype');
+  return select.options[select.selectedIndex]?.textContent || '';
 }
 
-function selectWindow(win, automatic = false) {
-  if (!state.selectedDayAvailability) {
-    document.getElementById('err-date').classList.add('show');
-    return;
+function populateConfirm() {
+  const fname = document.getElementById('fname').value.trim();
+  const lname = document.getElementById('lname').value.trim();
+
+  document.getElementById('cf-address').textContent = state.address;
+  document.getElementById('cf-postcode').textContent = state.postcode.toUpperCase();
+  document.getElementById('cf-service').textContent = state.type + ' EPC';
+  document.getElementById('cf-subtype').textContent = state.subtype || '—';
+  document.getElementById('cf-band').textContent = state.band;
+  document.getElementById('cf-date').textContent = state.dateStr;
+  document.getElementById('cf-window').textContent = state.bookingWindow === 'AM' ? 'AM — 08:00 to 13:00' : 'PM — 13:00 to 17:00';
+  document.getElementById('cf-duration').textContent = state.duration ? state.duration + ' minutes' : 'Review required';
+  document.getElementById('cf-name').textContent = `${fname} ${lname}`.trim();
+  document.getElementById('cf-email').textContent = document.getElementById('email').value.trim();
+  document.getElementById('cf-phone').textContent = document.getElementById('phone').value.trim();
+
+  document.getElementById('cf-total').textContent = formatPrice(state.price);
+
+  const depRow = document.getElementById('cf-deposit-row');
+  const balRow = document.getElementById('cf-balance-row');
+
+  if (state.type === 'Commercial') {
+    depRow.style.display = 'none';
+    balRow.innerHTML = '<span class="label">Commercial payment terms</span><span class="value">Review / invoice</span>';
+  } else {
+    depRow.style.display = 'flex';
+    balRow.style.display = 'flex';
+    document.getElementById('cf-deposit').textContent = formatPrice(state.deposit);
+    document.getElementById('cf-balance').textContent = formatPrice(state.balance);
   }
-
-  if (win === 'AM' && state.selectedDayAvailability.AMLeft <= 0) {
-    if (!automatic) document.getElementById('err-window').classList.add('show');
-    return;
-  }
-
-  if (win === 'PM' && state.selectedDayAvailability.PMLeft <= 0) {
-    if (!automatic) document.getElementById('err-window').classList.add('show');
-    return;
-  }
-
-  document.querySelectorAll('.window-card').forEach(s => s.classList.remove('selected'));
-  document.getElementById('window-' + win).classList.add('selected');
-
-  state.window = win;
-  document.getElementById('err-window').classList.remove('show');
 }
 
 function goToStep(n) {
   const active = document.querySelector('.form-step.active');
-  const cur = active && active.id.startsWith('step-')
-    ? parseInt(active.id.replace('step-', ''))
-    : 1;
+  const cur = active && active.id === 'step-success'
+    ? 6
+    : parseInt(active.id.replace('step-', ''), 10);
 
-  if (n > cur && !validateStep(cur)) return;
+  if (n > cur) {
+    if (cur === 1) {
+      if (!state.type) {
+        alert('Please select Domestic or Commercial.');
+        return;
+      }
+    }
 
-  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
-  document.getElementById('step-' + n).classList.add('active');
+    if (cur === 2) {
+      const addr = document.getElementById('address').value.trim();
+      const pc = document.getElementById('postcode').value.trim().toUpperCase();
+      const subtype = document.getElementById('prop-subtype').value;
 
-  document.querySelectorAll('.step-tab').forEach((t, i) => {
-    t.classList.remove('active', 'done');
-    if (i + 1 === n) t.classList.add('active');
-    if (i + 1 < n) t.classList.add('done');
-  });
+      clearBandErrors();
 
-  if (n === 3) {
-    loadExistingAvailability();
+      if (!addr) {
+        showErr('err-address', 'address');
+        return;
+      }
+
+      if (!pc || !getZone(pc)) {
+        showErr('err-postcode', 'postcode');
+        return;
+      }
+
+      if (!subtype) {
+        showErr('err-subtype', 'prop-subtype');
+        return;
+      }
+
+      if (!state.band) {
+        const errId = state.type === 'Commercial' ? 'err-band-commercial' : 'err-band-domestic';
+        const err = document.getElementById(errId);
+        if (err) err.classList.add('show');
+        return;
+      }
+
+      state.address = addr;
+      state.postcode = pc;
+      state.subtype = subtype;
+
+      loadLiveAvailability();
+    }
+
+    if (cur === 3) {
+      if (!state.availabilityLoaded) {
+        alert('Live availability has not loaded yet. Please wait a moment.');
+        return;
+      }
+
+      if (!state.date || !state.bookingWindow) {
+        const err = document.getElementById('err-date-window');
+        if (err) err.classList.add('show');
+        return;
+      }
+
+      const availability = getAvailabilityForDate(state.date);
+      const stillAvailable =
+        state.bookingWindow === 'AM'
+          ? availability.amAvailable
+          : availability.pmAvailable;
+
+      if (!stillAvailable) {
+        alert('That window has just become full. Please choose another available window.');
+        buildDateGrid();
+        return;
+      }
+    }
+
+    if (cur === 4) {
+      const fn = document.getElementById('fname').value.trim();
+      const ln = document.getElementById('lname').value.trim();
+      const em = document.getElementById('email').value.trim();
+      const ph = document.getElementById('phone').value.trim();
+
+      if (!fn) {
+        showErr('err-fname', 'fname');
+        return;
+      }
+
+      if (!ln) {
+        showErr('err-lname', 'lname');
+        return;
+      }
+
+      if (!em || !em.includes('@')) {
+        showErr('err-email', 'email');
+        return;
+      }
+
+      if (!ph) {
+        showErr('err-phone', 'phone');
+        return;
+      }
+
+      populateConfirm();
+    }
   }
 
-  if (n === 5) populateConfirm();
+  document.querySelectorAll('.form-step').forEach(step => step.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+
+  document.querySelectorAll('.step-tab').forEach((tab, index) => {
+    tab.classList.remove('active', 'done');
+    if (index + 1 === n) tab.classList.add('active');
+    if (index + 1 < n) tab.classList.add('done');
+  });
+
+  if (n === 2) {
+    document.getElementById('domestic-pricing').style.display = state.type === 'Domestic' ? 'block' : 'none';
+    document.getElementById('commercial-pricing').style.display = state.type === 'Commercial' ? 'block' : 'none';
+    setSubtypeOptions(state.type);
+  }
+
+  if (n === 3) {
+    updatePriceSummary();
+  }
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function validateStep(step) {
-  if (step === 1) {
-    if (!state.type) {
-      alert('Please select Domestic or Commercial EPC.');
-      return false;
-    }
+async function insertContact(contactPayload) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('contacts')
+      .insert(contactPayload)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.warn('Contact insert skipped/failed:', err.message);
+    return null;
   }
-
-  if (step === 2) {
-    const addr = document.getElementById('address').value.trim();
-    const pc = document.getElementById('postcode').value.trim();
-
-    if (!addr) return showErr('err-address', 'address');
-    if (!pc) return showErr('err-postcode', 'postcode');
-
-    const route = getRouteGroupFromPostcode(pc);
-    state.routeGroupCode = route.code;
-    state.routeGroupLabel = route.label;
-
-    refreshQuote();
-
-    if (state.type === 'Domestic' && !document.getElementById('property_value').value) {
-      return showErr('err-property-value', 'property_value');
-    }
-
-    if (
-      state.type === 'Domestic' &&
-      Number(document.getElementById('property_value').value) > 4000000 &&
-      !document.getElementById('domestic_sqm').value
-    ) {
-      return showErr('err-domestic-sqm', 'domestic_sqm');
-    }
-
-    if (state.type === 'Commercial' && !document.getElementById('commercial_sqm').value) {
-      return showErr('err-commercial-sqm', 'commercial_sqm');
-    }
-
-    state.address = addr;
-    state.postcode = pc.toUpperCase();
-  }
-
-  if (step === 3) {
-    if (!state.date) {
-      document.getElementById('err-date').classList.add('show');
-      return false;
-    }
-
-    if (!state.window) {
-      document.getElementById('err-window').classList.add('show');
-      return false;
-    }
-  }
-
-  if (step === 4) {
-    if (!document.getElementById('fname').value.trim()) return showErr('err-fname', 'fname');
-    if (!document.getElementById('lname').value.trim()) return showErr('err-lname', 'lname');
-
-    const em = document.getElementById('email').value.trim();
-    if (!em || !em.includes('@')) return showErr('err-email', 'email');
-
-    if (!document.getElementById('phone').value.trim()) return showErr('err-phone', 'phone');
-  }
-
-  return true;
 }
 
-function showErr(errId, fieldId) {
-  document.getElementById(errId).classList.add('show');
-  document.getElementById(fieldId).classList.add('error');
-  document.getElementById(fieldId).focus();
+async function insertProperty(propertyPayload) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('properties')
+      .insert(propertyPayload)
+      .select()
+      .single();
 
-  setTimeout(() => {
-    document.getElementById(errId).classList.remove('show');
-    document.getElementById(fieldId).classList.remove('error');
-  }, 3000);
-
-  return false;
-}
-
-function populateConfirm() {
-  const name = (document.getElementById('fname').value + ' ' + document.getElementById('lname').value).trim();
-
-  document.getElementById('cf-address').textContent = state.address;
-  document.getElementById('cf-postcode').textContent = state.postcode;
-  document.getElementById('cf-route').textContent = state.routeGroupLabel || 'Manual review route';
-  document.getElementById('cf-service').textContent = state.type + ' EPC';
-
-  document.getElementById('cf-quote').textContent =
-    state.price
-      ? '£' + state.price.toFixed(2) + ' · ' + state.quoteLabel
-      : state.quoteLabel;
-
-  document.getElementById('cf-date').textContent = state.dateStr;
-
-  document.getElementById('cf-window').textContent =
-    state.window === 'AM'
-      ? `AM · 08:00 to 13:00`
-      : `PM · 13:00 to 17:00`;
-
-  document.getElementById('cf-route-fit').textContent = state.selectedDayRouteFit || 'Route checked';
-
-  const availability = state.selectedDayAvailability;
-
-  if (availability) {
-    document.getElementById('cf-availability').textContent =
-      state.window === 'AM'
-        ? `${availability.AMLeft} of ${AM_CAPACITY} AM spaces were available when selected`
-        : `${availability.PMLeft} of ${PM_CAPACITY} PM spaces were available when selected`;
-  } else {
-    document.getElementById('cf-availability').textContent = 'Availability checked';
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.warn('Property insert skipped/failed:', err.message);
+    return null;
   }
-
-  document.getElementById('cf-name').textContent = name;
-  document.getElementById('cf-email').textContent = document.getElementById('email').value;
-  document.getElementById('cf-phone').textContent = document.getElementById('phone').value;
-
-  document.getElementById('confirm-subtitle').textContent =
-    state.type === 'Commercial'
-      ? 'This commercial enquiry will be sent for review/quote.'
-      : 'This domestic booking request will be sent to the EPC Pro dashboard.';
 }
 
-function setStatus(type, msg) {
-  const box = document.getElementById('submit-status');
-  box.className = 'status-box show ' + type;
-  box.textContent = msg;
+async function insertLead(leadPayload) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('leads')
+      .insert(leadPayload)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.warn('Lead insert skipped/failed:', err.message);
+    return null;
+  }
 }
 
-function normaliseSource(v) {
-  return v || 'Website';
-}
-
-async function recheckSelectedSlotBeforeSubmit() {
-  if (!supabaseClient || !state.date || !state.window) return true;
-
+async function insertJob(jobPayload) {
   const { data, error } = await supabaseClient
     .from('jobs')
-    .select('*')
-    .eq('booking_date', state.date);
+    .insert(jobPayload)
+    .select()
+    .single();
 
   if (error) throw error;
+  return data;
+}
 
-  let amBooked = 0;
-  let pmBooked = 0;
-  let routeConflict = false;
-  let matchingRouteFound = false;
-
-  (data || []).forEach(job => {
-    if (isClosedStatus(job.status)) return;
-
-    const windowKey = String(job.booking_window || '').toUpperCase();
-    if (windowKey === 'AM') amBooked += 1;
-    if (windowKey === 'PM') pmBooked += 1;
-
-    const docs = parseDocuments(job);
-    const existingRoute = docs.route_group_code || getRouteGroupFromPostcode(extractJobPostcode(job)).code;
-
-    if (existingRoute && existingRoute !== 'UNKNOWN') {
-      if (existingRoute === state.routeGroupCode || existingRoute === 'CENTRAL' || state.routeGroupCode === 'CENTRAL') {
-        matchingRouteFound = true;
-      } else {
-        routeConflict = true;
-      }
-    }
-  });
-
-  if (state.window === 'AM' && amBooked >= AM_CAPACITY) return false;
-  if (state.window === 'PM' && pmBooked >= PM_CAPACITY) return false;
-
-  if (routeConflict && !matchingRouteFound) {
-    return 'ROUTE_WARNING';
+function getEstimatedValueFromBand() {
+  if (state.pricingBasis === 'domestic_value') {
+    if (state.band.includes('999,000')) return 999000;
+    if (state.band.includes('1,000,000')) return 1500000;
+    if (state.band.includes('2,000,000')) return 2500000;
+    if (state.band.includes('3,000,000')) return 3500000;
   }
 
-  return true;
+  if (state.pricingBasis === 'domestic_sqm') return 4000000;
+
+  return null;
+}
+
+function getEstimatedSquareMeterageFromBand() {
+  const band = state.band;
+
+  if (band.includes('0 to 100') || band.includes('100 m²')) return 100;
+  if (band.includes('101 to 200') || band.includes('151 to 300')) return 200;
+  if (band.includes('201 to 300')) return 300;
+  if (band.includes('301 to 400') || band.includes('301 to 500')) return 400;
+  if (band.includes('401 to 500')) return 500;
+  if (band.includes('501 to 600') || band.includes('501 to 10,000')) return 600;
+  if (band.includes('601 to 700')) return 700;
+  if (band.includes('701 to 800')) return 800;
+  if (band.includes('801 to 900')) return 900;
+  if (band.includes('901')) return 901;
+
+  return null;
 }
 
 async function submitBooking() {
   if (!document.getElementById('terms').checked) {
-    alert('Please accept the confirmation box before submitting.');
+    alert('Please confirm the booking terms before continuing.');
     return;
   }
 
   if (!supabaseClient) {
-    setStatus('error', 'Supabase is not loaded, so the booking cannot be sent to the dashboard.');
+    alert('The booking system cannot connect to Supabase. Please call 07831 363 622 to book.');
     return;
   }
 
-  const btn = document.getElementById('submit-btn');
-  btn.disabled = true;
-  btn.textContent = 'Checking slot...';
+  const submitBtn = document.getElementById('submit-btn');
+  const label = document.getElementById('submit-btn-label');
+
+  submitBtn.disabled = true;
+  label.textContent = 'Saving booking...';
 
   try {
-    const slotCheck = await recheckSelectedSlotBeforeSubmit();
+    const latestAvailability = getAvailabilityForDate(state.date);
+    const stillAvailable =
+      state.bookingWindow === 'AM'
+        ? latestAvailability.amAvailable
+        : latestAvailability.pmAvailable;
 
-    if (slotCheck === false) {
-      setStatus('error', 'That booking window has just become full. Please go back and choose another slot.');
-      btn.disabled = false;
-      btn.textContent = 'Submit to EPC Pro';
+    if (!stillAvailable) {
+      alert('That window has just become full. Please choose another available window.');
+      submitBtn.disabled = false;
+      label.textContent = 'Confirm booking request';
+      goToStep(3);
+      await loadLiveAvailability();
       return;
     }
 
-    btn.textContent = 'Sending...';
+    const reference = generateReference();
+    state.reference = reference;
 
-    const publicReference = makeReference();
-
-    const contactId = generateDatabaseId();
-    const propertyId = generateDatabaseId();
-    const leadId = generateDatabaseId();
-    const jobId = generateDatabaseId();
-
-    const fullName = (document.getElementById('fname').value + ' ' + document.getElementById('lname').value).trim();
-    const source = normaliseSource(document.getElementById('source').value);
-    const propertyType = document.getElementById('property_type').value;
-    const notes = document.getElementById('notes').value;
+    const fname = document.getElementById('fname').value.trim();
+    const lname = document.getElementById('lname').value.trim();
+    const fullName = `${fname} ${lname}`.trim();
     const email = document.getElementById('email').value.trim();
     const phone = document.getElementById('phone').value.trim();
+    const access = document.getElementById('access').value.trim();
+    const referral = document.getElementById('referral').value || 'Website';
 
-    const now = new Date().toISOString();
+    const estimatedValue = getEstimatedValueFromBand();
+    const estimatedSqm = getEstimatedSquareMeterageFromBand();
 
-    const contactPayload = {
-      id: contactId,
-      client_reference: publicReference,
+    const documents = {
+      public_reference: reference,
+      customer_name: fullName,
+      customer_email: email,
+      customer_phone: phone,
+      property_address: state.address,
+      postcode: state.postcode,
+      zone_code: state.zone,
+      zone_name: state.zoneName,
+      service_type: state.type,
+      epc_type: state.type,
+      property_subtype: state.subtype,
+      pricing_band: state.band,
+      pricing_basis: state.pricingBasis,
+      quote_amount: state.price,
+      deposit_amount: state.deposit,
+      balance_due: state.balance,
+      duration_minutes: state.duration,
+      booking_date: state.date,
+      booking_window: state.bookingWindow,
+      booking_window_label: state.bookingWindow === 'AM' ? '08:00 - 13:00' : '13:00 - 17:00',
+      access_instructions: access,
+      source: referral,
+      created_from: 'booking_app',
+      capacity_rule: {
+        am_capacity: AM_CAPACITY,
+        pm_capacity: PM_CAPACITY,
+        day_capacity: DAY_CAPACITY
+      },
+      created_at: new Date().toISOString()
+    };
+
+    const contact = await insertContact({
       name: fullName,
       email: email,
       phone: phone,
-      type: document.getElementById('client_type').value,
-      created_at: now
-    };
+      type: 'Client',
+      client_reference: reference
+    });
 
-    const { error: contactErr } = await supabaseClient.from('contacts').insert(contactPayload);
-    if (contactErr) throw contactErr;
-
-    const propertyPayload = {
-      id: propertyId,
-      contact_id: contactId,
+    const property = await insertProperty({
+      contact_id: contact ? contact.id : null,
       address: state.address,
       postcode: state.postcode,
       city: 'London',
-      created_at: now
-    };
+      property_value: estimatedValue,
+      square_meterage: estimatedSqm
+    });
 
-    const { error: propertyErr } = await supabaseClient.from('properties').insert(propertyPayload);
-    if (propertyErr) throw propertyErr;
+    const leadStatus = state.type === 'Commercial' || state.price === 0 ? 'Review required' : 'Awaiting booking';
 
-    const routeWarning = slotCheck === 'ROUTE_WARNING';
-
-    const leadStatus =
-      state.type === 'Commercial' || state.reviewRequired || routeWarning
-        ? 'Review required'
-        : 'Awaiting booking';
-
-    const leadPayload = {
-      id: leadId,
-      contact_id: contactId,
+    const lead = await insertLead({
+      contact_id: contact ? contact.id : null,
+      property_id: property ? property.id : null,
       property_address: state.address,
       postcode: state.postcode,
-      source: source,
+      source: referral,
       status: leadStatus,
-      estimated_value: state.price || 0,
       epc_type: state.type,
-      created_at: now
-    };
-
-    const { error: leadErr } = await supabaseClient.from('leads').insert(leadPayload);
-    if (leadErr) throw leadErr;
-
-    const deposit =
-      state.type === 'Domestic' && state.price
-        ? Math.round((state.price * 0.5) * 100) / 100
-        : 0;
-
-    const balance =
-      state.price
-        ? Math.round((state.price - deposit) * 100) / 100
-        : 0;
-
-    const jobStatus =
-      state.type === 'Commercial' || state.reviewRequired || routeWarning
-        ? 'Review required'
-        : 'Awaiting booking';
+      property_value: estimatedValue,
+      square_meterage: estimatedSqm,
+      estimated_value: state.price,
+      documents: documents
+    });
 
     const jobPayload = {
-      id: jobId,
-      contact_id: contactId,
-      property_id: propertyId,
-      reference: publicReference,
+      contact_id: contact ? contact.id : null,
+      property_id: property ? property.id : null,
+      lead_id: lead ? lead.id : null,
+      reference: reference,
       booking_date: state.date,
-      booking_window: state.window,
-      provisional_eta: null,
-      deposit_amount: deposit,
+      booking_window: state.bookingWindow,
+      provisional_eta: 'TBC',
+      deposit_amount: state.deposit,
       deposit_paid: false,
       invoice_issued: false,
-      invoice_amount: state.price || 0,
-      balance_due: balance,
+      invoice_amount: state.price,
+      balance_due: state.type === 'Commercial' ? state.price : state.balance,
       epc_type: state.type,
-      status: jobStatus,
-      source: source,
-      documents: {
-        public_reference: publicReference,
-        contact_id: contactId,
-        property_id: propertyId,
-        lead_id: leadId,
-        job_id: jobId,
-        customer_name: fullName,
-        customer_email: email,
-        customer_phone: phone,
-        property_address: state.address,
-        postcode: state.postcode,
-        postcode_area: getPostcodeParts(state.postcode).area,
-        route_group_code: state.routeGroupCode,
-        route_group_label: state.routeGroupLabel,
-        selected_route_fit: state.selectedDayRouteFit,
-        route_warning: routeWarning,
-        property_type: propertyType,
-        pricing_band: state.quoteLabel,
-        service_type: state.type,
-        quote_amount: state.price || 0,
-        deposit_amount: deposit,
-        balance_due: balance,
-        appointment_date: state.date,
-        appointment_window: state.window,
-        appointment_capacity_rule: {
-          am_capacity: AM_CAPACITY,
-          pm_capacity: PM_CAPACITY,
-          daily_capacity: DAILY_CAPACITY
-        },
-        source: source,
-        notes: notes,
-        created_at: now
-      },
-      field_status: null,
-      created_at: now
+      status: leadStatus,
+      source: referral,
+      documents: documents,
+      field_status: null
     };
 
-    const { error: jobErr } = await supabaseClient.from('jobs').insert(jobPayload);
-    if (jobErr) throw jobErr;
+    let job;
 
-    document.getElementById('booking-ref-num').textContent = publicReference;
+    try {
+      job = await insertJob(jobPayload);
+    } catch (jobErr) {
+      console.warn('Full job insert failed. Retrying minimal job payload:', jobErr.message);
 
-    document.getElementById('success-title').textContent =
-      state.type === 'Commercial' || state.reviewRequired || routeWarning
-        ? 'Enquiry sent for review'
-        : 'Booking request received';
+      const minimalJobPayload = {
+        reference: reference,
+        booking_date: state.date,
+        booking_window: state.bookingWindow,
+        provisional_eta: 'TBC',
+        deposit_amount: state.deposit,
+        deposit_paid: false,
+        invoice_issued: false,
+        invoice_amount: state.price,
+        balance_due: state.type === 'Commercial' ? state.price : state.balance,
+        epc_type: state.type,
+        status: leadStatus,
+        source: referral,
+        documents: documents,
+        field_status: null
+      };
 
-    document.getElementById('success-text').textContent =
-      state.type === 'Commercial' || state.reviewRequired || routeWarning
-        ? 'Your enquiry has been sent to EPC Pro for review. Please quote your reference if you email, WhatsApp or send documents.'
-        : 'Your domestic booking request has been sent to EPC Pro. Please quote your reference if you email, WhatsApp or send documents.';
+      job = await insertJob(minimalJobPayload);
+    }
 
-    document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('booking-ref-num').textContent = reference;
+
+    document.querySelectorAll('.form-step').forEach(step => step.classList.remove('active'));
     document.getElementById('step-success').classList.add('active');
-    document.getElementById('progress-wrap').style.display = 'none';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.querySelector('.progress-wrap').style.display = 'none';
 
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (err) {
-    console.error(err);
-    setStatus('error', 'Could not send to the dashboard: ' + (err.message || err));
-    btn.disabled = false;
-    btn.textContent = 'Submit to EPC Pro';
+    console.error('Booking submission error:', err);
+    alert('There was a problem saving the booking request: ' + (err.message || err));
+    submitBtn.disabled = false;
+    label.textContent = 'Confirm booking request';
   }
 }
 
-document.querySelectorAll('.field input, .field select, .field textarea').forEach(el => {
+document.querySelectorAll('.field input, .field select').forEach(el => {
   el.addEventListener('input', () => {
     el.classList.remove('error');
   });
 });
+
+setSubtypeOptions('Domestic');
 </script>
 </body>
 </html>
