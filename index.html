@@ -2,577 +2,990 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EPC Pro Operating Platform</title>
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book an EPC Assessment — The EPC Pro</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --epc-yellow: #FFCB45;
-  --epc-light-blue: #50CDE8;
-  --epc-dark-teal: #264C6B;
-  --bg-dark: #0f172a;
-  --bg-darker: #0a0e1a;
-  --card-bg: #1a2332;
-  --card-border: #2a3a52;
-  --text-primary: #ffffff;
-  --text-secondary: #94a3b8;
-  --success: #25D366;
-  --warning: #ffa500;
-  --danger: #ef4444;
+  --ink: #111827;
+  --ink2: #1f2d3d;
+  --ink3: #5a6a7e;
+  --accent: #e07b10;
+  --accent-dark: #b85e05;
+  --navy: #153047;
+  --navy2: #1a3d5c;
+  --surface: #f4f6f9;
+  --white: #ffffff;
+  --border: #e2e8f0;
+  --success: #128C7E;
+  --success-bg: #e8f7f2;
+  --warning: #92400e;
+  --warning-bg: #fffbeb;
+  --error: #c0392b;
+  --error-bg: #fdf0ee;
+  --shadow: 0 4px 24px rgba(17,24,39,0.10);
+  --radius: 14px;
+  --radius-sm: 8px;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-  background: white;
-  color: var(--text-primary);
-  overflow-x: hidden;
-}
-
-.app-container { display: flex; min-height: 100vh; }
-
-.sidebar {
-  width: 260px;
-  background: white;
-  border-right: 1px solid #e0e0e0;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  height: 100vh;
-  overflow-y: auto;
-}
-
-.sidebar-header { padding: 24px 20px; border-bottom: 1px solid #e0e0e0; }
-
-.sidebar-title {
-  color: var(--epc-dark-teal);
-  font-size: 22px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.nav-menu { flex: 1; padding: 20px 0; }
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 20px;
-  color: #666;
-  cursor: pointer;
-  transition: all 0.2s;
-  border-left: 3px solid transparent;
-}
-
-.nav-item:hover { background: #f5f5f5; color: var(--epc-yellow); }
-
-.nav-item.active {
-  background: #f5f5f5;
-  color: var(--epc-yellow);
-  border-left-color: var(--epc-yellow);
-}
-
-.main-content {
-  flex: 1;
-  margin-left: 260px;
-  padding: 24px;
-  max-width: 1600px;
-  background: white;
-}
-
-.page-header { margin-bottom: 32px; }
-
-.page-title {
-  color: var(--epc-dark-teal);
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.page-subtitle { color: #666; font-size: 14px; }
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
-}
-
-.metrics-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.metric-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 20px;
-  transition: transform 0.2s;
-}
-
-.metric-card:hover { transform: translateY(-2px); }
-
-.metric-label {
-  color: var(--text-secondary);
-  font-size: 13px;
-  text-transform: uppercase;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.metric-value {
-  font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.metric-card.deposits-owed .metric-value { color: var(--epc-yellow); }
-.metric-card.deposits-paid .metric-value { color: var(--epc-light-blue); }
-.metric-card.active-jobs .metric-value { color: var(--success); }
-.metric-card.balance-due .metric-value { color: var(--warning); }
-
-.content-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
-}
-
-.section {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 24px;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid var(--epc-yellow);
-}
-
-.section-title {
-  color: var(--epc-yellow);
-  font-size: 20px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  justify-content: center;
-}
-
-.btn-primary { background: var(--epc-yellow); color: var(--bg-dark); }
-.btn-primary:hover { background: #ffb81c; }
-
-.btn-secondary { background: var(--card-border); color: var(--text-primary); }
-.btn-secondary:hover { background: #3a4a62; }
-
-.btn-sm { padding: 8px 16px; font-size: 13px; }
-
-.btn-muted { opacity: 0.75; cursor: not-allowed; }
-
-.whatsapp-box {
-  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-  border-radius: 12px;
-  padding: 24px;
-  color: white;
-}
-
-.whatsapp-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.whatsapp-icon { font-size: 32px; }
-.whatsapp-title { font-size: 18px; font-weight: 600; }
-.whatsapp-subtitle { font-size: 13px; opacity: 0.9; }
-
-.whatsapp-message {
-  background: rgba(255,255,255,0.2);
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 16px;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.whatsapp-button {
-  width: 100%;
-  background: white;
-  color: #128C7E;
-  border: none;
-  padding: 12px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.data-table { width: 100%; border-collapse: collapse; }
-
-.data-table thead { background: var(--bg-darker); }
-
-.data-table th {
-  text-align: left;
-  padding: 14px 16px;
-  color: var(--epc-yellow);
-  font-size: 13px;
-  text-transform: uppercase;
-  font-weight: 600;
-  border-bottom: 2px solid var(--card-border);
-}
-
-.data-table td {
-  padding: 16px;
-  border-bottom: 1px solid var(--card-border);
-  color: var(--text-primary);
-  vertical-align: top;
-}
-
-.data-table tbody tr {
-  transition: background 0.2s;
-  cursor: pointer;
-}
-
-.data-table tbody tr:hover { background: var(--bg-darker); }
-
-.badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.badge-blue { background: rgba(80,205,232,0.2); color: var(--epc-light-blue); }
-.badge-green { background: rgba(37,211,102,0.2); color: var(--success); }
-.badge-orange { background: rgba(255,165,0,0.2); color: var(--warning); }
-.badge-yellow { background: rgba(255,203,69,0.2); color: var(--epc-yellow); }
-.badge-red { background: rgba(239,68,68,0.2); color: var(--danger); }
-.badge-purple { background: rgba(168,85,247,0.2); color: #a855f7; }
-.badge-gray { background: rgba(107,114,128,0.2); color: #9ca3af; }
-.badge-dark { background: rgba(38,76,107,0.4); color: #cbd5e1; }
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
-}
-
-.modal {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 16px;
-  width: 100%;
-  max-width: 820px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  padding: 24px;
-  border-bottom: 1px solid var(--card-border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  color: var(--text-primary);
-}
-
-.modal-subtitle { font-size: 14px; color: var(--text-secondary); }
-
-.modal-close {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 32px;
-  cursor: pointer;
-  line-height: 1;
-  padding: 0;
-  width: 32px;
-  height: 32px;
-}
-
-.modal-close:hover { color: var(--text-primary); }
-
-.modal-body { padding: 24px; }
-
-.modal-section-title {
-  color: var(--epc-yellow);
-  font-size: 14px;
-  text-transform: uppercase;
-  font-weight: 600;
-  margin-bottom: 12px;
-  letter-spacing: 0.5px;
-}
-
-.tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
-  border-bottom: 2px solid var(--card-border);
-  flex-wrap: wrap;
-}
-
-.tab {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  padding: 12px 20px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
-}
-
-.tab:hover { color: var(--text-primary); }
-
-.tab.active {
-  color: var(--epc-yellow);
-  border-bottom-color: var(--epc-yellow);
-}
-
-.job-item {
-  background: var(--bg-darker);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 12px;
-}
-
-.job-address {
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 6px;
-  font-size: 15px;
-}
-
-.job-time {
-  color: var(--text-secondary);
-  font-size: 13px;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.job-status { color: var(--text-secondary); font-size: 12px; }
-
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.form-label {
-  display: block;
-  font-size: 12px;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  font-weight: 600;
-  margin-bottom: 6px;
-  letter-spacing: 0.5px;
-}
-
-.form-value {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.connection-banner {
-  padding: 12px 20px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
-  margin-bottom: 24px;
-  font-size: 13px;
-  font-weight: 600;
-  text-align: center;
-}
-
-.connection-banner.connected {
-  background: rgba(37,211,102,0.1);
-  border-color: var(--success);
-  color: var(--success);
-}
-
-.connection-banner.disconnected {
-  background: rgba(255,165,0,0.1);
-  border-color: var(--warning);
-  color: var(--warning);
-}
-
-.loading {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--surface);
+  color: var(--ink);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 40px;
-  color: #666;
 }
 
-.notice {
-  background: rgba(255,203,69,0.12);
-  border: 1px solid rgba(255,203,69,0.5);
-  border-radius: 8px;
-  padding: 12px;
-  color: var(--epc-yellow);
+header {
+  background: var(--navy2);
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+
+.logo-mark {
+  width: 38px;
+  height: 38px;
+  background: var(--accent);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-mark svg { width: 22px; height: 22px; }
+
+.logo-text { color: white; font-size: 17px; font-weight: 700; }
+.logo-text span { color: #f5a623; }
+
+.header-contact { color: rgba(255,255,255,0.65); font-size: 13px; }
+.header-contact a { color: #f5a623; text-decoration: none; font-weight: 600; }
+
+.hero {
+  background: var(--navy);
+  padding: 40px 32px 56px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 650px;
+  height: 320px;
+  background: radial-gradient(ellipse, rgba(224,123,16,0.24) 0%, transparent 70%);
+}
+
+.hero h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(28px, 5vw, 42px);
+  color: white;
+  line-height: 1.18;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.hero h1 em { color: #f5a623; }
+
+.hero p {
+  color: rgba(255,255,255,0.72);
+  font-size: 15px;
+  max-width: 610px;
+  margin: 0 auto;
+  line-height: 1.6;
+  position: relative;
+}
+
+.trust-badges {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 24px;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.trust-badge {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.82);
+}
+
+.progress-wrap {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.progress-steps { display: flex; max-width: 760px; margin: 0 auto; }
+
+.step-tab {
+  flex: 1;
+  padding: 16px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   font-size: 13px;
+  color: #9aa8b5;
+  border-bottom: 2px solid transparent;
+}
+
+.step-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.step-tab.done { color: var(--ink3); }
+
+.step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e8f0ed;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step-tab.active .step-num,
+.step-tab.done .step-num {
+  background: var(--accent);
+  color: white;
+}
+
+main { flex: 1; padding: 32px 16px 60px; }
+
+.form-card {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  max-width: 760px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.form-step { display: none; }
+.form-step.active { display: block; }
+
+.step-header {
+  padding: 28px 32px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.step-header h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 24px;
+  color: var(--ink);
+  margin-bottom: 5px;
+}
+
+.step-header p { color: var(--ink3); font-size: 14px; line-height: 1.5; }
+
+.step-body { padding: 28px 32px; }
+
+.type-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.type-card {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.18s;
+  position: relative;
+}
+
+.type-card:hover { border-color: #fdd9a8; background: #fff4e6; }
+.type-card.selected { border-color: var(--accent); background: #fff4e6; }
+
+.type-card.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 20px;
+  height: 20px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.type-icon { font-size: 34px; margin-bottom: 10px; display: block; }
+.type-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.type-desc { font-size: 12px; color: var(--ink3); line-height: 1.45; }
+
+.field { margin-bottom: 20px; }
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink2);
+  margin-bottom: 7px;
+}
+
+.req { color: var(--accent); }
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: var(--ink);
+  background: white;
+  outline: none;
+}
+
+.field textarea { min-height: 84px; resize: vertical; }
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(224,123,16,0.12);
+}
+
+.field input.error,
+.field select.error { border-color: var(--error); }
+
+.hint { font-size: 12px; color: var(--ink3); margin-top: 5px; line-height: 1.45; }
+
+.error-msg {
+  font-size: 12px;
+  color: var(--error);
+  margin-top: 5px;
+  display: none;
+}
+
+.error-msg.show { display: block; }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.price-panel {
+  background: #fff4e6;
+  border: 1.5px solid #fdd9a8;
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-top: 10px;
+}
+
+.price-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.price-big { font-size: 32px; font-weight: 800; color: var(--accent); margin-bottom: 5px; }
+.price-note { font-size: 13px; color: var(--ink3); line-height: 1.45; }
+
+.date-info {
+  background: var(--warning-bg);
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--warning);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.calendar-status {
+  background: var(--success-bg);
+  border: 1px solid #a4ddcc;
+  color: var(--success);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 18px;
+  display: none;
+}
+
+.calendar-status.show { display: block; }
+
+.days-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+.day-slot {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.15s;
+  position: relative;
+  min-height: 128px;
+}
+
+.day-slot:hover:not(.blocked) { border-color: #fdd9a8; background: #fff4e6; }
+.day-slot.selected { border-color: var(--accent); background: #fff4e6; }
+
+.day-slot.blocked {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f8fafc;
+}
+
+.day-name { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--ink3); }
+.day-date { font-size: 19px; font-weight: 800; color: var(--ink); margin: 3px 0; }
+.day-month { font-size: 11px; color: var(--ink3); }
+
+.route-chip {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: var(--ink3);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.route-chip.good { background: var(--success-bg); color: var(--success); }
+.route-chip.warn { background: var(--warning-bg); color: var(--warning); }
+
+.day-capacity { margin-top: 8px; font-size: 11px; color: var(--ink3); line-height: 1.4; }
+.day-full { margin-top: 6px; font-size: 11px; color: var(--error); font-weight: 700; }
+
+.window-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+
+.window-card {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 12px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.window-card:hover:not(.disabled),
+.window-card.selected {
+  border-color: var(--accent);
+  background: #fff4e6;
+}
+
+.window-card.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: #f8fafc;
+}
+
+.window-card strong { display: block; color: var(--ink); font-size: 15px; }
+.window-card span { display: block; color: var(--ink3); font-size: 12px; margin-top: 4px; }
+
+.recommended-label {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--success-bg);
+  color: var(--success);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.confirm-block {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 18px 20px;
   margin-bottom: 16px;
 }
 
-.price-card {
-  background: var(--bg-darker);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
-  padding: 14px;
-  margin-top: 12px;
+.confirm-block-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--accent);
+  margin-bottom: 12px;
 }
 
-.price-value {
-  color: var(--success);
-  font-size: 22px;
-  font-weight: 700;
-  margin-top: 6px;
+.confirm-item { display: flex; gap: 10px; margin-bottom: 10px; font-size: 14px; }
+.confirm-item:last-child { margin-bottom: 0; }
+
+.ci-label { color: var(--ink3); min-width: 120px; flex-shrink: 0; }
+.ci-value { font-weight: 600; color: var(--ink); line-height: 1.4; }
+
+.terms-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 20px 0;
+  cursor: pointer;
 }
 
-.price-review {
-  color: var(--warning);
-  font-size: 16px;
-  font-weight: 700;
-  margin-top: 6px;
+.terms-check input { width: 18px; height: 18px; accent-color: var(--accent); margin-top: 2px; }
+.terms-check span { font-size: 13px; color: var(--ink3); line-height: 1.5; }
+
+.status-box {
+  display: none;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.45;
+  margin-bottom: 16px;
 }
 
-.field-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.status-box.show { display: block; }
+.status-box.error { background: var(--error-bg); border: 1px solid #f3bbb4; color: var(--error); }
+.status-box.success { background: var(--success-bg); border: 1px solid #a4ddcc; color: var(--success); }
+
+.btn-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 20px 32px 28px;
+  border-top: 1px solid var(--border);
+}
+
+.btn {
+  padding: 14px 24px;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  transition: 0.15s;
+  display: inline-flex;
+  align-items: center;
   gap: 8px;
 }
 
-.calendar-key {
+.btn-primary { background: var(--accent); color: white; flex: 1; justify-content: center; }
+.btn-primary:hover { background: var(--accent-dark); }
+
+.btn-back { background: transparent; color: var(--ink3); border: 1.5px solid var(--border); }
+.btn-back:hover { background: var(--surface); }
+
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.success-screen { padding: 48px 32px; text-align: center; }
+
+.success-icon {
+  width: 72px;
+  height: 72px;
+  background: #fff4e6;
+  border-radius: 50%;
   display: flex;
-  gap: 20px;
-  font-size: 14px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-  background: #2a3a52;
-  border-radius: 8px;
-  padding: 16px;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  color: var(--accent);
+  font-size: 34px;
 }
 
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 12px;
+.success-screen h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  margin-bottom: 10px;
 }
 
-.calendar-card {
-  border-radius: 8px;
-  padding: 12px;
-  cursor: pointer;
+.success-screen p {
+  color: var(--ink3);
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 460px;
+  margin: 0 auto 24px;
+}
+
+.booking-ref {
+  background: #fff4e6;
+  border: 1.5px solid #fdd9a8;
+  border-radius: var(--radius-sm);
+  padding: 16px 24px;
+  display: inline-block;
+  margin-bottom: 24px;
+}
+
+.booking-ref-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.booking-ref-num {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ink);
+  font-family: monospace;
+  letter-spacing: 2px;
+}
+
+footer {
+  background: var(--navy2);
+  padding: 20px 32px;
   text-align: center;
-  border: 1px solid #2a3a52;
-  background: #1a2332;
-}
-
-.calendar-card.available { border-color: #4ade80; }
-.calendar-card.full { border-color: #ff6b6b; }
-.calendar-card.selected { background: #ffa500; }
-
-.small-text {
-  color: var(--text-secondary);
+  color: rgba(255,255,255,0.48);
   font-size: 12px;
-  line-height: 1.4;
+  margin-top: auto;
 }
 
-@media (max-width: 900px) {
-  .sidebar { width: 72px; }
-  .sidebar-title span, .nav-item span { display: none; }
-  .main-content { margin-left: 72px; padding: 16px; }
-  .dashboard-grid, .content-row, .metrics-grid, .info-grid { grid-template-columns: 1fr; }
-  .calendar-grid { grid-template-columns: repeat(2, 1fr); }
+footer a { color: #f5a623; text-decoration: none; }
+
+@media(max-width:560px) {
+  header { padding: 14px 16px; }
+  .header-contact { display: none; }
+  .hero { padding: 28px 16px 40px; }
+  .step-body, .step-header { padding: 20px 16px; }
+  .btn-row { padding: 16px; }
+  .type-cards, .field-row, .window-grid { grid-template-columns: 1fr; }
+  .days-grid { grid-template-columns: repeat(2, 1fr); }
+  .step-label { display: none; }
 }
 </style>
 </head>
 
 <body>
-<div id="root"><div class="loading"><div>Loading EPC Pro...</div></div></div>
+<header>
+  <a href="https://theepc.pro" class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </div>
+    <span class="logo-text">The EPC<span>.pro</span></span>
+  </a>
+  <div class="header-contact">Questions? <a href="tel:07831363622">07831 363 622</a></div>
+</header>
 
-<script type="text/babel">
-const { useState, useEffect } = React;
+<div class="hero">
+  <h1>Book your EPC<br><em>assessment online</em></h1>
+  <p>Fast, professional energy performance certificates for London properties. Available appointment windows are based on your postcode area and current route availability.</p>
+  <div class="trust-badges">
+    <div class="trust-badge">Fully accredited DEA</div>
+    <div class="trust-badge">London routing logic</div>
+    <div class="trust-badge">AM/PM booking windows</div>
+  </div>
+</div>
 
+<div class="progress-wrap" id="progress-wrap">
+  <div class="progress-steps">
+    <div class="step-tab active" id="tab-1"><div class="step-num">1</div><span class="step-label">Service</span></div>
+    <div class="step-tab" id="tab-2"><div class="step-num">2</div><span class="step-label">Property</span></div>
+    <div class="step-tab" id="tab-3"><div class="step-num">3</div><span class="step-label">Date</span></div>
+    <div class="step-tab" id="tab-4"><div class="step-num">4</div><span class="step-label">Contact</span></div>
+    <div class="step-tab" id="tab-5"><div class="step-num">5</div><span class="step-label">Confirm</span></div>
+  </div>
+</div>
+
+<main>
+<div class="form-card">
+
+  <div class="form-step active" id="step-1">
+    <div class="step-header">
+      <h2>What type of EPC do you need?</h2>
+      <p>Choose domestic or commercial so we can route the enquiry correctly.</p>
+    </div>
+    <div class="step-body">
+      <div class="type-cards">
+        <div class="type-card" id="card-domestic" onclick="selectType('Domestic')">
+          <span class="type-icon">🏠</span>
+          <div class="type-name">Domestic EPC</div>
+          <div class="type-desc">Houses, flats, landlords, homeowners and estate agents. From £60.</div>
+        </div>
+        <div class="type-card" id="card-commercial" onclick="selectType('Commercial')">
+          <span class="type-icon">🏢</span>
+          <div class="type-name">Commercial EPC</div>
+          <div class="type-desc">Shops, offices, warehouses and non-domestic premises. Review before booking.</div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="goToStep(2)">Continue →</button>
+    </div>
+  </div>
+
+  <div class="form-step" id="step-2">
+    <div class="step-header">
+      <h2>Property details</h2>
+      <p>We use this to calculate your quote and match the booking to a sensible route.</p>
+    </div>
+    <div class="step-body">
+      <div class="field">
+        <label>Property address <span class="req">*</span></label>
+        <input type="text" id="address" placeholder="e.g. 14 Highbury Grove">
+        <div class="error-msg" id="err-address">Please enter the property address</div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Postcode <span class="req">*</span></label>
+          <input type="text" id="postcode" placeholder="e.g. N5 1PF" oninput="checkPostcode()" style="text-transform:uppercase">
+          <div class="error-msg" id="err-postcode">Please enter a postcode</div>
+          <div class="hint" id="postcode-hint">Enter a London postcode. The calendar will prioritise route-compatible days.</div>
+        </div>
+
+        <div class="field">
+          <label>Property type</label>
+          <select id="property_type">
+            <option value="">— Select —</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="domestic-fields" style="display:none">
+        <div class="field">
+          <label>Estimated property value <span class="req">*</span></label>
+          <select id="property_value" onchange="refreshQuote()">
+            <option value="">— Select —</option>
+            <option value="999000">Up to £999,000</option>
+            <option value="1500000">£1,000,000 to £1,999,999</option>
+            <option value="2500000">£2,000,000 to £2,999,999</option>
+            <option value="3500000">£3,000,000 to £3,999,999</option>
+            <option value="4000001">Over £4,000,000</option>
+          </select>
+          <div class="error-msg" id="err-property-value">Please select the property value band</div>
+        </div>
+
+        <div class="field" id="domestic-size-field" style="display:none">
+          <label>Approximate floor area m² <span class="req">*</span></label>
+          <input type="number" min="1" id="domestic_sqm" placeholder="e.g. 180" oninput="refreshQuote()">
+          <div class="hint">Required for properties over £4,000,000.</div>
+          <div class="error-msg" id="err-domestic-sqm">Please enter approximate square meterage</div>
+        </div>
+      </div>
+
+      <div id="commercial-fields" style="display:none">
+        <div class="field">
+          <label>Approximate commercial floor area m² <span class="req">*</span></label>
+          <input type="number" min="1" id="commercial_sqm" placeholder="e.g. 250" oninput="refreshQuote()">
+          <div class="error-msg" id="err-commercial-sqm">Please enter the commercial floor area</div>
+          <div class="hint">901 m² and above will be treated as a custom quote / review.</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Notes / access information</label>
+        <textarea id="notes" placeholder="Tenant details, parking, agent details, preferred times, special access notes"></textarea>
+      </div>
+
+      <div class="price-panel" id="quote-panel">
+        <div class="price-title">Quote</div>
+        <div class="price-big" id="quote-price">—</div>
+        <div class="price-note" id="quote-note">Complete the property details to calculate the quote.</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-back" onclick="goToStep(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goToStep(3)">Continue →</button>
+    </div>
+  </div>
+
+  <div class="form-step" id="step-3">
+    <div class="step-header">
+      <h2 id="date-heading">Choose a booking window</h2>
+      <p id="date-subtitle">Available dates are prioritised by postcode route and current dashboard bookings.</p>
+    </div>
+    <div class="step-body">
+      <div class="date-info">
+        <strong>Capacity:</strong> 5 AM jobs and 3 PM jobs per day. &nbsp;|&nbsp;
+        <strong>Routing:</strong> <span id="route-message">Route will be calculated from your postcode.</span>
+      </div>
+
+      <div class="calendar-status" id="calendar-status">Checking live route availability...</div>
+
+      <div class="days-grid" id="days-grid"></div>
+
+      <div class="window-grid" id="window-grid">
+        <div class="window-card" id="window-AM" onclick="selectWindow('AM')">
+          <strong>AM <span class="recommended-label" id="am-recommended" style="display:none">Preferred</span></strong>
+          <span id="window-am-text">08:00 to 13:00 · 5 spaces</span>
+        </div>
+        <div class="window-card" id="window-PM" onclick="selectWindow('PM')">
+          <strong>PM</strong>
+          <span id="window-pm-text">13:00 to 17:00 · 3 spaces</span>
+        </div>
+      </div>
+
+      <div class="error-msg" id="err-date">Please select a date</div>
+      <div class="error-msg" id="err-window">Please select an available AM or PM window</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-back" onclick="goToStep(2)">← Back</button>
+      <button class="btn btn-primary" onclick="goToStep(4)">Continue →</button>
+    </div>
+  </div>
+
+  <div class="form-step" id="step-4">
+    <div class="step-header">
+      <h2>Your contact details</h2>
+      <p>These details will be saved into the EPC Pro dashboard with the enquiry.</p>
+    </div>
+    <div class="step-body">
+      <div class="field-row">
+        <div class="field">
+          <label>First name <span class="req">*</span></label>
+          <input type="text" id="fname">
+          <div class="error-msg" id="err-fname">Required</div>
+        </div>
+        <div class="field">
+          <label>Last name <span class="req">*</span></label>
+          <input type="text" id="lname">
+          <div class="error-msg" id="err-lname">Required</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Email <span class="req">*</span></label>
+        <input type="email" id="email">
+        <div class="error-msg" id="err-email">Please enter a valid email</div>
+      </div>
+
+      <div class="field">
+        <label>Phone <span class="req">*</span></label>
+        <input type="tel" id="phone">
+        <div class="error-msg" id="err-phone">Please enter a phone number</div>
+      </div>
+
+      <div class="field">
+        <label>I am a...</label>
+        <select id="client_type">
+          <option value="Client">Homeowner / private client</option>
+          <option value="Landlord">Landlord</option>
+          <option value="Estate Agent">Estate agent</option>
+          <option value="Business">Business</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>How did you hear about us?</label>
+        <select id="source">
+          <option value="Website">Website</option>
+          <option value="Google">Google search</option>
+          <option value="Local Surveyors Direct">Local Surveyors Direct</option>
+          <option value="Estate Agent">Estate agent</option>
+          <option value="Referral">Referral</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-back" onclick="goToStep(3)">← Back</button>
+      <button class="btn btn-primary" onclick="goToStep(5)">Review →</button>
+    </div>
+  </div>
+
+  <div class="form-step" id="step-5">
+    <div class="step-header">
+      <h2>Review and submit</h2>
+      <p id="confirm-subtitle">Check the details before sending this to EPC Pro.</p>
+    </div>
+    <div class="step-body">
+      <div class="status-box" id="submit-status"></div>
+
+      <div class="confirm-block">
+        <div class="confirm-block-label">Property</div>
+        <div class="confirm-item"><span class="ci-label">Address</span><span class="ci-value" id="cf-address">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Postcode</span><span class="ci-value" id="cf-postcode">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Route group</span><span class="ci-value" id="cf-route">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Service</span><span class="ci-value" id="cf-service">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Quote</span><span class="ci-value" id="cf-quote">—</span></div>
+      </div>
+
+      <div class="confirm-block">
+        <div class="confirm-block-label">Requested appointment</div>
+        <div class="confirm-item"><span class="ci-label">Date</span><span class="ci-value" id="cf-date">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Window</span><span class="ci-value" id="cf-window">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Route fit</span><span class="ci-value" id="cf-route-fit">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Availability</span><span class="ci-value" id="cf-availability">—</span></div>
+      </div>
+
+      <div class="confirm-block">
+        <div class="confirm-block-label">Contact</div>
+        <div class="confirm-item"><span class="ci-label">Name</span><span class="ci-value" id="cf-name">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Email</span><span class="ci-value" id="cf-email">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Phone</span><span class="ci-value" id="cf-phone">—</span></div>
+      </div>
+
+      <label class="terms-check">
+        <input type="checkbox" id="terms">
+        <span>I confirm the details are correct. Domestic online bookings are booking requests pending deposit/payment integration; commercial enquiries are review/quote requests and are not automatically confirmed.</span>
+      </label>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-back" onclick="goToStep(4)">← Back</button>
+      <button class="btn btn-primary" id="submit-btn" onclick="submitBooking()">Submit to EPC Pro</button>
+    </div>
+  </div>
+
+  <div class="form-step" id="step-success">
+    <div class="success-screen">
+      <div class="success-icon">✓</div>
+      <h2 id="success-title">Request received</h2>
+      <p id="success-text">Your details have been sent to EPC Pro and will now appear in the dashboard.</p>
+      <div class="booking-ref">
+        <div class="booking-ref-label">Your EPC Pro reference</div>
+        <div class="booking-ref-num" id="booking-ref-num">—</div>
+      </div>
+      <p style="font-size:13px">
+        Please quote this reference if you email, WhatsApp or send documents afterwards.
+      </p>
+      <p style="font-size:13px;margin-top:12px">
+        Questions? Call <a href="tel:07831363622" style="color:var(--accent);font-weight:700">07831 363 622</a>
+        or email <a href="mailto:help@theepc.pro" style="color:var(--accent);font-weight:700">help@theepc.pro</a>
+      </p>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<footer>
+  The EPC Pro · Accreditation No. EES/026824 ·
+  <a href="tel:07831363622">07831 363 622</a> ·
+  <a href="mailto:help@theepc.pro">help@theepc.pro</a> ·
+  <a href="https://theepc.pro">theepc.pro</a>
+</footer>
+
+<script>
 const SUPABASE_URL = 'https://lokyeggbiusgrrxbvnho.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXJhYmFzZSIsInJlZiI6Imxva3llZ2diaXVzZ3JyeGJ2bmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMjA1NzIsImV4cCI6MjA5MjU5NjU3Mn0.c9OAP7QnOYA9sB-0afDnUDnu-9SNXyRqgoggTWUiJhQ';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxva3llZ2diaXVzZ3JyeGJ2bmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMjA1NzIsImV4cCI6MjA5MjU5NjU3Mn0.c9OAP7QnOYA9sB-0afDnUDnu-9SNXyRqgoggTWUiJhQ';
+
+const supabaseClient = window.supabase
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
 
 const AM_CAPACITY = 5;
 const PM_CAPACITY = 3;
 const DAILY_CAPACITY = 8;
 
-let supabaseClient = null;
-let isSupabaseConfigured = false;
+const CLOSED_STATUSES = ['Closed', 'EPC served', 'Cancelled', 'Lost'];
 
-if (
-  SUPABASE_URL &&
-  SUPABASE_ANON_KEY &&
-  !SUPABASE_URL.includes('PASTE') &&
-  !SUPABASE_ANON_KEY.includes('PASTE') &&
-  SUPABASE_URL.startsWith('http')
-) {
-  try {
-    if (typeof supabase !== 'undefined' && supabase.createClient) {
-      supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      isSupabaseConfigured = true;
-      console.log('✅ Supabase client initialized');
-    }
-  } catch (error) {
-    console.error('❌ Failed to initialize Supabase:', error);
+const ENGLAND_WALES_BANK_HOLIDAYS = {
+  '2026-01-01': "New Year's Day",
+  '2026-04-03': 'Good Friday',
+  '2026-04-06': 'Easter Monday',
+  '2026-05-04': 'Early May bank holiday',
+  '2026-05-25': 'Spring bank holiday',
+  '2026-08-31': 'Summer bank holiday',
+  '2026-12-25': 'Christmas Day',
+  '2026-12-28': 'Boxing Day substitute',
+  '2027-01-01': "New Year's Day",
+  '2027-03-26': 'Good Friday',
+  '2027-03-29': 'Easter Monday',
+  '2027-05-03': 'Early May bank holiday',
+  '2027-05-31': 'Spring bank holiday',
+  '2027-08-30': 'Summer bank holiday',
+  '2027-12-27': 'Christmas Day substitute',
+  '2027-12-28': 'Boxing Day substitute',
+  '2028-01-03': "New Year's Day substitute"
+};
+
+const ROUTE_GROUPS = {
+  NORTH_NW: {
+    label: 'North / North West',
+    prefixes: ['N', 'NW', 'EN', 'HA']
+  },
+  EAST: {
+    label: 'East',
+    prefixes: ['E', 'IG', 'RM']
+  },
+  WEST_SW: {
+    label: 'West / South West',
+    prefixes: ['W', 'SW', 'TW', 'KT', 'UB']
+  },
+  SOUTH_EAST: {
+    label: 'South East',
+    prefixes: ['SE', 'BR', 'CR', 'DA']
+  },
+  CENTRAL: {
+    label: 'Central / Flexible',
+    prefixes: ['EC', 'WC']
   }
+};
+
+const CENTRAL_DISTRICTS = ['W1', 'N1', 'E1', 'SE1', 'SW1'];
+
+const state = {
+  type: null,
+  price: null,
+  pricingStatus: '',
+  quoteLabel: '',
+  address: '',
+  postcode: '',
+  routeGroupCode: '',
+  routeGroupLabel: '',
+  date: null,
+  dateStr: '',
+  window: null,
+  selectedDayAvailability: null,
+  selectedDayRouteFit: '',
+  reviewRequired: false,
+  availabilityByDate: {},
+  availabilityLoaded: false,
+  jobsByDate: {}
+};
+
+function generateDatabaseId() {
+  if (window.crypto && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
 }
 
-function safeDocuments(row) {
+function makeReference() {
+  return 'EPC-' + Date.now().toString(36).toUpperCase().slice(-6);
+}
+
+function localISODate(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function formatDisplayDate(date) {
+  return date.toLocaleDateString('en-GB', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short'
+  });
+}
+
+function parseDocuments(row) {
   if (!row || !row.documents) return {};
   if (typeof row.documents === 'object') return row.documents;
   try {
@@ -582,2066 +995,1002 @@ function safeDocuments(row) {
   }
 }
 
+function getPostcodeParts(pc) {
+  const clean = String(pc || '').replace(/\s/g, '').toUpperCase();
+  const areaMatch = clean.match(/^[A-Z]+/);
+  const districtMatch = clean.match(/^[A-Z]+(\d+)/);
+
+  return {
+    clean,
+    area: areaMatch ? areaMatch[0] : '',
+    district: districtMatch ? districtMatch[1] : '',
+    areaDistrict: areaMatch && districtMatch ? areaMatch[0] + districtMatch[1] : areaMatch ? areaMatch[0] : ''
+  };
+}
+
+function getRouteGroupFromPostcode(pc) {
+  const parts = getPostcodeParts(pc);
+
+  if (!parts.area) {
+    return { code: 'UNKNOWN', label: 'Unknown route' };
+  }
+
+  if (CENTRAL_DISTRICTS.includes(parts.areaDistrict)) {
+    return { code: 'CENTRAL', label: ROUTE_GROUPS.CENTRAL.label };
+  }
+
+  for (const [code, group] of Object.entries(ROUTE_GROUPS)) {
+    if (group.prefixes.includes(parts.area)) {
+      return { code, label: group.label };
+    }
+  }
+
+  return { code: 'UNKNOWN', label: 'Manual review route' };
+}
+
+function routeGroupsCompatible(dayRouteCode, customerRouteCode) {
+  if (!dayRouteCode || dayRouteCode === 'OPEN') return true;
+  if (!customerRouteCode || customerRouteCode === 'UNKNOWN') return true;
+  if (dayRouteCode === customerRouteCode) return true;
+  if (dayRouteCode === 'CENTRAL' || customerRouteCode === 'CENTRAL') return true;
+  return false;
+}
+
+function getRouteFitLabel(dayRouteCode, customerRouteCode) {
+  if (!dayRouteCode || dayRouteCode === 'OPEN') return 'Open day';
+  if (dayRouteCode === 'MIXED') return 'Mixed route day';
+  if (dayRouteCode === customerRouteCode) return 'Same route';
+  if (dayRouteCode === 'CENTRAL' || customerRouteCode === 'CENTRAL') return 'Central / flexible fit';
+  return 'Different route';
+}
+
 function toNumber(value) {
-  if (value === null || value === undefined || value === '') return null;
-  const cleaned = String(value).replace(/[^0-9.]/g, '');
-  const number = Number(cleaned);
-  return Number.isFinite(number) ? number : null;
+  if (value === null || value === undefined || value === '') return 0;
+  const number = Number(String(value).replace(/[^0-9.]/g, ''));
+  return Number.isFinite(number) ? number : 0;
 }
 
-function firstPresent(...values) {
-  for (const value of values) {
-    if (value !== null && value !== undefined && value !== '') return value;
-  }
-  return null;
-}
+function calculateDomesticPrice(propertyValue, sqm) {
+  const value = Number(propertyValue || 0);
+  const area = Number(sqm || 0);
 
-function normaliseText(value) {
-  return String(value || '').trim().toLowerCase();
-}
+  if (value <= 0) return { price: null, status: 'missing', label: 'Select property value', reviewRequired: false };
+  if (value <= 999000) return { price: 60, status: 'priced', label: 'Up to £999,000', reviewRequired: false };
+  if (value <= 1999999) return { price: 80, status: 'priced', label: '£1,000,000 to £1,999,999', reviewRequired: false };
+  if (value <= 2999999) return { price: 110, status: 'priced', label: '£2,000,000 to £2,999,999', reviewRequired: false };
+  if (value <= 3999999) return { price: 150, status: 'priced', label: '£3,000,000 to £3,999,999', reviewRequired: false };
 
-function formatCurrency(value) {
-  const number = toNumber(value);
-  if (number === null) return 'N/A';
-  return `£${number.toFixed(2)}`;
-}
-
-function formatCurrencyPlain(value) {
-  const number = toNumber(value);
-  if (number === null) return null;
-  return `£${number.toFixed(2)}`;
-}
-
-function getJobReference(job) {
-  const docs = safeDocuments(job);
-  return firstPresent(
-    job?.reference,
-    docs.public_reference,
-    docs.reference,
-    docs.job_reference,
-    docs.booking_reference,
-    job?.id ? String(job.id).substring(0, 8) : null
-  ) || 'No reference';
-}
-
-function getJobEpcType(job) {
-  const docs = safeDocuments(job);
-  const raw = firstPresent(
-    job?.epc_type,
-    docs.service_type,
-    docs.epc_type,
-    docs.type,
-    docs.service
-  );
-
-  const text = normaliseText(raw);
-
-  if (text.includes('commercial') || text.includes('non-domestic') || text.includes('non domestic')) {
-    return 'Commercial';
+  if (!area) {
+    return { price: null, status: 'review', label: 'Over £4,000,000 — square meterage required', reviewRequired: true };
   }
 
-  return 'Domestic';
+  if (area <= 150) return { price: 180, status: 'priced', label: 'Over £4,000,000, 100–150 m²', reviewRequired: false };
+  if (area <= 300) return { price: 240, status: 'priced', label: 'Over £4,000,000, 151–300 m²', reviewRequired: false };
+  if (area <= 500) return { price: 400, status: 'priced', label: 'Over £4,000,000, 301–500 m²', reviewRequired: false };
+  if (area <= 750) return { price: 450, status: 'priced', label: 'Over £4,000,000, 501–750 m²', reviewRequired: false };
+  if (area <= 10000) return { price: 450, status: 'priced', label: 'Over £4,000,000, 751–10,000 m²', reviewRequired: false };
+
+  return { price: null, status: 'review', label: 'Large residential property — review required', reviewRequired: true };
 }
 
-function getJobStatus(job) {
-  const docs = safeDocuments(job);
-  return firstPresent(
-    job?.status,
-    docs.status,
-    docs.job_status,
-    'Awaiting booking'
-  );
+function calculateCommercialPrice(sqm) {
+  const area = Number(sqm || 0);
+
+  if (!area) return { price: null, status: 'missing', label: 'Enter commercial floor area', reviewRequired: true };
+  if (area <= 100) return { price: 180, status: 'priced', label: '0–100 m²', reviewRequired: false };
+  if (area <= 200) return { price: 215, status: 'priced', label: '101–200 m²', reviewRequired: false };
+  if (area <= 300) return { price: 255, status: 'priced', label: '201–300 m²', reviewRequired: false };
+  if (area <= 400) return { price: 305, status: 'priced', label: '301–400 m²', reviewRequired: false };
+  if (area <= 500) return { price: 355, status: 'priced', label: '401–500 m²', reviewRequired: false };
+  if (area <= 600) return { price: 410, status: 'priced', label: '501–600 m²', reviewRequired: false };
+  if (area <= 700) return { price: 455, status: 'priced', label: '601–700 m²', reviewRequired: false };
+  if (area <= 800) return { price: 495, status: 'priced', label: '701–800 m²', reviewRequired: false };
+  if (area <= 900) return { price: 535, status: 'priced', label: '801–900 m²', reviewRequired: false };
+  if (area <= 10000) return { price: null, status: 'review', label: '901 m² to 10,000 m² — custom quote / review required', reviewRequired: true };
+
+  return { price: null, status: 'review', label: 'Large commercial property — custom quote required', reviewRequired: true };
 }
 
-function getJobSource(job) {
-  const docs = safeDocuments(job);
-  return firstPresent(job?.source, docs.source, 'Website');
-}
+function checkPostcode() {
+  const val = document.getElementById('postcode').value.toUpperCase().trim();
+  const hint = document.getElementById('postcode-hint');
 
-function getJobBookingDate(job) {
-  const docs = safeDocuments(job);
-  return firstPresent(job?.booking_date, docs.appointment_date, docs.booking_date, '');
-}
-
-function getJobBookingWindow(job) {
-  const docs = safeDocuments(job);
-  return firstPresent(job?.booking_window, docs.appointment_window, docs.booking_window, '');
-}
-
-function getSavedQuoteFromJob(job) {
-  const docs = safeDocuments(job);
-  return firstPresent(
-    docs.quote_amount,
-    docs.quoted_amount,
-    docs.price,
-    docs.total_price,
-    docs.invoice_amount,
-    docs.assessment_fee,
-    docs.calculated_quote,
-    job?.quote_amount,
-    job?.quoted_amount,
-    job?.estimated_value,
-    job?.invoice_amount
-  );
-}
-
-function getSavedDepositFromJob(job) {
-  const docs = safeDocuments(job);
-  return firstPresent(
-    docs.deposit_amount,
-    docs.deposit_due,
-    job?.deposit_amount
-  );
-}
-
-function getSavedBalanceFromJob(job) {
-  const docs = safeDocuments(job);
-  return firstPresent(
-    docs.balance_due,
-    docs.remaining_balance,
-    job?.balance_due
-  );
-}
-
-function getSavedPricingBandFromJob(job) {
-  const docs = safeDocuments(job);
-  return firstPresent(
-    docs.pricing_band,
-    docs.price_band,
-    docs.band,
-    docs.quote_band,
-    docs.property_value_band,
-    docs.commercial_band,
-    docs.floor_area_band,
-    job?.pricing_band,
-    job?.price_band,
-    job?.quote_band
-  );
-}
-
-function getFallbackContactName(job) {
-  const docs = safeDocuments(job);
-  return firstPresent(
-    docs.customer_name,
-    docs.client_name,
-    docs.name,
-    job?.customer_name,
-    job?.client_name,
-    'Unknown'
-  );
-}
-
-function getFallbackContactEmail(job) {
-  const docs = safeDocuments(job);
-  return firstPresent(
-    docs.customer_email,
-    docs.client_email,
-    docs.email,
-    job?.customer_email,
-    job?.client_email,
-    ''
-  );
-}
-
-function getFallbackContactPhone(job) {
-  const docs = safeDocuments(job);
-  return firstPresent(
-    docs.customer_phone,
-    docs.client_phone,
-    docs.phone,
-    job?.customer_phone,
-    job?.client_phone,
-    ''
-  );
-}
-
-function getSavedQuoteFromLead(lead, relatedJob) {
-  const docs = safeDocuments(lead);
-  return firstPresent(
-    docs.quote_amount,
-    docs.quoted_amount,
-    docs.price,
-    docs.total_price,
-    docs.assessment_fee,
-    docs.calculated_quote,
-    lead?.quote_amount,
-    lead?.quoted_amount,
-    lead?.estimated_value,
-    lead?.invoice_amount,
-    relatedJob ? getSavedQuoteFromJob(relatedJob) : null
-  );
-}
-
-function getSavedPricingBandFromLead(lead, relatedJob) {
-  const docs = safeDocuments(lead);
-  return firstPresent(
-    docs.pricing_band,
-    docs.price_band,
-    docs.band,
-    docs.quote_band,
-    docs.property_value_band,
-    docs.commercial_band,
-    docs.floor_area_band,
-    lead?.pricing_band,
-    lead?.price_band,
-    lead?.quote_band,
-    relatedJob ? getSavedPricingBandFromJob(relatedJob) : null
-  );
-}
-
-function getJobAddress(job, properties) {
-  const docs = safeDocuments(job);
-  const property = properties.find(p => String(p.id) === String(job?.property_id));
-
-  return firstPresent(
-    property?.address,
-    job?.property_address,
-    docs.property_address,
-    docs.address,
-    'No address'
-  );
-}
-
-function getJobPostcode(job, properties) {
-  const docs = safeDocuments(job);
-  const property = properties.find(p => String(p.id) === String(job?.property_id));
-
-  return firstPresent(
-    property?.postcode,
-    job?.postcode,
-    docs.postcode,
-    docs.property_postcode,
-    ''
-  );
-}
-
-function getPropertySquareMeterage(property, job) {
-  const docs = safeDocuments(job);
-
-  return firstPresent(
-    property?.square_meterage,
-    property?.sqm,
-    property?.size_m2,
-    property?.floor_area,
-    job?.square_meterage,
-    job?.sqm,
-    job?.size_m2,
-    job?.floor_area,
-    docs.square_meterage,
-    docs.sqm,
-    docs.floor_area
-  );
-}
-
-function findRelatedJobForLead(lead, jobs, properties) {
-  if (!lead) return null;
-
-  if (lead.job_id) {
-    const byJobId = jobs.find(j => String(j.id) === String(lead.job_id));
-    if (byJobId) return byJobId;
+  if (!val) {
+    hint.textContent = 'Enter a London postcode. The calendar will prioritise route-compatible days.';
+    hint.style.color = 'var(--ink3)';
+    return;
   }
 
-  if (lead.reference) {
-    const byReference = jobs.find(j => normaliseText(getJobReference(j)) === normaliseText(lead.reference));
-    if (byReference) return byReference;
+  const route = getRouteGroupFromPostcode(val);
+  state.routeGroupCode = route.code;
+  state.routeGroupLabel = route.label;
+
+  if (route.code === 'UNKNOWN') {
+    hint.textContent = 'Postcode recorded. Route may need manual review.';
+    hint.style.color = 'var(--warning)';
+  } else {
+    hint.textContent = `✓ Route group: ${route.label}. The calendar will prioritise suitable route days.`;
+    hint.style.color = 'var(--success)';
   }
-
-  const leadAddress = normaliseText(lead.property_address);
-  const leadPostcode = String(lead.postcode || '').replace(/\s/g, '').toLowerCase();
-
-  if (leadAddress || leadPostcode) {
-    const matched = jobs.find(job => {
-      const jobAddress = normaliseText(getJobAddress(job, properties));
-      const jobPostcode = String(getJobPostcode(job, properties) || '').replace(/\s/g, '').toLowerCase();
-      const addressMatches = leadAddress && jobAddress && jobAddress === leadAddress;
-      const postcodeMatches = leadPostcode && jobPostcode && jobPostcode === leadPostcode;
-      return addressMatches && postcodeMatches;
-    });
-
-    if (matched) return matched;
-  }
-
-  return null;
 }
 
-function getLeadDisplayValue(lead, jobs = [], properties = []) {
-  const relatedJob = findRelatedJobForLead(lead, jobs, properties);
-  const quote = getSavedQuoteFromLead(lead, relatedJob);
-  const price = formatCurrencyPlain(quote);
-  if (price) return price;
+function updatePropertyTypeOptions(type) {
+  const select = document.getElementById('property_type');
 
-  const band = getSavedPricingBandFromLead(lead, relatedJob);
-  if (band) return String(band);
-
-  return 'Review';
-}
-
-function getTimeAgo(timestamp) {
-  if (!timestamp) return 'Unknown';
-  const now = new Date();
-  const then = new Date(timestamp);
-  if (Number.isNaN(then.getTime())) return 'Unknown';
-  const seconds = Math.floor((now - then) / 1000);
-  if (seconds < 60) return 'Just now';
-  if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
-  if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
-  if (seconds < 604800) return Math.floor(seconds / 86400) + 'd ago';
-  return then.toLocaleDateString('en-GB');
-}
-
-function isClosedJob(job) {
-  const status = getJobStatus(job);
-  return ['EPC served', 'Closed', 'Cancelled', 'Lost'].includes(status);
-}
-
-function isActiveJob(job) {
-  return !isClosedJob(job);
-}
-
-function isCommercialJob(job) {
-  return getJobEpcType(job) === 'Commercial';
-}
-
-const db = {
-  async testConnection() {
-    if (!supabaseClient) return { success: false, message: 'Not configured' };
-    try {
-      const { error } = await supabaseClient.from('contacts').select('count').limit(1);
-      if (error) throw error;
-      return { success: true, message: 'Connected' };
-    } catch (err) {
-      return { success: false, message: err.message };
-    }
-  },
-
-  async getContacts() {
-    if (!supabaseClient) return [];
-    try {
-      const { data, error } = await supabaseClient
-        .from('contacts')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return data || [];
-    } catch (err) {
-      console.error('❌ Error loading contacts:', err.message);
-      return [];
-    }
-  },
-
-  async getProperties() {
-    if (!supabaseClient) return [];
-    try {
-      const { data, error } = await supabaseClient
-        .from('properties')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return data || [];
-    } catch (err) {
-      console.error('❌ Error loading properties:', err.message);
-      return [];
-    }
-  },
-
-  async getLeads() {
-    if (!supabaseClient) return [];
-    try {
-      const { data, error } = await supabaseClient
-        .from('leads')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return data || [];
-    } catch (err) {
-      console.error('❌ Error loading leads:', err.message);
-      return [];
-    }
-  },
-
-  async getJobs() {
-    if (!supabaseClient) return [];
-    try {
-      const { data, error } = await supabaseClient
-        .from('jobs')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return data || [];
-    } catch (err) {
-      console.error('❌ Error loading jobs:', err.message);
-      return [];
-    }
-  },
-
-  async updateJob(id, updates) {
-    if (!supabaseClient) return null;
-    try {
-      const { data, error } = await supabaseClient
-        .from('jobs')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (err) {
-      console.error('❌ Error updating job:', err.message);
-      return null;
-    }
-  },
-
-  async getEmails() {
-    if (!supabaseClient) return [];
-    try {
-      const { data, error } = await supabaseClient
-        .from('emails')
-        .select('*')
-        .order('received_at', { ascending: false })
-        .limit(10);
-
-      if (error) throw error;
-      return data || [];
-    } catch (err) {
-      console.error('❌ Error loading emails:', err.message);
-      return [];
-    }
-  },
-
-  async getMessages() {
-    if (!supabaseClient) return [];
-    try {
-      const { data, error } = await supabaseClient
-        .from('messages')
-        .select('*')
-        .order('received_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    } catch (err) {
-      console.error('❌ Error loading messages:', err.message);
-      return [];
-    }
-  }
-};
-
-const sampleData = {
-  contacts: [
-    {
-      id: 'c1',
-      name: 'John Smith',
-      email: 'john@email.com',
-      phone: '07700 900000',
-      type: 'Client',
-      client_reference: 'EPC-C001',
-      created_at: new Date().toISOString()
-    }
-  ],
-  properties: [
-    {
-      id: 'p1',
-      contact_id: 'c1',
-      address: '123 High Street',
-      postcode: 'NW1 1AA',
-      city: 'London',
-      square_meterage: 120,
-      created_at: new Date().toISOString()
-    }
-  ],
-  leads: [
-    {
-      id: 'l1',
-      property_address: '123 High Street',
-      postcode: 'NW1 1AA',
-      source: 'Website',
-      status: 'Awaiting booking',
-      estimated_value: 80,
-      epc_type: 'Domestic',
-      documents: {
-        pricing_band: '£1,000,000 to £1,999,999',
-        quote_amount: 80
-      },
-      created_at: new Date().toISOString()
-    }
-  ],
-  jobs: [
-    {
-      id: 'j1',
-      contact_id: 'c1',
-      property_id: 'p1',
-      reference: 'EPC-TEST01',
-      booking_date: new Date().toISOString().split('T')[0],
-      booking_window: 'AM',
-      provisional_eta: 'TBC',
-      deposit_amount: 40,
-      deposit_paid: false,
-      invoice_issued: false,
-      invoice_amount: 80,
-      balance_due: 40,
-      epc_type: 'Domestic',
-      status: 'Awaiting booking',
-      source: 'Website',
-      documents: {
-        pricing_band: '£1,000,000 to £1,999,999',
-        quote_amount: 80,
-        public_reference: 'EPC-TEST01',
-        customer_name: 'John Smith',
-        customer_email: 'john@email.com',
-        customer_phone: '07700 900000',
-        property_address: '123 High Street',
-        postcode: 'NW1 1AA'
-      },
-      field_status: null,
-      created_at: new Date().toISOString()
-    }
-  ],
-  emails: [],
-  messages: []
-};
-
-const Icon = ({ name, size = 20 }) => {
-  const icons = {
-    home: '🏠',
-    dashboard: '📊',
-    calendar: '📅',
-    mail: '📧',
-    users: '👥',
-    briefcase: '💼',
-    dollar: '💰',
-    clock: '🕐',
-    check: '✓',
-    alert: '⚠',
-    plus: '+',
-    x: '×',
-    calculator: '🧮'
-  };
-
-  return <span style={{ fontSize: `${size}px` }}>{icons[name] || '•'}</span>;
-};
-
-function ComingSoonButton({ children }) {
-  return (
-    <button className="btn btn-secondary btn-sm btn-muted" title="Coming soon - not wired yet">
-      {children} <span className="badge badge-dark">Coming soon</span>
-    </button>
-  );
-}
-
-function ConnectionBanner({ status, jobsCount }) {
-  if (status === 'connected') {
-    return <div className="connection-banner connected">✅ Database Connected · Jobs loaded: {jobsCount}</div>;
-  }
-
-  return <div className="connection-banner disconnected">⚠️ Offline Mode - Using Sample Data</div>;
-}
-
-function StatusBadge({ status }) {
-  const statusMap = {
-    'New lead': 'badge-blue',
-    'Quoted': 'badge-green',
-    'Awaiting booking': 'badge-orange',
-    'Review required': 'badge-yellow',
-    'Converted': 'badge-green',
-    'Lost': 'badge-red',
-    'Booked': 'badge-green',
-    'Awaiting inspection': 'badge-yellow',
-    'Inspected': 'badge-blue',
-    'Draft sent': 'badge-purple',
-    'Awaiting payment': 'badge-orange',
-    'EPC served': 'badge-green',
-    'Closed': 'badge-gray',
-    'Cancelled': 'badge-red',
-    'Custom quote': 'badge-yellow',
-    'Auto quoted': 'badge-green'
-  };
-
-  return <span className={`badge ${statusMap[status] || 'badge-blue'}`}>{status || 'Unknown'}</span>;
-}
-
-function Info({ label, value }) {
-  return (
-    <div>
-      <label className="form-label">{label}</label>
-      <div className="form-value">{value || 'N/A'}</div>
-    </div>
-  );
-}
-
-function EPCProApp() {
-  const [currentPage, setCurrentPage] = useState('dashboard');
-  const [contacts, setContacts] = useState([]);
-  const [properties, setProperties] = useState([]);
-  const [leads, setLeads] = useState([]);
-  const [jobs, setJobs] = useState([]);
-  const [emails, setEmails] = useState([]);
-  const [messages, setMessages] = useState([]);
-  const [selectedEmail, setSelectedEmail] = useState(null);
-  const [selectedContact, setSelectedContact] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [dbStatus, setDbStatus] = useState('disconnected');
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  async function loadData() {
-    try {
-      setLoading(true);
-
-      if (!isSupabaseConfigured) throw new Error('Supabase not configured');
-
-      const testResult = await db.testConnection();
-      if (!testResult.success) throw new Error(testResult.message);
-
-      setDbStatus('connected');
-
-      const [
-        contactsData,
-        propertiesData,
-        leadsData,
-        jobsData,
-        emailsData,
-        messagesData
-      ] = await Promise.all([
-        db.getContacts(),
-        db.getProperties(),
-        db.getLeads(),
-        db.getJobs(),
-        db.getEmails(),
-        db.getMessages()
-      ]);
-
-      if (
-        contactsData.length === 0 &&
-        propertiesData.length === 0 &&
-        leadsData.length === 0 &&
-        jobsData.length === 0
-      ) {
-        setContacts(sampleData.contacts);
-        setProperties(sampleData.properties);
-        setLeads(sampleData.leads);
-        setJobs(sampleData.jobs);
-        setEmails([]);
-        setMessages([]);
-      } else {
-        setContacts(contactsData);
-        setProperties(propertiesData);
-        setLeads(leadsData);
-        setJobs(jobsData);
-        setEmails(emailsData);
-        setMessages(messagesData);
-      }
-    } catch (err) {
-      console.error('❌ Failed to connect to Supabase:', err.message);
-      setDbStatus('disconnected');
-      setContacts(sampleData.contacts);
-      setProperties(sampleData.properties);
-      setLeads(sampleData.leads);
-      setJobs(sampleData.jobs);
-      setEmails([]);
-      setMessages([]);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function updateJobInDB(jobId, updates) {
-    try {
-      if (supabaseClient && dbStatus === 'connected') {
-        await db.updateJob(jobId, updates);
-      }
-
-      setJobs(prevJobs =>
-        prevJobs.map(j => (j.id === jobId ? { ...j, ...updates } : j))
-      );
-    } catch (err) {
-      console.error('❌ Error updating job:', err);
-      setJobs(prevJobs =>
-        prevJobs.map(j => (j.id === jobId ? { ...j, ...updates } : j))
-      );
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="loading">
-        <div>Loading EPC Pro Platform...</div>
-        <div style={{ fontSize: '14px', color: '#888' }}>Connecting to database...</div>
-      </div>
-    );
-  }
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'dashboard':
-        return (
-          <Dashboard
-            jobs={jobs}
-            leads={leads}
-            contacts={contacts}
-            properties={properties}
-            emails={emails}
-            selectedEmail={selectedEmail}
-            setSelectedEmail={setSelectedEmail}
-            updateJobInDB={updateJobInDB}
-          />
-        );
-
-      case 'calendar':
-        return <CalendarPage jobs={jobs} contacts={contacts} properties={properties} />;
-
-      case 'messages':
-        return (
-          <MessagesPage
-            messages={messages}
-            contacts={contacts}
-            selectedContact={selectedContact}
-            setSelectedContact={setSelectedContact}
-          />
-        );
-
-      case 'contacts':
-        return <ContactsPage contacts={contacts} />;
-
-      case 'leads':
-        return <LeadsPage leads={leads} jobs={jobs} properties={properties} />;
-
-      case 'jobs':
-        return (
-          <JobsPage
-            jobs={jobs}
-            contacts={contacts}
-            properties={properties}
-            updateJobInDB={updateJobInDB}
-          />
-        );
-
-      default:
-        return (
-          <Dashboard
-            jobs={jobs}
-            leads={leads}
-            contacts={contacts}
-            properties={properties}
-            emails={emails}
-            selectedEmail={selectedEmail}
-            setSelectedEmail={setSelectedEmail}
-            updateJobInDB={updateJobInDB}
-          />
-        );
-    }
-  };
-
-  return (
-    <div className="app-container">
-      <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} dbStatus={dbStatus} />
-      <main className="main-content">
-        <ConnectionBanner status={dbStatus} jobsCount={jobs.length} />
-        {renderPage()}
-      </main>
-    </div>
-  );
-}
-
-function Sidebar({ currentPage, setCurrentPage, dbStatus }) {
-  const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-    { id: 'calendar', label: 'Calendar', icon: 'calendar' },
-    { id: 'messages', label: 'Messages', icon: 'mail' },
-    { id: 'contacts', label: 'Contacts', icon: 'users' },
-    { id: 'leads', label: 'Leads', icon: 'users' },
-    { id: 'jobs', label: 'Jobs', icon: 'briefcase' }
+  const domesticOptions = [
+    'Flat / Apartment',
+    'Terraced house',
+    'Semi-detached house',
+    'Detached house',
+    'Bungalow',
+    'Maisonette',
+    'Other residential property'
   ];
 
-  return (
-    <aside className="sidebar">
-      <div className="sidebar-header">
-        <div className="sidebar-title">
-          <Icon name="home" size={24} />
-          <span>EPC Pro</span>
-        </div>
-        <div style={{ fontSize: '10px', color: '#888', marginTop: '8px' }}>
-          {dbStatus === 'connected' ? '🟢 Database Connected' : '🔴 Offline Mode'}
-        </div>
-      </div>
-
-      <nav className="nav-menu">
-        {navItems.map(item => (
-          <div
-            key={item.id}
-            className={`nav-item ${currentPage === item.id ? 'active' : ''}`}
-            onClick={() => setCurrentPage(item.id)}
-          >
-            <Icon name={item.icon} size={20} />
-            <span>{item.label}</span>
-          </div>
-        ))}
-      </nav>
-    </aside>
-  );
-}
-
-function Dashboard({
-  jobs,
-  contacts,
-  properties,
-  emails,
-  selectedEmail,
-  setSelectedEmail,
-  updateJobInDB
-}) {
-  const depositsOwed = jobs.reduce((sum, job) => {
-    return !job.deposit_paid ? sum + (toNumber(getSavedDepositFromJob(job)) || 0) : sum;
-  }, 0);
-
-  const depositsPaid = jobs.reduce((sum, job) => {
-    return job.deposit_paid ? sum + (toNumber(getSavedDepositFromJob(job)) || 0) : sum;
-  }, 0);
-
-  const activeJobsCount = jobs.filter(j => isActiveJob(j)).length;
-
-  const balanceDue = jobs.reduce((sum, job) => {
-    return sum + (toNumber(getSavedBalanceFromJob(job)) || 0);
-  }, 0);
-
-  const today = new Date().toISOString().split('T')[0];
-
-  const upcomingJobs = jobs
-    .filter(j => getJobBookingDate(j) >= today && isActiveJob(j))
-    .sort((a, b) => {
-      return String(getJobBookingDate(a)).localeCompare(String(getJobBookingDate(b))) ||
-        String(getJobBookingWindow(a)).localeCompare(String(getJobBookingWindow(b)));
-    });
-
-  const nextJob = upcomingJobs[0];
-  const todaysJobs = jobs.filter(j => getJobBookingDate(j) === today);
-
-  return (
-    <div>
-      <div className="page-header">
-        <h1 className="page-title">Dashboard</h1>
-        <p className="page-subtitle">Welcome to EPC Pro Operating Platform</p>
-      </div>
-
-      <div className="dashboard-grid">
-        <div className="metrics-grid">
-          <MetricCard className="deposits-owed" label="Deposits Owed" value={formatCurrency(depositsOwed)} />
-          <MetricCard className="deposits-paid" label="Deposits Paid" value={formatCurrency(depositsPaid)} />
-          <MetricCard className="active-jobs" label="Active Jobs" value={activeJobsCount} />
-          <MetricCard className="balance-due" label="Balance Due" value={formatCurrency(balanceDue)} />
-        </div>
-
-        <FieldStatusWidget
-          jobs={jobs}
-          contacts={contacts}
-          properties={properties}
-          updateJobInDB={updateJobInDB}
-        />
-      </div>
-
-      <div className="content-row">
-        <div className="section">
-          <div className="section-header">
-            <h2 className="section-title">
-              Today's Schedule - {new Date().toLocaleDateString('en-GB', {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </h2>
-          </div>
-
-          {todaysJobs.length === 0 ? (
-            <p style={{ color: 'var(--text-secondary)' }}>No jobs scheduled for today</p>
-          ) : (
-            todaysJobs.map(job => (
-              <JobListCard
-                key={job.id}
-                job={job}
-                contacts={contacts}
-                properties={properties}
-              />
-            ))
-          )}
-        </div>
-
-        <div className="whatsapp-box">
-          <div className="whatsapp-header">
-            <div className="whatsapp-icon">💬</div>
-            <div>
-              <div className="whatsapp-title">Quick WhatsApp</div>
-              <div className="whatsapp-subtitle">Send instant messages</div>
-            </div>
-          </div>
-
-          {nextJob ? (
-            <>
-              <div className="whatsapp-message">
-                <strong>Next Job: </strong>
-                {getDisplayContactName(nextJob, contacts)}
-                <br />
-                <strong>Address: </strong>
-                {getJobAddress(nextJob, properties)}
-                <br />
-                <strong>Reference: </strong>
-                {getJobReference(nextJob)}
-                <br />
-                <strong>Time: </strong>
-                {getJobBookingDate(nextJob)} ({getJobBookingWindow(nextJob) || 'TBC'})
-              </div>
-
-              <button className="whatsapp-button" title="Coming soon - WhatsApp sending not wired yet">
-                📱 Notify Client - Coming soon
-              </button>
-            </>
-          ) : (
-            <div className="whatsapp-message">No upcoming jobs scheduled</div>
-          )}
-        </div>
-      </div>
-
-      <EmailWidget emails={emails || []} contacts={contacts} setSelectedEmail={setSelectedEmail} />
-
-      {selectedEmail && (
-        <EmailViewerModal
-          email={selectedEmail}
-          contacts={contacts}
-          onClose={() => setSelectedEmail(null)}
-        />
-      )}
-    </div>
-  );
-}
-
-function MetricCard({ className, label, value }) {
-  return (
-    <div className={`metric-card ${className}`}>
-      <div className="metric-label">{label}</div>
-      <div className="metric-value">{value}</div>
-    </div>
-  );
-}
-
-function getDisplayContactName(job, contacts) {
-  const contact = contacts.find(c => String(c.id) === String(job?.contact_id));
-  return contact?.name || getFallbackContactName(job);
-}
-
-function getDisplayContactEmail(job, contacts) {
-  const contact = contacts.find(c => String(c.id) === String(job?.contact_id));
-  return contact?.email || getFallbackContactEmail(job);
-}
-
-function getDisplayContactPhone(job, contacts) {
-  const contact = contacts.find(c => String(c.id) === String(job?.contact_id));
-  return contact?.phone || getFallbackContactPhone(job);
-}
-
-function FieldStatusWidget({ jobs, contacts, properties, updateJobInDB }) {
-  const [currentStatus, setCurrentStatus] = useState(null);
-  const [saving, setSaving] = useState(false);
-
-  const today = new Date().toISOString().split('T')[0];
-
-  const nextJob = jobs
-    .filter(j => getJobBookingDate(j) === today && isActiveJob(j))
-    .sort((a, b) => {
-      if (getJobBookingWindow(a) !== getJobBookingWindow(b)) {
-        return getJobBookingWindow(a) === 'AM' ? -1 : 1;
-      }
-
-      return String(a.provisional_eta || '').localeCompare(String(b.provisional_eta || ''));
-    })[0];
-
-  const statusButtons = [
-    { id: 'on_my_way', label: 'On My Way', emoji: '🚗', color: '#50CDE8' },
-    { id: 'arrived', label: 'Arrived', emoji: '📍', color: '#25D366' },
-    { id: 'started', label: 'Started', emoji: '▶️', color: '#ffa500' },
-    { id: 'completed', label: 'Completed', emoji: '✅', color: '#25D366' },
-    { id: 'left_site', label: 'Left Site', emoji: '👋', color: '#264C6B' }
+  const commercialOptions = [
+    'Shop / Retail unit',
+    'Office',
+    'Restaurant / Café',
+    'Warehouse / Industrial unit',
+    'Workshop',
+    'Mixed-use commercial premises',
+    'Community / Public building',
+    'Medical / Dental / Clinic',
+    'School / Nursery / Education',
+    'Hotel / Guest accommodation',
+    'Storage unit',
+    'Other commercial premises'
   ];
 
-  async function updateStatus(status) {
-    if (!nextJob) return;
+  const options = type === 'Commercial' ? commercialOptions : domesticOptions;
+  select.innerHTML = '<option value="">— Select —</option>';
 
-    setSaving(true);
-    setCurrentStatus(status);
+  options.forEach(optionText => {
+    const option = document.createElement('option');
+    option.value = optionText;
+    option.textContent = optionText;
+    select.appendChild(option);
+  });
+}
 
-    await updateJobInDB(nextJob.id, {
-      field_status: status
-    });
+function selectType(type) {
+  state.type = type;
+  state.price = null;
+  state.reviewRequired = false;
+  state.window = null;
+  state.date = null;
 
-    setSaving(false);
+  document.getElementById('card-domestic').classList.toggle('selected', type === 'Domestic');
+  document.getElementById('card-commercial').classList.toggle('selected', type === 'Commercial');
+
+  document.getElementById('domestic-fields').style.display = type === 'Domestic' ? 'block' : 'none';
+  document.getElementById('commercial-fields').style.display = type === 'Commercial' ? 'block' : 'none';
+
+  updatePropertyTypeOptions(type);
+  refreshQuote();
+}
+
+function refreshQuote() {
+  let result = { price: null, status: 'missing', label: 'Complete details', reviewRequired: false };
+
+  if (state.type === 'Domestic') {
+    const value = document.getElementById('property_value')?.value;
+    const sqm = document.getElementById('domestic_sqm')?.value;
+
+    document.getElementById('domestic-size-field').style.display =
+      Number(value) > 4000000 ? 'block' : 'none';
+
+    result = calculateDomesticPrice(value, sqm);
   }
 
-  return (
-    <div
-      style={{
-        background: 'var(--card-bg)',
-        border: '1px solid var(--card-border)',
-        borderRadius: '12px',
-        padding: '20px',
-        minHeight: '100%'
-      }}
-    >
-      <div
-        style={{
-          fontSize: '13px',
-          fontWeight: '600',
-          color: 'var(--epc-yellow)',
-          textTransform: 'uppercase',
-          marginBottom: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          letterSpacing: '0.5px'
-        }}
-      >
-        🚦 Field Status
-      </div>
+  if (state.type === 'Commercial') {
+    result = calculateCommercialPrice(document.getElementById('commercial_sqm')?.value);
+  }
 
-      {nextJob ? (
-        <>
-          <div
-            style={{
-              background: 'var(--bg-darker)',
-              borderRadius: '8px',
-              padding: '12px',
-              marginBottom: '16px',
-              color: 'var(--text-primary)'
-            }}
-          >
-            <div style={{ fontWeight: '600', marginBottom: '4px', fontSize: '14px' }}>
-              {getJobReference(nextJob)}
-            </div>
-            <div style={{ fontSize: '14px' }}>{getDisplayContactName(nextJob, contacts)}</div>
-            <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-              {getJobAddress(nextJob, properties)}
-            </div>
-          </div>
+  state.price = result.price;
+  state.pricingStatus = result.status;
+  state.quoteLabel = result.label;
+  state.reviewRequired = result.reviewRequired || result.status === 'review';
 
-          <div className="field-grid">
-            {statusButtons.map(btn => (
-              <button
-                key={btn.id}
-                onClick={() => updateStatus(btn.id)}
-                disabled={saving}
-                style={{
-                  background: (currentStatus || nextJob.field_status) === btn.id
-                    ? btn.color
-                    : 'var(--bg-darker)',
-                  color: 'white',
-                  border: '1px solid var(--card-border)',
-                  borderRadius: '8px',
-                  padding: '10px',
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  cursor: saving ? 'wait' : 'pointer',
-                  transition: 'all 0.2s'
-                }}
-              >
-                {btn.emoji} {btn.label}
-              </button>
-            ))}
-          </div>
+  const qp = document.getElementById('quote-price');
+  const qn = document.getElementById('quote-note');
 
-          {(currentStatus || nextJob.field_status) && (
-            <div
-              style={{
-                marginTop: '12px',
-                padding: '8px 12px',
-                background: 'rgba(37,211,102,0.2)',
-                border: '1px solid var(--success)',
-                borderRadius: '6px',
-                fontSize: '13px',
-                color: 'var(--success)',
-                textAlign: 'center'
-              }}
-            >
-              ✅ Saved status: {String(currentStatus || nextJob.field_status).replaceAll('_', ' ')}
-            </div>
-          )}
-        </>
-      ) : (
-        <div
-          style={{
-            padding: '20px',
-            textAlign: 'center',
-            color: 'var(--text-secondary)',
-            fontSize: '14px'
-          }}
-        >
-          No jobs scheduled for today
-        </div>
-      )}
-    </div>
-  );
+  if (result.price) {
+    qp.textContent = '£' + Number(result.price).toFixed(2);
+    qn.textContent =
+      result.label +
+      (state.type === 'Domestic'
+        ? ' · 50% deposit requested before appointment confirmation.'
+        : ' · Commercial quote/review workflow.');
+  } else if (result.status === 'review') {
+    qp.textContent = 'Review required';
+    qn.textContent = result.label;
+  } else {
+    qp.textContent = '—';
+    qn.textContent = 'Complete the property details to calculate the quote.';
+  }
 }
 
-function LeadsPage({ leads, jobs, properties }) {
-  const [selectedLead, setSelectedLead] = useState(null);
-
-  const sourceStats = leads.reduce((acc, lead) => {
-    const source = lead.source || 'Unknown';
-    acc[source] = (acc[source] || 0) + 1;
-    return acc;
-  }, {});
-
-  return (
-    <div>
-      <div className="page-header">
-        <h1 className="page-title">📋 Leads</h1>
-        <p className="page-subtitle">Manage enquiries and convert to jobs</p>
-      </div>
-
-      <div className="section">
-        <div className="section-header">
-          <h2 className="section-title">Lead Source Summary</h2>
-        </div>
-
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          {Object.keys(sourceStats).length === 0 ? (
-            <span style={{ color: '#888' }}>No lead sources yet</span>
-          ) : (
-            Object.entries(sourceStats).map(([source, count]) => (
-              <span key={source} className="badge badge-dark">
-                {source}: {count}
-              </span>
-            ))
-          )}
-        </div>
-      </div>
-
-      <div className="section">
-        <div className="section-header">
-          <h2 className="section-title">All Leads</h2>
-          <ComingSoonButton>
-            <Icon name="plus" size={16} /> Add Lead
-          </ComingSoonButton>
-        </div>
-
-        {leads.length === 0 ? (
-          <p style={{ color: '#888', padding: '20px', textAlign: 'center' }}>
-            No leads yet. Your enquiries will appear here.
-          </p>
-        ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Address</th>
-                <th>Postcode</th>
-                <th>Source</th>
-                <th>EPC Type</th>
-                <th>Status</th>
-                <th>Quote</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leads.map(lead => (
-                <tr key={lead.id} onClick={() => setSelectedLead(lead)}>
-                  <td style={{ fontWeight: 600 }}>{String(lead.id).substring(0, 8)}</td>
-                  <td>{lead.property_address || '-'}</td>
-                  <td>{lead.postcode || '-'}</td>
-                  <td>{lead.source || '-'}</td>
-                  <td>{lead.epc_type || 'Domestic'}</td>
-                  <td><StatusBadge status={lead.status} /></td>
-                  <td>{getLeadDisplayValue(lead, jobs, properties)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-
-      {selectedLead && (
-        <LeadModal
-          lead={selectedLead}
-          jobs={jobs}
-          properties={properties}
-          onClose={() => setSelectedLead(null)}
-        />
-      )}
-    </div>
-  );
+function isClosedStatus(status) {
+  return CLOSED_STATUSES.includes(status);
 }
 
-function LeadModal({ lead, jobs, properties, onClose }) {
-  const relatedJob = findRelatedJobForLead(lead, jobs, properties);
-
-  const savedQuote = getSavedQuoteFromLead(lead, relatedJob);
-  const savedBand = getSavedPricingBandFromLead(lead, relatedJob);
-
-  const quoteText = formatCurrencyPlain(savedQuote);
-  const quoteStatus = quoteText ? 'Saved quote from booking form' : 'Review required';
-
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
-          <div>
-            <h2 className="modal-title">Lead Details</h2>
-            <p className="modal-subtitle">{lead.property_address || 'No address'}</p>
-          </div>
-          <button className="modal-close" onClick={onClose}>×</button>
-        </div>
-
-        <div className="modal-body">
-          <div className="info-grid">
-            <Info label="Property Address" value={lead.property_address} />
-            <Info label="Postcode" value={lead.postcode} />
-            <Info label="Source" value={lead.source} />
-            <Info label="Status" value={<StatusBadge status={lead.status} />} />
-            <Info label="EPC Type" value={lead.epc_type || 'Domestic'} />
-            <Info label="Linked Job Reference" value={relatedJob ? getJobReference(relatedJob) : 'N/A'} />
-          </div>
-
-          <div className="price-card">
-            <div className="form-label">Saved Quote</div>
-
-            {quoteText ? (
-              <div className="price-value">{quoteText}</div>
-            ) : (
-              <div className="price-review">Review required</div>
-            )}
-
-            <div style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '6px' }}>
-              {quoteStatus}
-              {savedBand ? ` • ${savedBand}` : ''}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+function getEmptyAvailability() {
+  return { AM: 0, PM: 0, total: 0 };
 }
 
-function CalendarPage({ jobs, contacts, properties }) {
-  const [selectedDate, setSelectedDate] = useState(null);
+function extractJobPostcode(job) {
+  const docs = parseDocuments(job);
+  return job.postcode || docs.postcode || docs.property_postcode || docs.propertyPostcode || '';
+}
 
-  const days = [];
+async function loadExistingAvailability() {
+  const statusBox = document.getElementById('calendar-status');
+  statusBox.className = 'calendar-status show';
+  statusBox.textContent = 'Checking live route availability from the dashboard...';
+
+  state.availabilityByDate = {};
+  state.jobsByDate = {};
+  state.availabilityLoaded = false;
+
+  if (!supabaseClient) {
+    statusBox.textContent = 'Live calendar could not connect. Showing availability without existing bookings.';
+    buildDateGrid();
+    return;
+  }
+
   const today = new Date();
+  const startDate = localISODate(today);
+  const endDateObj = new Date(today);
+  endDateObj.setDate(today.getDate() + 120);
+  const endDate = localISODate(endDateObj);
 
-  for (let i = 0; i < 30; i++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
+  try {
+    const { data, error } = await supabaseClient
+      .from('jobs')
+      .select('*')
+      .gte('booking_date', startDate)
+      .lte('booking_date', endDate);
 
-    const dateStr = date.toISOString().split('T')[0];
-    const dayJobs = jobs.filter(j => getJobBookingDate(j) === dateStr && isActiveJob(j));
+    if (error) throw error;
 
-    const amCount = dayJobs.filter(j => String(getJobBookingWindow(j) || '').toUpperCase() === 'AM').length;
-    const pmCount = dayJobs.filter(j => String(getJobBookingWindow(j) || '').toUpperCase() === 'PM').length;
-    const totalCount = amCount + pmCount;
+    (data || []).forEach(job => {
+      if (!job.booking_date) return;
+      if (isClosedStatus(job.status)) return;
 
-    days.push({
-      date: dateStr,
-      dayNumber: date.getDate(),
-      dayName: date.toLocaleDateString('en-GB', { weekday: 'short' }),
-      monthName: date.toLocaleDateString('en-GB', { month: 'short' }),
-      amBooked: amCount,
-      pmBooked: pmCount,
-      totalBooked: totalCount,
-      amSlots: Math.max(0, AM_CAPACITY - amCount),
-      pmSlots: Math.max(0, PM_CAPACITY - pmCount),
-      totalSlots: Math.max(0, DAILY_CAPACITY - totalCount),
-      amAvailable: amCount < AM_CAPACITY,
-      pmAvailable: pmCount < PM_CAPACITY,
-      dayAvailable: totalCount < DAILY_CAPACITY
+      const dateKey = job.booking_date;
+      const windowKey = String(job.booking_window || '').toUpperCase();
+
+      if (!state.availabilityByDate[dateKey]) {
+        state.availabilityByDate[dateKey] = getEmptyAvailability();
+      }
+
+      if (!state.jobsByDate[dateKey]) {
+        state.jobsByDate[dateKey] = [];
+      }
+
+      state.jobsByDate[dateKey].push(job);
+
+      if (windowKey === 'AM') {
+        state.availabilityByDate[dateKey].AM += 1;
+        state.availabilityByDate[dateKey].total += 1;
+      }
+
+      if (windowKey === 'PM') {
+        state.availabilityByDate[dateKey].PM += 1;
+        state.availabilityByDate[dateKey].total += 1;
+      }
     });
+
+    state.availabilityLoaded = true;
+    statusBox.textContent = 'Live route availability loaded from the dashboard.';
+    buildDateGrid();
+
+  } catch (err) {
+    console.error(err);
+    statusBox.textContent = 'Could not read existing jobs. Showing availability without existing bookings.';
+    buildDateGrid();
+  }
+}
+
+function getAvailabilityForDate(dateKey) {
+  const existing = state.availabilityByDate[dateKey] || getEmptyAvailability();
+
+  return {
+    AMBooked: existing.AM || 0,
+    PMBooked: existing.PM || 0,
+    totalBooked: existing.total || 0,
+    AMLeft: Math.max(0, AM_CAPACITY - (existing.AM || 0)),
+    PMLeft: Math.max(0, PM_CAPACITY - (existing.PM || 0)),
+    totalLeft: Math.max(0, DAILY_CAPACITY - (existing.total || 0))
+  };
+}
+
+function getDayRouteSummary(dateKey) {
+  const jobs = state.jobsByDate[dateKey] || [];
+  const counts = {};
+
+  jobs.forEach(job => {
+    const docs = parseDocuments(job);
+    let code = docs.route_group_code;
+
+    if (!code) {
+      const pc = extractJobPostcode(job);
+      code = getRouteGroupFromPostcode(pc).code;
+    }
+
+    if (!code || code === 'UNKNOWN') code = 'UNKNOWN';
+    counts[code] = (counts[code] || 0) + 1;
+  });
+
+  const routeCodes = Object.keys(counts).filter(code => code !== 'UNKNOWN');
+
+  if (routeCodes.length === 0) {
+    return {
+      code: jobs.length > 0 ? 'UNKNOWN' : 'OPEN',
+      label: jobs.length > 0 ? 'Unknown route' : 'Open day',
+      counts,
+      mixed: false
+    };
   }
 
-  return (
-    <div>
-      <div className="page-header">
-        <h1 className="page-title">📅 Calendar</h1>
-        <p className="page-subtitle">Booking availability - AM/PM windows only</p>
-      </div>
-
-      <div className="section">
-        <div className="section-header">
-          <h2 className="section-title">Booking Windows</h2>
-        </div>
-
-        <div className="notice">
-          Dashboard calendar matches the booking app: 5 AM jobs, 3 PM jobs, 8 jobs maximum per day.
-        </div>
-
-        <div className="calendar-key">
-          <div>
-            <span className="badge badge-yellow">AM</span>
-            <span style={{ marginLeft: '8px', color: '#e0e0e0' }}>
-              08:00 - 13:00 · Max {AM_CAPACITY} jobs
-            </span>
-          </div>
-          <div>
-            <span className="badge badge-orange">PM</span>
-            <span style={{ marginLeft: '8px', color: '#e0e0e0' }}>
-              13:00 - 17:00 · Max {PM_CAPACITY} jobs
-            </span>
-          </div>
-          <div>
-            <span className="badge badge-green">DAY</span>
-            <span style={{ marginLeft: '8px', color: '#e0e0e0' }}>
-              Max {DAILY_CAPACITY} jobs total
-            </span>
-          </div>
-        </div>
-
-        <div className="calendar-grid">
-          {days.map(day => (
-            <div
-              key={day.date}
-              onClick={() => setSelectedDate(day.date)}
-              className={`calendar-card ${day.dayAvailable ? 'available' : 'full'} ${selectedDate === day.date ? 'selected' : ''}`}
-            >
-              <div style={{
-                fontSize: '10px',
-                color: selectedDate === day.date ? '#0f1419' : '#888',
-                marginBottom: '4px'
-              }}>
-                {day.dayName}
-              </div>
-
-              <div style={{
-                fontSize: '20px',
-                fontWeight: '600',
-                color: selectedDate === day.date ? '#0f1419' : '#fff',
-                marginBottom: '4px'
-              }}>
-                {day.dayNumber}
-              </div>
-
-              <div style={{
-                fontSize: '10px',
-                color: selectedDate === day.date ? '#0f1419' : '#888',
-                marginBottom: '8px'
-              }}>
-                {day.monthName}
-              </div>
-
-              <div style={{ fontSize: '11px' }}>
-                <div style={{
-                  color: day.amAvailable ? '#4ade80' : '#ff6b6b',
-                  marginBottom: '2px'
-                }}>
-                  AM: {day.amSlots} left / {AM_CAPACITY}
-                </div>
-                <div style={{
-                  color: day.pmAvailable ? '#4ade80' : '#ff6b6b',
-                  marginBottom: '2px'
-                }}>
-                  PM: {day.pmSlots} left / {PM_CAPACITY}
-                </div>
-                <div style={{
-                  color: day.dayAvailable ? '#94a3b8' : '#ff6b6b'
-                }}>
-                  Day: {day.totalSlots} left / {DAILY_CAPACITY}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {selectedDate && (
-        <div className="section">
-          <div className="section-header">
-            <h2 className="section-title">Bookings for {selectedDate}</h2>
-          </div>
-
-          {jobs.filter(j => getJobBookingDate(j) === selectedDate).length > 0 ? (
-            jobs
-              .filter(j => getJobBookingDate(j) === selectedDate)
-              .sort((a, b) => {
-                const wa = String(getJobBookingWindow(a) || '');
-                const wb = String(getJobBookingWindow(b) || '');
-                if (wa !== wb) return wa === 'AM' ? -1 : 1;
-                return String(a.provisional_eta || '').localeCompare(String(b.provisional_eta || ''));
-              })
-              .map(job => (
-                <JobListCard
-                  key={job.id}
-                  job={job}
-                  contacts={contacts}
-                  properties={properties}
-                />
-              ))
-          ) : (
-            <p style={{ color: '#888' }}>No bookings for this date</p>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function JobsPage({ jobs, contacts, properties, updateJobInDB }) {
-  const [selectedTab, setSelectedTab] = useState('active');
-  const [selectedJob, setSelectedJob] = useState(null);
-
-  const allOpenJobs = jobs.filter(j => isActiveJob(j));
-  const activeJobs = jobs.filter(j => getJobEpcType(j) === 'Domestic' && isActiveJob(j));
-  const commercialJobs = jobs.filter(j => getJobEpcType(j) === 'Commercial' && isActiveJob(j));
-  const closedJobs = jobs.filter(j => isClosedJob(j));
-
-  let displayJobs = activeJobs;
-
-  if (selectedTab === 'allopen') displayJobs = allOpenJobs;
-  if (selectedTab === 'commercial') displayJobs = commercialJobs;
-  if (selectedTab === 'closed') displayJobs = closedJobs;
-
-  return (
-    <div>
-      <div className="page-header">
-        <h1 className="page-title">💼 Jobs</h1>
-        <p className="page-subtitle">
-          Operational workspace for all bookings. Total jobs loaded from Supabase: {jobs.length}
-        </p>
-      </div>
-
-      <div className="tabs">
-        <button
-          className={`tab ${selectedTab === 'active' ? 'active' : ''}`}
-          onClick={() => setSelectedTab('active')}
-        >
-          Active Domestic ({activeJobs.length})
-        </button>
-
-        <button
-          className={`tab ${selectedTab === 'allopen' ? 'active' : ''}`}
-          onClick={() => setSelectedTab('allopen')}
-        >
-          All Open ({allOpenJobs.length})
-        </button>
-
-        <button
-          className={`tab ${selectedTab === 'commercial' ? 'active' : ''}`}
-          onClick={() => setSelectedTab('commercial')}
-        >
-          Commercial ({commercialJobs.length})
-        </button>
-
-        <button
-          className={`tab ${selectedTab === 'closed' ? 'active' : ''}`}
-          onClick={() => setSelectedTab('closed')}
-        >
-          Closed/Completed ({closedJobs.length})
-        </button>
-      </div>
-
-      <div className="section">
-        <div className="section-header">
-          <h2 className="section-title">Jobs</h2>
-          <ComingSoonButton>
-            <Icon name="plus" size={16} /> New Job
-          </ComingSoonButton>
-        </div>
-
-        <div className="notice">
-          This version displays jobs directly from the jobs table first, then uses contact/property records only as extra detail. A job will no longer disappear because a linked contact or property lookup fails.
-        </div>
-
-        {selectedTab === 'commercial' && (
-          <div className="notice">
-            Commercial jobs follow review/custom quote before approval and job creation.
-          </div>
-        )}
-
-        {displayJobs.length === 0 ? (
-          <p style={{ color: '#888', padding: '20px', textAlign: 'center' }}>
-            No jobs in this tab.
-          </p>
-        ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Reference</th>
-                <th>Client</th>
-                <th>Property</th>
-                <th>Type</th>
-                <th>Date</th>
-                <th>Window</th>
-                <th>Quote</th>
-                <th>Deposit</th>
-                <th>Balance</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayJobs.map(job => {
-                const quote = getSavedQuoteFromJob(job);
-                const deposit = getSavedDepositFromJob(job);
-                const balance = getSavedBalanceFromJob(job);
-
-                return (
-                  <tr key={job.id} onClick={() => setSelectedJob(job)}>
-                    <td style={{ fontWeight: 600 }}>
-                      {getJobReference(job)}
-                      <div className="small-text">ID: {String(job.id).substring(0, 8)}</div>
-                    </td>
-                    <td>
-                      {getDisplayContactName(job, contacts)}
-                      <div className="small-text">{getDisplayContactPhone(job, contacts)}</div>
-                    </td>
-                    <td>
-                      {getJobAddress(job, properties)}
-                      <div className="small-text">{getJobPostcode(job, properties)}</div>
-                    </td>
-                    <td>{getJobEpcType(job)}</td>
-                    <td>{getJobBookingDate(job) || '-'}</td>
-                    <td>{getJobBookingWindow(job) || '-'}</td>
-                    <td>{formatCurrency(quote)}</td>
-                    <td>
-                      {job.deposit_paid ? (
-                        <span style={{ color: '#4ade80' }}>✓ {formatCurrency(deposit)}</span>
-                      ) : (
-                        <span style={{ color: '#fbbf24' }}>⚠ {formatCurrency(deposit)}</span>
-                      )}
-                    </td>
-                    <td>{formatCurrency(balance)}</td>
-                    <td><StatusBadge status={getJobStatus(job)} /></td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
-
-      {selectedJob && (
-        <JobModal
-          job={selectedJob}
-          contacts={contacts}
-          properties={properties}
-          onClose={() => setSelectedJob(null)}
-          updateJobInDB={updateJobInDB}
-        />
-      )}
-    </div>
-  );
-}
-
-function JobModal({ job, contacts, properties, onClose, updateJobInDB }) {
-  const [activeTab, setActiveTab] = useState('overview');
-
-  async function updateFieldStatus(newStatus) {
-    await updateJobInDB(job.id, { field_status: newStatus });
+  if (routeCodes.length === 1) {
+    const code = routeCodes[0];
+    return {
+      code,
+      label: ROUTE_GROUPS[code]?.label || 'Unknown route',
+      counts,
+      mixed: false
+    };
   }
 
-  const contact = contacts.find(c => String(c.id) === String(job.contact_id));
-  const property = properties.find(p => String(p.id) === String(job.property_id));
-  const quote = getSavedQuoteFromJob(job);
-  const deposit = getSavedDepositFromJob(job);
-  const balance = getSavedBalanceFromJob(job);
-  const pricingBand = getSavedPricingBandFromJob(job);
-  const sqm = getPropertySquareMeterage(property, job);
-
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
-          <div>
-            <h2 className="modal-title">{getJobReference(job)}</h2>
-            <p className="modal-subtitle">{getJobEpcType(job)} • {getJobStatus(job)}</p>
-          </div>
-          <button className="modal-close" onClick={onClose}>×</button>
-        </div>
-
-        <div style={{ padding: '0 24px' }}>
-          <div className="tabs">
-            <button
-              className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
-              onClick={() => setActiveTab('overview')}
-            >
-              Overview
-            </button>
-
-            <button
-              className={`tab ${activeTab === 'field' ? 'active' : ''}`}
-              onClick={() => setActiveTab('field')}
-            >
-              Field Status
-            </button>
-
-            <button
-              className={`tab ${activeTab === 'raw' ? 'active' : ''}`}
-              onClick={() => setActiveTab('raw')}
-            >
-              Record Check
-            </button>
-          </div>
-        </div>
-
-        <div className="modal-body">
-          {activeTab === 'overview' && (
-            <>
-              <h3 className="modal-section-title">Client Information</h3>
-
-              <div className="info-grid">
-                <Info label="Client Name" value={contact?.name || getFallbackContactName(job)} />
-                <Info label="Email" value={contact?.email || getFallbackContactEmail(job)} />
-                <Info label="Phone" value={contact?.phone || getFallbackContactPhone(job)} />
-                <Info label="Client Reference" value={contact?.client_reference || getJobReference(job)} />
-              </div>
-
-              <h3 className="modal-section-title" style={{ marginTop: '20px' }}>
-                Property Details
-              </h3>
-
-              <div className="info-grid">
-                <Info label="Address" value={getJobAddress(job, properties)} />
-                <Info label="Postcode" value={getJobPostcode(job, properties)} />
-                <Info label="City" value={property?.city || 'London'} />
-                <Info label="Square Meterage" value={sqm || 'N/A'} />
-                <Info label="Booking Date" value={getJobBookingDate(job) || 'N/A'} />
-                <Info label="Booking Window" value={getJobBookingWindow(job) || 'N/A'} />
-              </div>
-
-              <div className="price-card">
-                <div className="form-label">Saved Booking Quote</div>
-
-                {formatCurrencyPlain(quote) ? (
-                  <div className="price-value">{formatCurrency(quote)}</div>
-                ) : (
-                  <div className="price-review">Review required</div>
-                )}
-
-                <div style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '6px' }}>
-                  {pricingBand ? pricingBand : 'No pricing band saved'}
-                </div>
-
-                <div style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '10px' }}>
-                  Deposit: {formatCurrency(deposit)} • Balance: {formatCurrency(balance)}
-                </div>
-              </div>
-            </>
-          )}
-
-          {activeTab === 'field' && (
-            <div>
-              <h3 className="modal-section-title">Live Field Operations</h3>
-
-              <p style={{ color: '#888', marginBottom: '20px', fontSize: '14px' }}>
-                Update job progress in real-time during field operations.
-              </p>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {[
-                  ['on_my_way', '🚗 On My Way'],
-                  ['arrived', '📍 Arrived'],
-                  ['started', '⏱️ Started'],
-                  ['completed', '✅ Completed'],
-                  ['left_site', '➡️ Left Site']
-                ].map(([id, label]) => (
-                  <button
-                    key={id}
-                    className={`btn ${job.field_status === id ? 'btn-primary' : 'btn-secondary'}`}
-                    onClick={() => updateFieldStatus(id)}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-
-              {job.field_status && (
-                <div style={{ marginTop: '16px', padding: '12px', background: '#2a3a52', borderRadius: '8px' }}>
-                  <strong style={{ color: '#ffa500' }}>Current Status:</strong>
-                  <span style={{ color: '#e0e0e0', marginLeft: '8px', textTransform: 'capitalize' }}>
-                    {String(job.field_status).replaceAll('_', ' ')}
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
-
-          {activeTab === 'raw' && (
-            <div>
-              <h3 className="modal-section-title">Record Check</h3>
-              <div className="price-card">
-                <div className="small-text">
-                  This confirms the dashboard is reading the jobs table row even if contact/property links are incomplete.
-                </div>
-                <pre style={{
-                  whiteSpace: 'pre-wrap',
-                  color: '#e0e0e0',
-                  fontSize: '12px',
-                  marginTop: '12px',
-                  lineHeight: 1.5
-                }}>{JSON.stringify({
-                  id: job.id,
-                  reference: getJobReference(job),
-                  contact_id: job.contact_id,
-                  property_id: job.property_id,
-                  epc_type: getJobEpcType(job),
-                  status: getJobStatus(job),
-                  booking_date: getJobBookingDate(job),
-                  booking_window: getJobBookingWindow(job),
-                  documents: safeDocuments(job)
-                }, null, 2)}</pre>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+  return {
+    code: 'MIXED',
+    label: 'Mixed route day',
+    counts,
+    mixed: true
+  };
 }
 
-function JobListCard({ job, contacts, properties }) {
-  return (
-    <div className="job-item">
-      <div className="job-address">
-        {getJobAddress(job, properties)}, {getJobPostcode(job, properties)}
-      </div>
+function scoreDate(dateKey, availability) {
+  const dayRoute = getDayRouteSummary(dateKey);
+  const customerRoute = state.routeGroupCode || 'UNKNOWN';
+  let score = 0;
+  let compatible = false;
+  let routeFit = getRouteFitLabel(dayRoute.code, customerRoute);
 
-      <div className="job-time">
-        <Icon name="clock" size={14} />
-        {getJobBookingWindow(job) || 'Window TBC'} ({job.provisional_eta || 'TBC'}) — {getDisplayContactName(job, contacts)}
-      </div>
+  if (availability.totalLeft <= 0) {
+    return { score: -1000, compatible: false, routeFit: 'Full day', dayRoute };
+  }
 
-      <div className="job-status">
-        {getJobStatus(job)} • {getJobReference(job)} • Quote {formatCurrency(getSavedQuoteFromJob(job))}
-      </div>
-    </div>
-  );
+  if (dayRoute.code === 'OPEN') {
+    score += 40;
+    compatible = true;
+  } else if (dayRoute.code === customerRoute) {
+    score += 70;
+    compatible = true;
+  } else if (dayRoute.code === 'CENTRAL' || customerRoute === 'CENTRAL') {
+    score += 30;
+    compatible = true;
+  } else if (dayRoute.code === 'MIXED') {
+    if (dayRoute.counts[customerRoute]) {
+      score += 20;
+      compatible = true;
+      routeFit = 'Mixed day with matching route';
+    } else {
+      score -= 40;
+      compatible = false;
+    }
+  } else {
+    score -= 80;
+    compatible = false;
+  }
+
+  if (availability.AMLeft > 0) score += 25;
+  if (availability.PMLeft > 0) score += 10;
+
+  return { score, compatible, routeFit, dayRoute };
 }
 
-function ContactsPage({ contacts }) {
-  return (
-    <div>
-      <div className="page-header">
-        <h1 className="page-title">👥 Contacts</h1>
-        <p className="page-subtitle">Client contact management</p>
-      </div>
-
-      <div className="section">
-        <div className="section-header">
-          <h2 className="section-title">All Contacts</h2>
-          <ComingSoonButton>+ Add Contact</ComingSoonButton>
-        </div>
-
-        {contacts.length === 0 ? (
-          <p style={{ color: '#888', padding: '20px', textAlign: 'center' }}>
-            No contacts yet.
-          </p>
-        ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Reference</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Type</th>
-                <th>Added</th>
-              </tr>
-            </thead>
-            <tbody>
-              {contacts.map(contact => (
-                <tr key={contact.id}>
-                  <td>
-                    <span className="badge badge-yellow">
-                      {contact.client_reference || 'N/A'}
-                    </span>
-                  </td>
-                  <td style={{ fontWeight: '600' }}>{contact.name || 'Unnamed'}</td>
-                  <td>{contact.email || '-'}</td>
-                  <td>{contact.phone || '-'}</td>
-                  <td>
-                    <span className={`badge ${contact.type === 'Client' ? 'badge-blue' : 'badge-green'}`}>
-                      {contact.type || 'Client'}
-                    </span>
-                  </td>
-                  <td style={{ color: '#888', fontSize: '13px' }}>
-                    {contact.created_at ? new Date(contact.created_at).toLocaleDateString('en-GB') : '-'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-    </div>
-  );
+function isWorkingDay(date) {
+  const dow = date.getDay();
+  return dow >= 1 && dow <= 5;
 }
 
-function MessagesPage({ messages, contacts, selectedContact, setSelectedContact }) {
-  const messagesByContact = {};
+function isBankHoliday(dateKey) {
+  return Boolean(ENGLAND_WALES_BANK_HOLIDAYS[dateKey]);
+}
 
-  (messages || []).forEach(msg => {
-    if (msg.contact_id) {
-      if (!messagesByContact[msg.contact_id]) messagesByContact[msg.contact_id] = [];
-      messagesByContact[msg.contact_id].push(msg);
+function buildDateGrid() {
+  const grid = document.getElementById('days-grid');
+  grid.innerHTML = '';
+
+  state.date = null;
+  state.dateStr = '';
+  state.window = null;
+  state.selectedDayAvailability = null;
+  state.selectedDayRouteFit = '';
+  refreshWindowCards();
+
+  const today = new Date();
+  let d = new Date(today);
+  d.setDate(d.getDate() + 1);
+
+  const candidates = [];
+  let safety = 0;
+
+  while (safety < 140) {
+    const dateKey = localISODate(d);
+    const bankHolidayName = ENGLAND_WALES_BANK_HOLIDAYS[dateKey];
+    const workingDay = isWorkingDay(d);
+    const bankHoliday = isBankHoliday(dateKey);
+
+    if (workingDay || bankHoliday) {
+      const availability = getAvailabilityForDate(dateKey);
+      const isFull = availability.AMLeft === 0 && availability.PMLeft === 0;
+      const scoring = scoreDate(dateKey, availability);
+
+      candidates.push({
+        date: new Date(d),
+        dateKey,
+        bankHolidayName,
+        workingDay,
+        bankHoliday,
+        isFull,
+        availability,
+        ...scoring
+      });
+    }
+
+    d.setDate(d.getDate() + 1);
+    safety++;
+  }
+
+  const usable = candidates.filter(c => c.workingDay && !c.bankHoliday && !c.isFull);
+  const preferred = usable.filter(c => c.compatible);
+  const fallback = usable.filter(c => !c.compatible);
+
+  let displayCandidates = [];
+
+  if (preferred.length >= 8) {
+    displayCandidates = preferred;
+  } else {
+    displayCandidates = preferred.concat(fallback.slice(0, 8));
+  }
+
+  displayCandidates = displayCandidates
+    .sort((a, b) => b.score - a.score || a.date - b.date)
+    .slice(0, 18);
+
+  const blockedBankHolidays = candidates
+    .filter(c => c.bankHoliday)
+    .slice(0, 3);
+
+  displayCandidates = displayCandidates.concat(blockedBankHolidays);
+
+  displayCandidates.forEach(candidate => {
+    const slot = document.createElement('div');
+    const isBlocked = candidate.bankHoliday || candidate.isFull;
+
+    slot.className = 'day-slot' + (isBlocked ? ' blocked' : '');
+    slot.setAttribute('data-date', candidate.dateKey);
+
+    const display = formatDisplayDate(candidate.date);
+    const displayParts = display.split(' ');
+
+    let chipClass = 'route-chip';
+    if (candidate.compatible) chipClass += ' good';
+    if (!candidate.compatible) chipClass += ' warn';
+
+    const routeLabel = candidate.bankHoliday
+      ? candidate.bankHolidayName
+      : candidate.routeFit;
+
+    slot.innerHTML = `
+      <div class="day-name">${displayParts[0] || ''}</div>
+      <div class="day-date">${displayParts[1] || candidate.date.getDate()}</div>
+      <div class="day-month">${displayParts[2] || ''}</div>
+      <div class="${chipClass}">${routeLabel}</div>
+      ${
+        candidate.bankHoliday
+          ? `<div class="day-full">${candidate.bankHolidayName}</div>`
+          : `<div class="day-capacity">AM ${candidate.availability.AMLeft}/${AM_CAPACITY}<br>PM ${candidate.availability.PMLeft}/${PM_CAPACITY}</div>`
+      }
+      ${
+        candidate.isFull && !candidate.bankHoliday
+          ? `<div class="day-full">Full</div>`
+          : ''
+      }
+    `;
+
+    if (!isBlocked) {
+      const dateLabel = candidate.date.toLocaleDateString('en-GB', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+
+      slot.onclick = () => selectDate(slot, candidate.dateKey, dateLabel, candidate.availability, candidate.routeFit);
+    }
+
+    grid.appendChild(slot);
+  });
+
+  const routeMessage = document.getElementById('route-message');
+  routeMessage.textContent = state.routeGroupLabel
+    ? `${state.routeGroupLabel} route. Best matching days are shown first.`
+    : 'Best matching route days are shown first.';
+}
+
+function selectDate(el, iso, str, availability, routeFit) {
+  document.querySelectorAll('.day-slot').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+
+  state.date = iso;
+  state.dateStr = str;
+  state.window = null;
+  state.selectedDayAvailability = availability;
+  state.selectedDayRouteFit = routeFit;
+
+  document.getElementById('err-date').classList.remove('show');
+  document.getElementById('err-window').classList.remove('show');
+
+  refreshWindowCards();
+
+  if (availability && availability.AMLeft > 0) {
+    selectWindow('AM', true);
+  } else if (availability && availability.PMLeft > 0) {
+    selectWindow('PM', true);
+  }
+}
+
+function refreshWindowCards() {
+  const amCard = document.getElementById('window-AM');
+  const pmCard = document.getElementById('window-PM');
+  const amText = document.getElementById('window-am-text');
+  const pmText = document.getElementById('window-pm-text');
+  const amRec = document.getElementById('am-recommended');
+
+  amCard.classList.remove('selected', 'disabled');
+  pmCard.classList.remove('selected', 'disabled');
+  amRec.style.display = 'none';
+
+  const availability = state.selectedDayAvailability;
+
+  if (!availability) {
+    amText.textContent = '08:00 to 13:00 · select date first';
+    pmText.textContent = '13:00 to 17:00 · select date first';
+    return;
+  }
+
+  amText.textContent = `08:00 to 13:00 · ${availability.AMLeft} of ${AM_CAPACITY} left`;
+  pmText.textContent = `13:00 to 17:00 · ${availability.PMLeft} of ${PM_CAPACITY} left`;
+
+  if (availability.AMLeft > 0) {
+    amRec.style.display = 'inline-block';
+  }
+
+  if (availability.AMLeft <= 0) amCard.classList.add('disabled');
+  if (availability.PMLeft <= 0) pmCard.classList.add('disabled');
+}
+
+function selectWindow(win, automatic = false) {
+  if (!state.selectedDayAvailability) {
+    document.getElementById('err-date').classList.add('show');
+    return;
+  }
+
+  if (win === 'AM' && state.selectedDayAvailability.AMLeft <= 0) {
+    if (!automatic) document.getElementById('err-window').classList.add('show');
+    return;
+  }
+
+  if (win === 'PM' && state.selectedDayAvailability.PMLeft <= 0) {
+    if (!automatic) document.getElementById('err-window').classList.add('show');
+    return;
+  }
+
+  document.querySelectorAll('.window-card').forEach(s => s.classList.remove('selected'));
+  document.getElementById('window-' + win).classList.add('selected');
+
+  state.window = win;
+  document.getElementById('err-window').classList.remove('show');
+}
+
+function goToStep(n) {
+  const active = document.querySelector('.form-step.active');
+  const cur = active && active.id.startsWith('step-')
+    ? parseInt(active.id.replace('step-', ''))
+    : 1;
+
+  if (n > cur && !validateStep(cur)) return;
+
+  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+
+  document.querySelectorAll('.step-tab').forEach((t, i) => {
+    t.classList.remove('active', 'done');
+    if (i + 1 === n) t.classList.add('active');
+    if (i + 1 < n) t.classList.add('done');
+  });
+
+  if (n === 3) {
+    loadExistingAvailability();
+  }
+
+  if (n === 5) populateConfirm();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateStep(step) {
+  if (step === 1) {
+    if (!state.type) {
+      alert('Please select Domestic or Commercial EPC.');
+      return false;
+    }
+  }
+
+  if (step === 2) {
+    const addr = document.getElementById('address').value.trim();
+    const pc = document.getElementById('postcode').value.trim();
+
+    if (!addr) return showErr('err-address', 'address');
+    if (!pc) return showErr('err-postcode', 'postcode');
+
+    const route = getRouteGroupFromPostcode(pc);
+    state.routeGroupCode = route.code;
+    state.routeGroupLabel = route.label;
+
+    refreshQuote();
+
+    if (state.type === 'Domestic' && !document.getElementById('property_value').value) {
+      return showErr('err-property-value', 'property_value');
+    }
+
+    if (
+      state.type === 'Domestic' &&
+      Number(document.getElementById('property_value').value) > 4000000 &&
+      !document.getElementById('domestic_sqm').value
+    ) {
+      return showErr('err-domestic-sqm', 'domestic_sqm');
+    }
+
+    if (state.type === 'Commercial' && !document.getElementById('commercial_sqm').value) {
+      return showErr('err-commercial-sqm', 'commercial_sqm');
+    }
+
+    state.address = addr;
+    state.postcode = pc.toUpperCase();
+  }
+
+  if (step === 3) {
+    if (!state.date) {
+      document.getElementById('err-date').classList.add('show');
+      return false;
+    }
+
+    if (!state.window) {
+      document.getElementById('err-window').classList.add('show');
+      return false;
+    }
+  }
+
+  if (step === 4) {
+    if (!document.getElementById('fname').value.trim()) return showErr('err-fname', 'fname');
+    if (!document.getElementById('lname').value.trim()) return showErr('err-lname', 'lname');
+
+    const em = document.getElementById('email').value.trim();
+    if (!em || !em.includes('@')) return showErr('err-email', 'email');
+
+    if (!document.getElementById('phone').value.trim()) return showErr('err-phone', 'phone');
+  }
+
+  return true;
+}
+
+function showErr(errId, fieldId) {
+  document.getElementById(errId).classList.add('show');
+  document.getElementById(fieldId).classList.add('error');
+  document.getElementById(fieldId).focus();
+
+  setTimeout(() => {
+    document.getElementById(errId).classList.remove('show');
+    document.getElementById(fieldId).classList.remove('error');
+  }, 3000);
+
+  return false;
+}
+
+function populateConfirm() {
+  const name = (document.getElementById('fname').value + ' ' + document.getElementById('lname').value).trim();
+
+  document.getElementById('cf-address').textContent = state.address;
+  document.getElementById('cf-postcode').textContent = state.postcode;
+  document.getElementById('cf-route').textContent = state.routeGroupLabel || 'Manual review route';
+  document.getElementById('cf-service').textContent = state.type + ' EPC';
+
+  document.getElementById('cf-quote').textContent =
+    state.price
+      ? '£' + state.price.toFixed(2) + ' · ' + state.quoteLabel
+      : state.quoteLabel;
+
+  document.getElementById('cf-date').textContent = state.dateStr;
+
+  document.getElementById('cf-window').textContent =
+    state.window === 'AM'
+      ? `AM · 08:00 to 13:00`
+      : `PM · 13:00 to 17:00`;
+
+  document.getElementById('cf-route-fit').textContent = state.selectedDayRouteFit || 'Route checked';
+
+  const availability = state.selectedDayAvailability;
+
+  if (availability) {
+    document.getElementById('cf-availability').textContent =
+      state.window === 'AM'
+        ? `${availability.AMLeft} of ${AM_CAPACITY} AM spaces were available when selected`
+        : `${availability.PMLeft} of ${PM_CAPACITY} PM spaces were available when selected`;
+  } else {
+    document.getElementById('cf-availability').textContent = 'Availability checked';
+  }
+
+  document.getElementById('cf-name').textContent = name;
+  document.getElementById('cf-email').textContent = document.getElementById('email').value;
+  document.getElementById('cf-phone').textContent = document.getElementById('phone').value;
+
+  document.getElementById('confirm-subtitle').textContent =
+    state.type === 'Commercial'
+      ? 'This commercial enquiry will be sent for review/quote.'
+      : 'This domestic booking request will be sent to the EPC Pro dashboard.';
+}
+
+function setStatus(type, msg) {
+  const box = document.getElementById('submit-status');
+  box.className = 'status-box show ' + type;
+  box.textContent = msg;
+}
+
+function normaliseSource(v) {
+  return v || 'Website';
+}
+
+async function recheckSelectedSlotBeforeSubmit() {
+  if (!supabaseClient || !state.date || !state.window) return true;
+
+  const { data, error } = await supabaseClient
+    .from('jobs')
+    .select('*')
+    .eq('booking_date', state.date);
+
+  if (error) throw error;
+
+  let amBooked = 0;
+  let pmBooked = 0;
+  let routeConflict = false;
+  let matchingRouteFound = false;
+
+  (data || []).forEach(job => {
+    if (isClosedStatus(job.status)) return;
+
+    const windowKey = String(job.booking_window || '').toUpperCase();
+    if (windowKey === 'AM') amBooked += 1;
+    if (windowKey === 'PM') pmBooked += 1;
+
+    const docs = parseDocuments(job);
+    const existingRoute = docs.route_group_code || getRouteGroupFromPostcode(extractJobPostcode(job)).code;
+
+    if (existingRoute && existingRoute !== 'UNKNOWN') {
+      if (existingRoute === state.routeGroupCode || existingRoute === 'CENTRAL' || state.routeGroupCode === 'CENTRAL') {
+        matchingRouteFound = true;
+      } else {
+        routeConflict = true;
+      }
     }
   });
 
-  if (selectedContact) {
-    const contact = contacts.find(c => String(c.id) === String(selectedContact));
-    const contactMessages = messagesByContact[selectedContact] || [];
+  if (state.window === 'AM' && amBooked >= AM_CAPACITY) return false;
+  if (state.window === 'PM' && pmBooked >= PM_CAPACITY) return false;
 
-    return (
-      <div>
-        <div className="page-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <button
-              className="btn btn-secondary btn-sm"
-              onClick={() => setSelectedContact(null)}
-            >
-              ← Back
-            </button>
-
-            <div>
-              <h1 className="page-title" style={{ marginBottom: '4px' }}>
-                💬 {contact?.name || 'Unknown'}
-              </h1>
-              <p className="page-subtitle">
-                {contact?.email || 'No email'} • {contact?.phone || 'No phone'}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="section">
-          <div className="section-header">
-            <h2 className="section-title">Message History</h2>
-            <ComingSoonButton>✉️ New Message</ComingSoonButton>
-          </div>
-
-          {contactMessages.length === 0 ? (
-            <p style={{ color: '#888', padding: '20px', textAlign: 'center' }}>
-              No messages yet
-            </p>
-          ) : (
-            contactMessages.map(msg => (
-              <div key={msg.id} className="job-item">
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <strong>{msg.type === 'whatsapp' ? '💬' : '📧'} {msg.subject || 'Message'}</strong>
-                  <span style={{ color: '#888', fontSize: '13px' }}>
-                    {getTimeAgo(msg.received_at || msg.sent_at)}
-                  </span>
-                </div>
-
-                <div style={{ color: '#e0e0e0', lineHeight: 1.5 }}>
-                  {msg.body}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    );
+  if (routeConflict && !matchingRouteFound) {
+    return 'ROUTE_WARNING';
   }
 
-  return (
-    <div>
-      <div className="page-header">
-        <h1 className="page-title">💬 Messages</h1>
-        <p className="page-subtitle">All conversations with clients</p>
-      </div>
-
-      <div className="section">
-        <div className="section-header">
-          <h2 className="section-title">Conversations</h2>
-        </div>
-
-        {contacts.length === 0 ? (
-          <p style={{ color: '#888', padding: '20px', textAlign: 'center' }}>
-            No contacts yet
-          </p>
-        ) : (
-          contacts.map(contact => {
-            const contactMsgs = messagesByContact[contact.id] || [];
-            const lastMsg = contactMsgs[0];
-            const unreadCount = contactMsgs.filter(m => !m.is_read).length;
-
-            return (
-              <div
-                key={contact.id}
-                onClick={() => setSelectedContact(contact.id)}
-                className="job-item"
-                style={{
-                  cursor: 'pointer',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}
-              >
-                <div>
-                  <div style={{ fontWeight: '600', color: '#fff', marginBottom: '4px' }}>
-                    {contact.name}
-                  </div>
-
-                  {lastMsg && (
-                    <div style={{ color: '#888', fontSize: '14px' }}>
-                      {lastMsg.subject || String(lastMsg.body || '').substring(0, 50)}
-                    </div>
-                  )}
-                </div>
-
-                <div style={{ textAlign: 'right' }}>
-                  {unreadCount > 0 && (
-                    <span className="badge badge-orange">{unreadCount} new</span>
-                  )}
-
-                  <div style={{ color: '#888', fontSize: '12px' }}>
-                    {contactMsgs.length} messages
-                  </div>
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-    </div>
-  );
+  return true;
 }
 
-function EmailWidget({ emails, contacts, setSelectedEmail }) {
-  return (
-    <div className="section">
-      <div className="section-header">
-        <h2 className="section-title">
-          <Icon name="mail" size={20} /> Recent Emails
-        </h2>
-        <ComingSoonButton>✉️ Compose</ComingSoonButton>
-      </div>
+async function submitBooking() {
+  if (!document.getElementById('terms').checked) {
+    alert('Please accept the confirmation box before submitting.');
+    return;
+  }
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        {(!emails || emails.length === 0) ? (
-          <p style={{ color: '#888', padding: '20px', textAlign: 'center' }}>
-            No emails yet. Connect Gmail API to start receiving emails.
-          </p>
-        ) : (
-          emails.map(email => {
-            const contact = contacts.find(c => c.email === email.from_email);
+  if (!supabaseClient) {
+    setStatus('error', 'Supabase is not loaded, so the booking cannot be sent to the dashboard.');
+    return;
+  }
 
-            return (
-              <div
-                key={email.id}
-                onClick={() => setSelectedEmail(email)}
-                className="job-item"
-                style={{
-                  cursor: 'pointer',
-                  borderLeft: email.is_read
-                    ? '3px solid #2a3a52'
-                    : '3px solid #ffa500'
-                }}
-              >
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'start',
-                  marginBottom: '6px'
-                }}>
-                  <div style={{
-                    fontWeight: email.is_read ? '400' : '700',
-                    color: '#fff',
-                    fontSize: '14px'
-                  }}>
-                    {contact?.name || email.from_email}
-                  </div>
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Checking slot...';
 
-                  <div style={{ color: '#888', fontSize: '12px' }}>
-                    {getTimeAgo(email.received_at)}
-                  </div>
-                </div>
+  try {
+    const slotCheck = await recheckSelectedSlotBeforeSubmit();
 
-                <div style={{
-                  fontWeight: email.is_read ? '400' : '600',
-                  color: '#e0e0e0',
-                  fontSize: '13px',
-                  marginBottom: '4px'
-                }}>
-                  {email.subject}
-                </div>
+    if (slotCheck === false) {
+      setStatus('error', 'That booking window has just become full. Please go back and choose another slot.');
+      btn.disabled = false;
+      btn.textContent = 'Submit to EPC Pro';
+      return;
+    }
 
-                <div style={{
-                  color: '#888',
-                  fontSize: '12px',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }}>
-                  {String(email.body || '').substring(0, 80)}...
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-    </div>
-  );
-}
+    btn.textContent = 'Sending...';
 
-function EmailViewerModal({ email, contacts, onClose }) {
-  const contact = contacts.find(c => c.email === email.from_email);
+    const publicReference = makeReference();
 
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '900px' }}>
-        <div className="modal-header">
-          <div>
-            <h2 className="modal-title">{email.subject || 'Email'}</h2>
-          </div>
-          <button className="modal-close" onClick={onClose}>×</button>
-        </div>
+    const contactId = generateDatabaseId();
+    const propertyId = generateDatabaseId();
+    const leadId = generateDatabaseId();
+    const jobId = generateDatabaseId();
 
-        <div className="modal-body">
-          <div style={{
-            marginBottom: '24px',
-            paddingBottom: '16px',
-            borderBottom: '1px solid #2a3a52'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <div>
-                <div style={{ fontWeight: '600', color: '#fff', marginBottom: '4px' }}>
-                  {contact?.name || email.from_email}
-                </div>
-                <div style={{ color: '#888', fontSize: '13px' }}>
-                  From: {email.from_email}
-                </div>
-                <div style={{ color: '#888', fontSize: '13px' }}>
-                  To: {email.to_email}
-                </div>
-              </div>
+    const fullName = (document.getElementById('fname').value + ' ' + document.getElementById('lname').value).trim();
+    const source = normaliseSource(document.getElementById('source').value);
+    const propertyType = document.getElementById('property_type').value;
+    const notes = document.getElementById('notes').value;
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
 
-              <div style={{ textAlign: 'right', color: '#888', fontSize: '13px' }}>
-                {email.received_at ? new Date(email.received_at).toLocaleString('en-GB') : '-'}
-              </div>
-            </div>
-          </div>
+    const now = new Date().toISOString();
 
-          <div style={{ marginBottom: '24px', lineHeight: 1.6, color: '#e0e0e0' }}>
-            {email.body}
-          </div>
+    const contactPayload = {
+      id: contactId,
+      client_reference: publicReference,
+      name: fullName,
+      email: email,
+      phone: phone,
+      type: document.getElementById('client_type').value,
+      created_at: now
+    };
 
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <ComingSoonButton>↩️ Reply</ComingSoonButton>
-            <ComingSoonButton>➡️ Forward</ComingSoonButton>
-            <ComingSoonButton>🗑️ Delete</ComingSoonButton>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+    const { error: contactErr } = await supabaseClient.from('contacts').insert(contactPayload);
+    if (contactErr) throw contactErr;
 
-function initApp() {
-  const root = document.getElementById('root');
+    const propertyPayload = {
+      id: propertyId,
+      contact_id: contactId,
+      address: state.address,
+      postcode: state.postcode,
+      city: 'London',
+      created_at: now
+    };
 
-  if (root && typeof ReactDOM !== 'undefined') {
-    ReactDOM.render(<EPCProApp />, root);
-  } else if (root) {
-    root.innerHTML = '<div class="loading">Error: React failed to load. Please refresh.</div>';
+    const { error: propertyErr } = await supabaseClient.from('properties').insert(propertyPayload);
+    if (propertyErr) throw propertyErr;
+
+    const routeWarning = slotCheck === 'ROUTE_WARNING';
+
+    const leadStatus =
+      state.type === 'Commercial' || state.reviewRequired || routeWarning
+        ? 'Review required'
+        : 'Awaiting booking';
+
+    const leadPayload = {
+      id: leadId,
+      contact_id: contactId,
+      property_address: state.address,
+      postcode: state.postcode,
+      source: source,
+      status: leadStatus,
+      estimated_value: state.price || 0,
+      epc_type: state.type,
+      created_at: now
+    };
+
+    const { error: leadErr } = await supabaseClient.from('leads').insert(leadPayload);
+    if (leadErr) throw leadErr;
+
+    const deposit =
+      state.type === 'Domestic' && state.price
+        ? Math.round((state.price * 0.5) * 100) / 100
+        : 0;
+
+    const balance =
+      state.price
+        ? Math.round((state.price - deposit) * 100) / 100
+        : 0;
+
+    const jobStatus =
+      state.type === 'Commercial' || state.reviewRequired || routeWarning
+        ? 'Review required'
+        : 'Awaiting booking';
+
+    const jobPayload = {
+      id: jobId,
+      contact_id: contactId,
+      property_id: propertyId,
+      reference: publicReference,
+      booking_date: state.date,
+      booking_window: state.window,
+      provisional_eta: null,
+      deposit_amount: deposit,
+      deposit_paid: false,
+      invoice_issued: false,
+      invoice_amount: state.price || 0,
+      balance_due: balance,
+      epc_type: state.type,
+      status: jobStatus,
+      source: source,
+      documents: {
+        public_reference: publicReference,
+        contact_id: contactId,
+        property_id: propertyId,
+        lead_id: leadId,
+        job_id: jobId,
+        customer_name: fullName,
+        customer_email: email,
+        customer_phone: phone,
+        property_address: state.address,
+        postcode: state.postcode,
+        postcode_area: getPostcodeParts(state.postcode).area,
+        route_group_code: state.routeGroupCode,
+        route_group_label: state.routeGroupLabel,
+        selected_route_fit: state.selectedDayRouteFit,
+        route_warning: routeWarning,
+        property_type: propertyType,
+        pricing_band: state.quoteLabel,
+        service_type: state.type,
+        quote_amount: state.price || 0,
+        deposit_amount: deposit,
+        balance_due: balance,
+        appointment_date: state.date,
+        appointment_window: state.window,
+        appointment_capacity_rule: {
+          am_capacity: AM_CAPACITY,
+          pm_capacity: PM_CAPACITY,
+          daily_capacity: DAILY_CAPACITY
+        },
+        source: source,
+        notes: notes,
+        created_at: now
+      },
+      field_status: null,
+      created_at: now
+    };
+
+    const { error: jobErr } = await supabaseClient.from('jobs').insert(jobPayload);
+    if (jobErr) throw jobErr;
+
+    document.getElementById('booking-ref-num').textContent = publicReference;
+
+    document.getElementById('success-title').textContent =
+      state.type === 'Commercial' || state.reviewRequired || routeWarning
+        ? 'Enquiry sent for review'
+        : 'Booking request received';
+
+    document.getElementById('success-text').textContent =
+      state.type === 'Commercial' || state.reviewRequired || routeWarning
+        ? 'Your enquiry has been sent to EPC Pro for review. Please quote your reference if you email, WhatsApp or send documents.'
+        : 'Your domestic booking request has been sent to EPC Pro. Please quote your reference if you email, WhatsApp or send documents.';
+
+    document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-success').classList.add('active');
+    document.getElementById('progress-wrap').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  } catch (err) {
+    console.error(err);
+    setStatus('error', 'Could not send to the dashboard: ' + (err.message || err));
+    btn.disabled = false;
+    btn.textContent = 'Submit to EPC Pro';
   }
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
-} else {
-  initApp();
-}
+document.querySelectorAll('.field input, .field select, .field textarea').forEach(el => {
+  el.addEventListener('input', () => {
+    el.classList.remove('error');
+  });
+});
 </script>
 </body>
 </html>
