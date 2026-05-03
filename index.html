@@ -8,11 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
   --ink: #111827;
@@ -53,12 +49,7 @@ header {
   justify-content: space-between;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-}
+.logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
 
 .logo-mark {
   width: 38px;
@@ -70,31 +61,13 @@ header {
   justify-content: center;
 }
 
-.logo-mark svg {
-  width: 22px;
-  height: 22px;
-}
+.logo-mark svg { width: 22px; height: 22px; }
 
-.logo-text {
-  color: white;
-  font-size: 17px;
-  font-weight: 700;
-}
+.logo-text { color: white; font-size: 17px; font-weight: 700; }
+.logo-text span { color: #f5a623; }
 
-.logo-text span {
-  color: #f5a623;
-}
-
-.header-contact {
-  color: rgba(255,255,255,0.65);
-  font-size: 13px;
-}
-
-.header-contact a {
-  color: #f5a623;
-  text-decoration: none;
-  font-weight: 600;
-}
+.header-contact { color: rgba(255,255,255,0.65); font-size: 13px; }
+.header-contact a { color: #f5a623; text-decoration: none; font-weight: 600; }
 
 .hero {
   background: var(--navy);
@@ -124,14 +97,12 @@ header {
   position: relative;
 }
 
-.hero h1 em {
-  color: #f5a623;
-}
+.hero h1 em { color: #f5a623; }
 
 .hero p {
   color: rgba(255,255,255,0.72);
   font-size: 15px;
-  max-width: 580px;
+  max-width: 610px;
   margin: 0 auto;
   line-height: 1.6;
   position: relative;
@@ -165,11 +136,7 @@ header {
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
-.progress-steps {
-  display: flex;
-  max-width: 760px;
-  margin: 0 auto;
-}
+.progress-steps { display: flex; max-width: 760px; margin: 0 auto; }
 
 .step-tab {
   flex: 1;
@@ -183,14 +150,8 @@ header {
   border-bottom: 2px solid transparent;
 }
 
-.step-tab.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-}
-
-.step-tab.done {
-  color: var(--ink3);
-}
+.step-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.step-tab.done { color: var(--ink3); }
 
 .step-num {
   width: 22px;
@@ -211,10 +172,7 @@ header {
   color: white;
 }
 
-main {
-  flex: 1;
-  padding: 32px 16px 60px;
-}
+main { flex: 1; padding: 32px 16px 60px; }
 
 .form-card {
   background: white;
@@ -225,13 +183,8 @@ main {
   overflow: hidden;
 }
 
-.form-step {
-  display: none;
-}
-
-.form-step.active {
-  display: block;
-}
+.form-step { display: none; }
+.form-step.active { display: block; }
 
 .step-header {
   padding: 28px 32px 20px;
@@ -245,21 +198,11 @@ main {
   margin-bottom: 5px;
 }
 
-.step-header p {
-  color: var(--ink3);
-  font-size: 14px;
-  line-height: 1.5;
-}
+.step-header p { color: var(--ink3); font-size: 14px; line-height: 1.5; }
 
-.step-body {
-  padding: 28px 32px;
-}
+.step-body { padding: 28px 32px; }
 
-.type-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
+.type-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
 .type-card {
   border: 2px solid var(--border);
@@ -271,15 +214,8 @@ main {
   position: relative;
 }
 
-.type-card:hover {
-  border-color: #fdd9a8;
-  background: #fff4e6;
-}
-
-.type-card.selected {
-  border-color: var(--accent);
-  background: #fff4e6;
-}
+.type-card:hover { border-color: #fdd9a8; background: #fff4e6; }
+.type-card.selected { border-color: var(--accent); background: #fff4e6; }
 
 .type-card.selected::after {
   content: '✓';
@@ -298,27 +234,11 @@ main {
   font-weight: 700;
 }
 
-.type-icon {
-  font-size: 34px;
-  margin-bottom: 10px;
-  display: block;
-}
+.type-icon { font-size: 34px; margin-bottom: 10px; display: block; }
+.type-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.type-desc { font-size: 12px; color: var(--ink3); line-height: 1.45; }
 
-.type-name {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.type-desc {
-  font-size: 12px;
-  color: var(--ink3);
-  line-height: 1.45;
-}
-
-.field {
-  margin-bottom: 20px;
-}
+.field { margin-bottom: 20px; }
 
 .field label {
   display: block;
@@ -328,9 +248,7 @@ main {
   margin-bottom: 7px;
 }
 
-.req {
-  color: var(--accent);
-}
+.req { color: var(--accent); }
 
 .field input,
 .field select,
@@ -346,10 +264,7 @@ main {
   outline: none;
 }
 
-.field textarea {
-  min-height: 84px;
-  resize: vertical;
-}
+.field textarea { min-height: 84px; resize: vertical; }
 
 .field input:focus,
 .field select:focus,
@@ -359,15 +274,9 @@ main {
 }
 
 .field input.error,
-.field select.error {
-  border-color: var(--error);
-}
+.field select.error { border-color: var(--error); }
 
-.hint {
-  font-size: 12px;
-  color: var(--ink3);
-  margin-top: 5px;
-}
+.hint { font-size: 12px; color: var(--ink3); margin-top: 5px; line-height: 1.45; }
 
 .error-msg {
   font-size: 12px;
@@ -376,15 +285,9 @@ main {
   display: none;
 }
 
-.error-msg.show {
-  display: block;
-}
+.error-msg.show { display: block; }
 
-.field-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
 .price-panel {
   background: #fff4e6;
@@ -403,18 +306,8 @@ main {
   margin-bottom: 12px;
 }
 
-.price-big {
-  font-size: 32px;
-  font-weight: 800;
-  color: var(--accent);
-  margin-bottom: 5px;
-}
-
-.price-note {
-  font-size: 13px;
-  color: var(--ink3);
-  line-height: 1.45;
-}
+.price-big { font-size: 32px; font-weight: 800; color: var(--accent); margin-bottom: 5px; }
+.price-note { font-size: 13px; color: var(--ink3); line-height: 1.45; }
 
 .date-info {
   background: var(--warning-bg);
@@ -438,15 +331,9 @@ main {
   display: none;
 }
 
-.calendar-status.show {
-  display: block;
-}
+.calendar-status.show { display: block; }
 
-.days-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
+.days-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 
 .day-slot {
   border: 1.5px solid var(--border);
@@ -456,17 +343,11 @@ main {
   cursor: pointer;
   transition: 0.15s;
   position: relative;
+  min-height: 128px;
 }
 
-.day-slot:hover:not(.blocked) {
-  border-color: #fdd9a8;
-  background: #fff4e6;
-}
-
-.day-slot.selected {
-  border-color: var(--accent);
-  background: #fff4e6;
-}
+.day-slot:hover:not(.blocked) { border-color: #fdd9a8; background: #fff4e6; }
+.day-slot.selected { border-color: var(--accent); background: #fff4e6; }
 
 .day-slot.blocked {
   opacity: 0.5;
@@ -474,45 +355,28 @@ main {
   background: #f8fafc;
 }
 
-.day-name {
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  color: var(--ink3);
-}
+.day-name { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--ink3); }
+.day-date { font-size: 19px; font-weight: 800; color: var(--ink); margin: 3px 0; }
+.day-month { font-size: 11px; color: var(--ink3); }
 
-.day-date {
-  font-size: 19px;
-  font-weight: 800;
-  color: var(--ink);
-  margin: 3px 0;
-}
-
-.day-month {
-  font-size: 11px;
-  color: var(--ink3);
-}
-
-.day-capacity {
-  margin-top: 8px;
-  font-size: 11px;
-  color: var(--ink3);
-  line-height: 1.4;
-}
-
-.day-full {
+.route-chip {
+  display: inline-block;
   margin-top: 6px;
-  font-size: 11px;
-  color: var(--error);
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: var(--ink3);
+  font-size: 10px;
   font-weight: 700;
 }
 
-.window-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 18px;
-}
+.route-chip.good { background: var(--success-bg); color: var(--success); }
+.route-chip.warn { background: var(--warning-bg); color: var(--warning); }
+
+.day-capacity { margin-top: 8px; font-size: 11px; color: var(--ink3); line-height: 1.4; }
+.day-full { margin-top: 6px; font-size: 11px; color: var(--error); font-weight: 700; }
+
+.window-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
 
 .window-card {
   border: 1.5px solid var(--border);
@@ -534,17 +398,18 @@ main {
   background: #f8fafc;
 }
 
-.window-card strong {
-  display: block;
-  color: var(--ink);
-  font-size: 15px;
-}
+.window-card strong { display: block; color: var(--ink); font-size: 15px; }
+.window-card span { display: block; color: var(--ink3); font-size: 12px; margin-top: 4px; }
 
-.window-card span {
-  display: block;
-  color: var(--ink3);
-  font-size: 12px;
-  margin-top: 4px;
+.recommended-label {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--success-bg);
+  color: var(--success);
+  font-size: 10px;
+  font-weight: 800;
 }
 
 .confirm-block {
@@ -563,28 +428,11 @@ main {
   margin-bottom: 12px;
 }
 
-.confirm-item {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
+.confirm-item { display: flex; gap: 10px; margin-bottom: 10px; font-size: 14px; }
+.confirm-item:last-child { margin-bottom: 0; }
 
-.confirm-item:last-child {
-  margin-bottom: 0;
-}
-
-.ci-label {
-  color: var(--ink3);
-  min-width: 120px;
-  flex-shrink: 0;
-}
-
-.ci-value {
-  font-weight: 600;
-  color: var(--ink);
-  line-height: 1.4;
-}
+.ci-label { color: var(--ink3); min-width: 120px; flex-shrink: 0; }
+.ci-value { font-weight: 600; color: var(--ink); line-height: 1.4; }
 
 .terms-check {
   display: flex;
@@ -594,18 +442,8 @@ main {
   cursor: pointer;
 }
 
-.terms-check input {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--accent);
-  margin-top: 2px;
-}
-
-.terms-check span {
-  font-size: 13px;
-  color: var(--ink3);
-  line-height: 1.5;
-}
+.terms-check input { width: 18px; height: 18px; accent-color: var(--accent); margin-top: 2px; }
+.terms-check span { font-size: 13px; color: var(--ink3); line-height: 1.5; }
 
 .status-box {
   display: none;
@@ -616,21 +454,9 @@ main {
   margin-bottom: 16px;
 }
 
-.status-box.show {
-  display: block;
-}
-
-.status-box.error {
-  background: var(--error-bg);
-  border: 1px solid #f3bbb4;
-  color: var(--error);
-}
-
-.status-box.success {
-  background: var(--success-bg);
-  border: 1px solid #a4ddcc;
-  color: var(--success);
-}
+.status-box.show { display: block; }
+.status-box.error { background: var(--error-bg); border: 1px solid #f3bbb4; color: var(--error); }
+.status-box.success { background: var(--success-bg); border: 1px solid #a4ddcc; color: var(--success); }
 
 .btn-row {
   display: flex;
@@ -654,36 +480,15 @@ main {
   gap: 8px;
 }
 
-.btn-primary {
-  background: var(--accent);
-  color: white;
-  flex: 1;
-  justify-content: center;
-}
+.btn-primary { background: var(--accent); color: white; flex: 1; justify-content: center; }
+.btn-primary:hover { background: var(--accent-dark); }
 
-.btn-primary:hover {
-  background: var(--accent-dark);
-}
+.btn-back { background: transparent; color: var(--ink3); border: 1.5px solid var(--border); }
+.btn-back:hover { background: var(--surface); }
 
-.btn-back {
-  background: transparent;
-  color: var(--ink3);
-  border: 1.5px solid var(--border);
-}
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
-.btn-back:hover {
-  background: var(--surface);
-}
-
-.btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.success-screen {
-  padding: 48px 32px;
-  text-align: center;
-}
+.success-screen { padding: 48px 32px; text-align: center; }
 
 .success-icon {
   width: 72px;
@@ -747,46 +552,17 @@ footer {
   margin-top: auto;
 }
 
-footer a {
-  color: #f5a623;
-  text-decoration: none;
-}
+footer a { color: #f5a623; text-decoration: none; }
 
 @media(max-width:560px) {
-  header {
-    padding: 14px 16px;
-  }
-
-  .header-contact {
-    display: none;
-  }
-
-  .hero {
-    padding: 28px 16px 40px;
-  }
-
-  .step-body,
-  .step-header {
-    padding: 20px 16px;
-  }
-
-  .btn-row {
-    padding: 16px;
-  }
-
-  .type-cards,
-  .field-row,
-  .window-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .days-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .step-label {
-    display: none;
-  }
+  header { padding: 14px 16px; }
+  .header-contact { display: none; }
+  .hero { padding: 28px 16px 40px; }
+  .step-body, .step-header { padding: 20px 16px; }
+  .btn-row { padding: 16px; }
+  .type-cards, .field-row, .window-grid { grid-template-columns: 1fr; }
+  .days-grid { grid-template-columns: repeat(2, 1fr); }
+  .step-label { display: none; }
 }
 </style>
 </head>
@@ -807,10 +583,10 @@ footer a {
 
 <div class="hero">
   <h1>Book your EPC<br><em>assessment online</em></h1>
-  <p>Fast, professional energy performance certificates for London properties. Domestic bookings and commercial quote reviews are sent straight into the EPC Pro dashboard.</p>
+  <p>Fast, professional energy performance certificates for London properties. Available appointment windows are based on your postcode area and current route availability.</p>
   <div class="trust-badges">
     <div class="trust-badge">Fully accredited DEA</div>
-    <div class="trust-badge">London coverage</div>
+    <div class="trust-badge">London routing logic</div>
     <div class="trust-badge">AM/PM booking windows</div>
   </div>
 </div>
@@ -855,7 +631,7 @@ footer a {
   <div class="form-step" id="step-2">
     <div class="step-header">
       <h2>Property details</h2>
-      <p>We use this to calculate your quote and check the correct booking route.</p>
+      <p>We use this to calculate your quote and match the booking to a sensible route.</p>
     </div>
     <div class="step-body">
       <div class="field">
@@ -869,7 +645,7 @@ footer a {
           <label>Postcode <span class="req">*</span></label>
           <input type="text" id="postcode" placeholder="e.g. N5 1PF" oninput="checkPostcode()" style="text-transform:uppercase">
           <div class="error-msg" id="err-postcode">Please enter a postcode</div>
-          <div class="hint" id="postcode-hint">Enter a London postcode.</div>
+          <div class="hint" id="postcode-hint">Enter a London postcode. The calendar will prioritise route-compatible days.</div>
         </div>
 
         <div class="field">
@@ -932,21 +708,21 @@ footer a {
   <div class="form-step" id="step-3">
     <div class="step-header">
       <h2 id="date-heading">Choose a booking window</h2>
-      <p id="date-subtitle">Choose a date and AM or PM window. Exact ETA is allocated later.</p>
+      <p id="date-subtitle">Available dates are prioritised by postcode route and current dashboard bookings.</p>
     </div>
     <div class="step-body">
       <div class="date-info">
         <strong>Capacity:</strong> 5 AM jobs and 3 PM jobs per day. &nbsp;|&nbsp;
-        <strong>Booking type:</strong> <span id="booking-type-note">AM/PM booking window</span>
+        <strong>Routing:</strong> <span id="route-message">Route will be calculated from your postcode.</span>
       </div>
 
-      <div class="calendar-status" id="calendar-status">Checking live availability...</div>
+      <div class="calendar-status" id="calendar-status">Checking live route availability...</div>
 
       <div class="days-grid" id="days-grid"></div>
 
       <div class="window-grid" id="window-grid">
         <div class="window-card" id="window-AM" onclick="selectWindow('AM')">
-          <strong>AM</strong>
+          <strong>AM <span class="recommended-label" id="am-recommended" style="display:none">Preferred</span></strong>
           <span id="window-am-text">08:00 to 13:00 · 5 spaces</span>
         </div>
         <div class="window-card" id="window-PM" onclick="selectWindow('PM')">
@@ -1038,6 +814,7 @@ footer a {
         <div class="confirm-block-label">Property</div>
         <div class="confirm-item"><span class="ci-label">Address</span><span class="ci-value" id="cf-address">—</span></div>
         <div class="confirm-item"><span class="ci-label">Postcode</span><span class="ci-value" id="cf-postcode">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Route group</span><span class="ci-value" id="cf-route">—</span></div>
         <div class="confirm-item"><span class="ci-label">Service</span><span class="ci-value" id="cf-service">—</span></div>
         <div class="confirm-item"><span class="ci-label">Quote</span><span class="ci-value" id="cf-quote">—</span></div>
       </div>
@@ -1046,6 +823,7 @@ footer a {
         <div class="confirm-block-label">Requested appointment</div>
         <div class="confirm-item"><span class="ci-label">Date</span><span class="ci-value" id="cf-date">—</span></div>
         <div class="confirm-item"><span class="ci-label">Window</span><span class="ci-value" id="cf-window">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Route fit</span><span class="ci-value" id="cf-route-fit">—</span></div>
         <div class="confirm-item"><span class="ci-label">Availability</span><span class="ci-value" id="cf-availability">—</span></div>
       </div>
 
@@ -1127,8 +905,34 @@ const ENGLAND_WALES_BANK_HOLIDAYS = {
   '2027-05-31': 'Spring bank holiday',
   '2027-08-30': 'Summer bank holiday',
   '2027-12-27': 'Christmas Day substitute',
-  '2027-12-28': 'Boxing Day substitute'
+  '2027-12-28': 'Boxing Day substitute',
+  '2028-01-03': "New Year's Day substitute"
 };
+
+const ROUTE_GROUPS = {
+  NORTH_NW: {
+    label: 'North / North West',
+    prefixes: ['N', 'NW', 'EN', 'HA']
+  },
+  EAST: {
+    label: 'East',
+    prefixes: ['E', 'IG', 'RM']
+  },
+  WEST_SW: {
+    label: 'West / South West',
+    prefixes: ['W', 'SW', 'TW', 'KT', 'UB']
+  },
+  SOUTH_EAST: {
+    label: 'South East',
+    prefixes: ['SE', 'BR', 'CR', 'DA']
+  },
+  CENTRAL: {
+    label: 'Central / Flexible',
+    prefixes: ['EC', 'WC']
+  }
+};
+
+const CENTRAL_DISTRICTS = ['W1', 'N1', 'E1', 'SE1', 'SW1'];
 
 const state = {
   type: null,
@@ -1137,13 +941,17 @@ const state = {
   quoteLabel: '',
   address: '',
   postcode: '',
+  routeGroupCode: '',
+  routeGroupLabel: '',
   date: null,
   dateStr: '',
   window: null,
   selectedDayAvailability: null,
+  selectedDayRouteFit: '',
   reviewRequired: false,
   availabilityByDate: {},
-  availabilityLoaded: false
+  availabilityLoaded: false,
+  jobsByDate: {}
 };
 
 function generateDatabaseId() {
@@ -1177,6 +985,65 @@ function formatDisplayDate(date) {
   });
 }
 
+function parseDocuments(row) {
+  if (!row || !row.documents) return {};
+  if (typeof row.documents === 'object') return row.documents;
+  try {
+    return JSON.parse(row.documents);
+  } catch {
+    return {};
+  }
+}
+
+function getPostcodeParts(pc) {
+  const clean = String(pc || '').replace(/\s/g, '').toUpperCase();
+  const areaMatch = clean.match(/^[A-Z]+/);
+  const districtMatch = clean.match(/^[A-Z]+(\d+)/);
+
+  return {
+    clean,
+    area: areaMatch ? areaMatch[0] : '',
+    district: districtMatch ? districtMatch[1] : '',
+    areaDistrict: areaMatch && districtMatch ? areaMatch[0] + districtMatch[1] : areaMatch ? areaMatch[0] : ''
+  };
+}
+
+function getRouteGroupFromPostcode(pc) {
+  const parts = getPostcodeParts(pc);
+
+  if (!parts.area) {
+    return { code: 'UNKNOWN', label: 'Unknown route' };
+  }
+
+  if (CENTRAL_DISTRICTS.includes(parts.areaDistrict)) {
+    return { code: 'CENTRAL', label: ROUTE_GROUPS.CENTRAL.label };
+  }
+
+  for (const [code, group] of Object.entries(ROUTE_GROUPS)) {
+    if (group.prefixes.includes(parts.area)) {
+      return { code, label: group.label };
+    }
+  }
+
+  return { code: 'UNKNOWN', label: 'Manual review route' };
+}
+
+function routeGroupsCompatible(dayRouteCode, customerRouteCode) {
+  if (!dayRouteCode || dayRouteCode === 'OPEN') return true;
+  if (!customerRouteCode || customerRouteCode === 'UNKNOWN') return true;
+  if (dayRouteCode === customerRouteCode) return true;
+  if (dayRouteCode === 'CENTRAL' || customerRouteCode === 'CENTRAL') return true;
+  return false;
+}
+
+function getRouteFitLabel(dayRouteCode, customerRouteCode) {
+  if (!dayRouteCode || dayRouteCode === 'OPEN') return 'Open day';
+  if (dayRouteCode === 'MIXED') return 'Mixed route day';
+  if (dayRouteCode === customerRouteCode) return 'Same route';
+  if (dayRouteCode === 'CENTRAL' || customerRouteCode === 'CENTRAL') return 'Central / flexible fit';
+  return 'Different route';
+}
+
 function toNumber(value) {
   if (value === null || value === undefined || value === '') return 0;
   const number = Number(String(value).replace(/[^0-9.]/g, ''));
@@ -1187,54 +1054,21 @@ function calculateDomesticPrice(propertyValue, sqm) {
   const value = Number(propertyValue || 0);
   const area = Number(sqm || 0);
 
-  if (value <= 0) {
-    return { price: null, status: 'missing', label: 'Select property value', reviewRequired: false };
-  }
-
-  if (value <= 999000) {
-    return { price: 60, status: 'priced', label: 'Up to £999,000', reviewRequired: false };
-  }
-
-  if (value <= 1999999) {
-    return { price: 80, status: 'priced', label: '£1,000,000 to £1,999,999', reviewRequired: false };
-  }
-
-  if (value <= 2999999) {
-    return { price: 110, status: 'priced', label: '£2,000,000 to £2,999,999', reviewRequired: false };
-  }
-
-  if (value <= 3999999) {
-    return { price: 150, status: 'priced', label: '£3,000,000 to £3,999,999', reviewRequired: false };
-  }
+  if (value <= 0) return { price: null, status: 'missing', label: 'Select property value', reviewRequired: false };
+  if (value <= 999000) return { price: 60, status: 'priced', label: 'Up to £999,000', reviewRequired: false };
+  if (value <= 1999999) return { price: 80, status: 'priced', label: '£1,000,000 to £1,999,999', reviewRequired: false };
+  if (value <= 2999999) return { price: 110, status: 'priced', label: '£2,000,000 to £2,999,999', reviewRequired: false };
+  if (value <= 3999999) return { price: 150, status: 'priced', label: '£3,000,000 to £3,999,999', reviewRequired: false };
 
   if (!area) {
-    return {
-      price: null,
-      status: 'review',
-      label: 'Over £4,000,000 — square meterage required',
-      reviewRequired: true
-    };
+    return { price: null, status: 'review', label: 'Over £4,000,000 — square meterage required', reviewRequired: true };
   }
 
-  if (area <= 150) {
-    return { price: 180, status: 'priced', label: 'Over £4,000,000, 100–150 m²', reviewRequired: false };
-  }
-
-  if (area <= 300) {
-    return { price: 240, status: 'priced', label: 'Over £4,000,000, 151–300 m²', reviewRequired: false };
-  }
-
-  if (area <= 500) {
-    return { price: 400, status: 'priced', label: 'Over £4,000,000, 301–500 m²', reviewRequired: false };
-  }
-
-  if (area <= 750) {
-    return { price: 450, status: 'priced', label: 'Over £4,000,000, 501–750 m²', reviewRequired: false };
-  }
-
-  if (area <= 10000) {
-    return { price: 450, status: 'priced', label: 'Over £4,000,000, 751–10,000 m²', reviewRequired: false };
-  }
+  if (area <= 150) return { price: 180, status: 'priced', label: 'Over £4,000,000, 100–150 m²', reviewRequired: false };
+  if (area <= 300) return { price: 240, status: 'priced', label: 'Over £4,000,000, 151–300 m²', reviewRequired: false };
+  if (area <= 500) return { price: 400, status: 'priced', label: 'Over £4,000,000, 301–500 m²', reviewRequired: false };
+  if (area <= 750) return { price: 450, status: 'priced', label: 'Over £4,000,000, 501–750 m²', reviewRequired: false };
+  if (area <= 10000) return { price: 450, status: 'priced', label: 'Over £4,000,000, 751–10,000 m²', reviewRequired: false };
 
   return { price: null, status: 'review', label: 'Large residential property — review required', reviewRequired: true };
 }
@@ -1242,57 +1076,19 @@ function calculateDomesticPrice(propertyValue, sqm) {
 function calculateCommercialPrice(sqm) {
   const area = Number(sqm || 0);
 
-  if (!area) {
-    return { price: null, status: 'missing', label: 'Enter commercial floor area', reviewRequired: true };
-  }
-
-  if (area <= 100) {
-    return { price: 180, status: 'priced', label: '0–100 m²', reviewRequired: false };
-  }
-
-  if (area <= 200) {
-    return { price: 215, status: 'priced', label: '101–200 m²', reviewRequired: false };
-  }
-
-  if (area <= 300) {
-    return { price: 255, status: 'priced', label: '201–300 m²', reviewRequired: false };
-  }
-
-  if (area <= 400) {
-    return { price: 305, status: 'priced', label: '301–400 m²', reviewRequired: false };
-  }
-
-  if (area <= 500) {
-    return { price: 355, status: 'priced', label: '401–500 m²', reviewRequired: false };
-  }
-
-  if (area <= 600) {
-    return { price: 410, status: 'priced', label: '501–600 m²', reviewRequired: false };
-  }
-
-  if (area <= 700) {
-    return { price: 455, status: 'priced', label: '601–700 m²', reviewRequired: false };
-  }
-
-  if (area <= 800) {
-    return { price: 495, status: 'priced', label: '701–800 m²', reviewRequired: false };
-  }
-
-  if (area <= 900) {
-    return { price: 535, status: 'priced', label: '801–900 m²', reviewRequired: false };
-  }
-
-  if (area <= 10000) {
-    return { price: null, status: 'review', label: '901 m² to 10,000 m² — custom quote / review required', reviewRequired: true };
-  }
+  if (!area) return { price: null, status: 'missing', label: 'Enter commercial floor area', reviewRequired: true };
+  if (area <= 100) return { price: 180, status: 'priced', label: '0–100 m²', reviewRequired: false };
+  if (area <= 200) return { price: 215, status: 'priced', label: '101–200 m²', reviewRequired: false };
+  if (area <= 300) return { price: 255, status: 'priced', label: '201–300 m²', reviewRequired: false };
+  if (area <= 400) return { price: 305, status: 'priced', label: '301–400 m²', reviewRequired: false };
+  if (area <= 500) return { price: 355, status: 'priced', label: '401–500 m²', reviewRequired: false };
+  if (area <= 600) return { price: 410, status: 'priced', label: '501–600 m²', reviewRequired: false };
+  if (area <= 700) return { price: 455, status: 'priced', label: '601–700 m²', reviewRequired: false };
+  if (area <= 800) return { price: 495, status: 'priced', label: '701–800 m²', reviewRequired: false };
+  if (area <= 900) return { price: 535, status: 'priced', label: '801–900 m²', reviewRequired: false };
+  if (area <= 10000) return { price: null, status: 'review', label: '901 m² to 10,000 m² — custom quote / review required', reviewRequired: true };
 
   return { price: null, status: 'review', label: 'Large commercial property — custom quote required', reviewRequired: true };
-}
-
-function getPostcodeArea(pc) {
-  const clean = (pc || '').replace(/\s/g, '').toUpperCase();
-  const match = clean.match(/^[A-Z]+/);
-  return match ? match[0] : '';
 }
 
 function checkPostcode() {
@@ -1300,19 +1096,21 @@ function checkPostcode() {
   const hint = document.getElementById('postcode-hint');
 
   if (!val) {
-    hint.textContent = 'Enter a London postcode.';
+    hint.textContent = 'Enter a London postcode. The calendar will prioritise route-compatible days.';
     hint.style.color = 'var(--ink3)';
     return;
   }
 
-  const area = getPostcodeArea(val);
+  const route = getRouteGroupFromPostcode(val);
+  state.routeGroupCode = route.code;
+  state.routeGroupLabel = route.label;
 
-  if (area) {
-    hint.textContent = '✓ Postcode recorded. Calendar now shows full weekday availability, not postcode-restricted days.';
-    hint.style.color = 'var(--success)';
-  } else {
-    hint.textContent = 'Enter a valid postcode.';
+  if (route.code === 'UNKNOWN') {
+    hint.textContent = 'Postcode recorded. Route may need manual review.';
     hint.style.color = 'var(--warning)';
+  } else {
+    hint.textContent = `✓ Route group: ${route.label}. The calendar will prioritise suitable route days.`;
+    hint.style.color = 'var(--success)';
   }
 }
 
@@ -1345,7 +1143,6 @@ function updatePropertyTypeOptions(type) {
   ];
 
   const options = type === 'Commercial' ? commercialOptions : domesticOptions;
-
   select.innerHTML = '<option value="">— Select —</option>';
 
   options.forEach(optionText => {
@@ -1419,19 +1216,21 @@ function isClosedStatus(status) {
 }
 
 function getEmptyAvailability() {
-  return {
-    AM: 0,
-    PM: 0,
-    total: 0
-  };
+  return { AM: 0, PM: 0, total: 0 };
+}
+
+function extractJobPostcode(job) {
+  const docs = parseDocuments(job);
+  return job.postcode || docs.postcode || docs.property_postcode || docs.propertyPostcode || '';
 }
 
 async function loadExistingAvailability() {
   const statusBox = document.getElementById('calendar-status');
   statusBox.className = 'calendar-status show';
-  statusBox.textContent = 'Checking live availability from the dashboard...';
+  statusBox.textContent = 'Checking live route availability from the dashboard...';
 
   state.availabilityByDate = {};
+  state.jobsByDate = {};
   state.availabilityLoaded = false;
 
   if (!supabaseClient) {
@@ -1443,13 +1242,13 @@ async function loadExistingAvailability() {
   const today = new Date();
   const startDate = localISODate(today);
   const endDateObj = new Date(today);
-  endDateObj.setDate(today.getDate() + 90);
+  endDateObj.setDate(today.getDate() + 120);
   const endDate = localISODate(endDateObj);
 
   try {
     const { data, error } = await supabaseClient
       .from('jobs')
-      .select('booking_date, booking_window, status')
+      .select('*')
       .gte('booking_date', startDate)
       .lte('booking_date', endDate);
 
@@ -1466,6 +1265,12 @@ async function loadExistingAvailability() {
         state.availabilityByDate[dateKey] = getEmptyAvailability();
       }
 
+      if (!state.jobsByDate[dateKey]) {
+        state.jobsByDate[dateKey] = [];
+      }
+
+      state.jobsByDate[dateKey].push(job);
+
       if (windowKey === 'AM') {
         state.availabilityByDate[dateKey].AM += 1;
         state.availabilityByDate[dateKey].total += 1;
@@ -1478,7 +1283,7 @@ async function loadExistingAvailability() {
     });
 
     state.availabilityLoaded = true;
-    statusBox.textContent = 'Live availability loaded from the dashboard.';
+    statusBox.textContent = 'Live route availability loaded from the dashboard.';
     buildDateGrid();
 
   } catch (err) {
@@ -1501,6 +1306,92 @@ function getAvailabilityForDate(dateKey) {
   };
 }
 
+function getDayRouteSummary(dateKey) {
+  const jobs = state.jobsByDate[dateKey] || [];
+  const counts = {};
+
+  jobs.forEach(job => {
+    const docs = parseDocuments(job);
+    let code = docs.route_group_code;
+
+    if (!code) {
+      const pc = extractJobPostcode(job);
+      code = getRouteGroupFromPostcode(pc).code;
+    }
+
+    if (!code || code === 'UNKNOWN') code = 'UNKNOWN';
+    counts[code] = (counts[code] || 0) + 1;
+  });
+
+  const routeCodes = Object.keys(counts).filter(code => code !== 'UNKNOWN');
+
+  if (routeCodes.length === 0) {
+    return {
+      code: jobs.length > 0 ? 'UNKNOWN' : 'OPEN',
+      label: jobs.length > 0 ? 'Unknown route' : 'Open day',
+      counts,
+      mixed: false
+    };
+  }
+
+  if (routeCodes.length === 1) {
+    const code = routeCodes[0];
+    return {
+      code,
+      label: ROUTE_GROUPS[code]?.label || 'Unknown route',
+      counts,
+      mixed: false
+    };
+  }
+
+  return {
+    code: 'MIXED',
+    label: 'Mixed route day',
+    counts,
+    mixed: true
+  };
+}
+
+function scoreDate(dateKey, availability) {
+  const dayRoute = getDayRouteSummary(dateKey);
+  const customerRoute = state.routeGroupCode || 'UNKNOWN';
+  let score = 0;
+  let compatible = false;
+  let routeFit = getRouteFitLabel(dayRoute.code, customerRoute);
+
+  if (availability.totalLeft <= 0) {
+    return { score: -1000, compatible: false, routeFit: 'Full day', dayRoute };
+  }
+
+  if (dayRoute.code === 'OPEN') {
+    score += 40;
+    compatible = true;
+  } else if (dayRoute.code === customerRoute) {
+    score += 70;
+    compatible = true;
+  } else if (dayRoute.code === 'CENTRAL' || customerRoute === 'CENTRAL') {
+    score += 30;
+    compatible = true;
+  } else if (dayRoute.code === 'MIXED') {
+    if (dayRoute.counts[customerRoute]) {
+      score += 20;
+      compatible = true;
+      routeFit = 'Mixed day with matching route';
+    } else {
+      score -= 40;
+      compatible = false;
+    }
+  } else {
+    score -= 80;
+    compatible = false;
+  }
+
+  if (availability.AMLeft > 0) score += 25;
+  if (availability.PMLeft > 0) score += 10;
+
+  return { score, compatible, routeFit, dayRoute };
+}
+
 function isWorkingDay(date) {
   const dow = date.getDay();
   return dow >= 1 && dow <= 5;
@@ -1518,16 +1409,17 @@ function buildDateGrid() {
   state.dateStr = '';
   state.window = null;
   state.selectedDayAvailability = null;
+  state.selectedDayRouteFit = '';
   refreshWindowCards();
 
   const today = new Date();
   let d = new Date(today);
   d.setDate(d.getDate() + 1);
 
-  let shown = 0;
+  const candidates = [];
   let safety = 0;
 
-  while (shown < 18 && safety < 120) {
+  while (safety < 140) {
     const dateKey = localISODate(d);
     const bankHolidayName = ENGLAND_WALES_BANK_HOLIDAYS[dateKey];
     const workingDay = isWorkingDay(d);
@@ -1536,52 +1428,102 @@ function buildDateGrid() {
     if (workingDay || bankHoliday) {
       const availability = getAvailabilityForDate(dateKey);
       const isFull = availability.AMLeft === 0 && availability.PMLeft === 0;
-      const isBlocked = !workingDay || bankHoliday || isFull;
+      const scoring = scoreDate(dateKey, availability);
 
-      const slot = document.createElement('div');
-      slot.className = 'day-slot' + (isBlocked ? ' blocked' : '');
-      slot.setAttribute('data-date', dateKey);
-
-      const display = formatDisplayDate(d);
-      const displayParts = display.split(' ');
-
-      slot.innerHTML = `
-        <div class="day-name">${displayParts[0] || ''}</div>
-        <div class="day-date">${displayParts[1] || d.getDate()}</div>
-        <div class="day-month">${displayParts[2] || ''}</div>
-        ${
-          bankHoliday
-            ? `<div class="day-full">${bankHolidayName}</div>`
-            : `<div class="day-capacity">AM ${availability.AMLeft}/${AM_CAPACITY}<br>PM ${availability.PMLeft}/${PM_CAPACITY}</div>`
-        }
-        ${
-          isFull && !bankHoliday
-            ? `<div class="day-full">Full</div>`
-            : ''
-        }
-      `;
-
-      if (!isBlocked) {
-        const dateLabel = d.toLocaleDateString('en-GB', {
-          weekday: 'short',
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric'
-        });
-
-        slot.onclick = () => selectDate(slot, dateKey, dateLabel, availability);
-      }
-
-      grid.appendChild(slot);
-      shown++;
+      candidates.push({
+        date: new Date(d),
+        dateKey,
+        bankHolidayName,
+        workingDay,
+        bankHoliday,
+        isFull,
+        availability,
+        ...scoring
+      });
     }
 
     d.setDate(d.getDate() + 1);
     safety++;
   }
+
+  const usable = candidates.filter(c => c.workingDay && !c.bankHoliday && !c.isFull);
+  const preferred = usable.filter(c => c.compatible);
+  const fallback = usable.filter(c => !c.compatible);
+
+  let displayCandidates = [];
+
+  if (preferred.length >= 8) {
+    displayCandidates = preferred;
+  } else {
+    displayCandidates = preferred.concat(fallback.slice(0, 8));
+  }
+
+  displayCandidates = displayCandidates
+    .sort((a, b) => b.score - a.score || a.date - b.date)
+    .slice(0, 18);
+
+  const blockedBankHolidays = candidates
+    .filter(c => c.bankHoliday)
+    .slice(0, 3);
+
+  displayCandidates = displayCandidates.concat(blockedBankHolidays);
+
+  displayCandidates.forEach(candidate => {
+    const slot = document.createElement('div');
+    const isBlocked = candidate.bankHoliday || candidate.isFull;
+
+    slot.className = 'day-slot' + (isBlocked ? ' blocked' : '');
+    slot.setAttribute('data-date', candidate.dateKey);
+
+    const display = formatDisplayDate(candidate.date);
+    const displayParts = display.split(' ');
+
+    let chipClass = 'route-chip';
+    if (candidate.compatible) chipClass += ' good';
+    if (!candidate.compatible) chipClass += ' warn';
+
+    const routeLabel = candidate.bankHoliday
+      ? candidate.bankHolidayName
+      : candidate.routeFit;
+
+    slot.innerHTML = `
+      <div class="day-name">${displayParts[0] || ''}</div>
+      <div class="day-date">${displayParts[1] || candidate.date.getDate()}</div>
+      <div class="day-month">${displayParts[2] || ''}</div>
+      <div class="${chipClass}">${routeLabel}</div>
+      ${
+        candidate.bankHoliday
+          ? `<div class="day-full">${candidate.bankHolidayName}</div>`
+          : `<div class="day-capacity">AM ${candidate.availability.AMLeft}/${AM_CAPACITY}<br>PM ${candidate.availability.PMLeft}/${PM_CAPACITY}</div>`
+      }
+      ${
+        candidate.isFull && !candidate.bankHoliday
+          ? `<div class="day-full">Full</div>`
+          : ''
+      }
+    `;
+
+    if (!isBlocked) {
+      const dateLabel = candidate.date.toLocaleDateString('en-GB', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+
+      slot.onclick = () => selectDate(slot, candidate.dateKey, dateLabel, candidate.availability, candidate.routeFit);
+    }
+
+    grid.appendChild(slot);
+  });
+
+  const routeMessage = document.getElementById('route-message');
+  routeMessage.textContent = state.routeGroupLabel
+    ? `${state.routeGroupLabel} route. Best matching days are shown first.`
+    : 'Best matching route days are shown first.';
 }
 
-function selectDate(el, iso, str, availability) {
+function selectDate(el, iso, str, availability, routeFit) {
   document.querySelectorAll('.day-slot').forEach(s => s.classList.remove('selected'));
   el.classList.add('selected');
 
@@ -1589,11 +1531,18 @@ function selectDate(el, iso, str, availability) {
   state.dateStr = str;
   state.window = null;
   state.selectedDayAvailability = availability;
+  state.selectedDayRouteFit = routeFit;
 
   document.getElementById('err-date').classList.remove('show');
   document.getElementById('err-window').classList.remove('show');
 
   refreshWindowCards();
+
+  if (availability && availability.AMLeft > 0) {
+    selectWindow('AM', true);
+  } else if (availability && availability.PMLeft > 0) {
+    selectWindow('PM', true);
+  }
 }
 
 function refreshWindowCards() {
@@ -1601,9 +1550,11 @@ function refreshWindowCards() {
   const pmCard = document.getElementById('window-PM');
   const amText = document.getElementById('window-am-text');
   const pmText = document.getElementById('window-pm-text');
+  const amRec = document.getElementById('am-recommended');
 
   amCard.classList.remove('selected', 'disabled');
   pmCard.classList.remove('selected', 'disabled');
+  amRec.style.display = 'none';
 
   const availability = state.selectedDayAvailability;
 
@@ -1616,28 +1567,27 @@ function refreshWindowCards() {
   amText.textContent = `08:00 to 13:00 · ${availability.AMLeft} of ${AM_CAPACITY} left`;
   pmText.textContent = `13:00 to 17:00 · ${availability.PMLeft} of ${PM_CAPACITY} left`;
 
-  if (availability.AMLeft <= 0) {
-    amCard.classList.add('disabled');
+  if (availability.AMLeft > 0) {
+    amRec.style.display = 'inline-block';
   }
 
-  if (availability.PMLeft <= 0) {
-    pmCard.classList.add('disabled');
-  }
+  if (availability.AMLeft <= 0) amCard.classList.add('disabled');
+  if (availability.PMLeft <= 0) pmCard.classList.add('disabled');
 }
 
-function selectWindow(win) {
+function selectWindow(win, automatic = false) {
   if (!state.selectedDayAvailability) {
     document.getElementById('err-date').classList.add('show');
     return;
   }
 
   if (win === 'AM' && state.selectedDayAvailability.AMLeft <= 0) {
-    document.getElementById('err-window').classList.add('show');
+    if (!automatic) document.getElementById('err-window').classList.add('show');
     return;
   }
 
   if (win === 'PM' && state.selectedDayAvailability.PMLeft <= 0) {
-    document.getElementById('err-window').classList.add('show');
+    if (!automatic) document.getElementById('err-window').classList.add('show');
     return;
   }
 
@@ -1654,9 +1604,7 @@ function goToStep(n) {
     ? parseInt(active.id.replace('step-', ''))
     : 1;
 
-  if (n > cur && !validateStep(cur)) {
-    return;
-  }
+  if (n > cur && !validateStep(cur)) return;
 
   document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
   document.getElementById('step-' + n).classList.add('active');
@@ -1668,17 +1616,10 @@ function goToStep(n) {
   });
 
   if (n === 3) {
-    document.getElementById('booking-type-note').textContent =
-      state.type === 'Domestic'
-        ? 'Domestic AM/PM booking request'
-        : 'Commercial requested date/window for review';
-
     loadExistingAvailability();
   }
 
-  if (n === 5) {
-    populateConfirm();
-  }
+  if (n === 5) populateConfirm();
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1697,6 +1638,10 @@ function validateStep(step) {
 
     if (!addr) return showErr('err-address', 'address');
     if (!pc) return showErr('err-postcode', 'postcode');
+
+    const route = getRouteGroupFromPostcode(pc);
+    state.routeGroupCode = route.code;
+    state.routeGroupLabel = route.label;
 
     refreshQuote();
 
@@ -1763,6 +1708,7 @@ function populateConfirm() {
 
   document.getElementById('cf-address').textContent = state.address;
   document.getElementById('cf-postcode').textContent = state.postcode;
+  document.getElementById('cf-route').textContent = state.routeGroupLabel || 'Manual review route';
   document.getElementById('cf-service').textContent = state.type + ' EPC';
 
   document.getElementById('cf-quote').textContent =
@@ -1776,6 +1722,8 @@ function populateConfirm() {
     state.window === 'AM'
       ? `AM · 08:00 to 13:00`
       : `PM · 13:00 to 17:00`;
+
+  document.getElementById('cf-route-fit').textContent = state.selectedDayRouteFit || 'Route checked';
 
   const availability = state.selectedDayAvailability;
 
@@ -1809,35 +1757,44 @@ function normaliseSource(v) {
 }
 
 async function recheckSelectedSlotBeforeSubmit() {
-  if (!supabaseClient || !state.date || !state.window) {
-    return true;
-  }
+  if (!supabaseClient || !state.date || !state.window) return true;
 
   const { data, error } = await supabaseClient
     .from('jobs')
-    .select('booking_date, booking_window, status')
+    .select('*')
     .eq('booking_date', state.date);
 
   if (error) throw error;
 
   let amBooked = 0;
   let pmBooked = 0;
+  let routeConflict = false;
+  let matchingRouteFound = false;
 
   (data || []).forEach(job => {
     if (isClosedStatus(job.status)) return;
 
     const windowKey = String(job.booking_window || '').toUpperCase();
-
     if (windowKey === 'AM') amBooked += 1;
     if (windowKey === 'PM') pmBooked += 1;
+
+    const docs = parseDocuments(job);
+    const existingRoute = docs.route_group_code || getRouteGroupFromPostcode(extractJobPostcode(job)).code;
+
+    if (existingRoute && existingRoute !== 'UNKNOWN') {
+      if (existingRoute === state.routeGroupCode || existingRoute === 'CENTRAL' || state.routeGroupCode === 'CENTRAL') {
+        matchingRouteFound = true;
+      } else {
+        routeConflict = true;
+      }
+    }
   });
 
-  if (state.window === 'AM' && amBooked >= AM_CAPACITY) {
-    return false;
-  }
+  if (state.window === 'AM' && amBooked >= AM_CAPACITY) return false;
+  if (state.window === 'PM' && pmBooked >= PM_CAPACITY) return false;
 
-  if (state.window === 'PM' && pmBooked >= PM_CAPACITY) {
-    return false;
+  if (routeConflict && !matchingRouteFound) {
+    return 'ROUTE_WARNING';
   }
 
   return true;
@@ -1859,9 +1816,9 @@ async function submitBooking() {
   btn.textContent = 'Checking slot...';
 
   try {
-    const slotStillAvailable = await recheckSelectedSlotBeforeSubmit();
+    const slotCheck = await recheckSelectedSlotBeforeSubmit();
 
-    if (!slotStillAvailable) {
+    if (slotCheck === false) {
       setStatus('error', 'That booking window has just become full. Please go back and choose another slot.');
       btn.disabled = false;
       btn.textContent = 'Submit to EPC Pro';
@@ -1896,10 +1853,7 @@ async function submitBooking() {
       created_at: now
     };
 
-    const { error: contactErr } = await supabaseClient
-      .from('contacts')
-      .insert(contactPayload);
-
+    const { error: contactErr } = await supabaseClient.from('contacts').insert(contactPayload);
     if (contactErr) throw contactErr;
 
     const propertyPayload = {
@@ -1911,14 +1865,13 @@ async function submitBooking() {
       created_at: now
     };
 
-    const { error: propertyErr } = await supabaseClient
-      .from('properties')
-      .insert(propertyPayload);
-
+    const { error: propertyErr } = await supabaseClient.from('properties').insert(propertyPayload);
     if (propertyErr) throw propertyErr;
 
+    const routeWarning = slotCheck === 'ROUTE_WARNING';
+
     const leadStatus =
-      state.type === 'Commercial' || state.reviewRequired
+      state.type === 'Commercial' || state.reviewRequired || routeWarning
         ? 'Review required'
         : 'Awaiting booking';
 
@@ -1934,10 +1887,7 @@ async function submitBooking() {
       created_at: now
     };
 
-    const { error: leadErr } = await supabaseClient
-      .from('leads')
-      .insert(leadPayload);
-
+    const { error: leadErr } = await supabaseClient.from('leads').insert(leadPayload);
     if (leadErr) throw leadErr;
 
     const deposit =
@@ -1951,7 +1901,7 @@ async function submitBooking() {
         : 0;
 
     const jobStatus =
-      state.type === 'Commercial' || state.reviewRequired
+      state.type === 'Commercial' || state.reviewRequired || routeWarning
         ? 'Review required'
         : 'Awaiting booking';
 
@@ -1982,6 +1932,11 @@ async function submitBooking() {
         customer_phone: phone,
         property_address: state.address,
         postcode: state.postcode,
+        postcode_area: getPostcodeParts(state.postcode).area,
+        route_group_code: state.routeGroupCode,
+        route_group_label: state.routeGroupLabel,
+        selected_route_fit: state.selectedDayRouteFit,
+        route_warning: routeWarning,
         property_type: propertyType,
         pricing_band: state.quoteLabel,
         service_type: state.type,
@@ -2003,22 +1958,19 @@ async function submitBooking() {
       created_at: now
     };
 
-    const { error: jobErr } = await supabaseClient
-      .from('jobs')
-      .insert(jobPayload);
-
+    const { error: jobErr } = await supabaseClient.from('jobs').insert(jobPayload);
     if (jobErr) throw jobErr;
 
     document.getElementById('booking-ref-num').textContent = publicReference;
 
     document.getElementById('success-title').textContent =
-      state.type === 'Commercial' || state.reviewRequired
+      state.type === 'Commercial' || state.reviewRequired || routeWarning
         ? 'Enquiry sent for review'
         : 'Booking request received';
 
     document.getElementById('success-text').textContent =
-      state.type === 'Commercial' || state.reviewRequired
-        ? 'Your commercial enquiry has been sent to EPC Pro for review. Please quote your reference if you email, WhatsApp or send documents.'
+      state.type === 'Commercial' || state.reviewRequired || routeWarning
+        ? 'Your enquiry has been sent to EPC Pro for review. Please quote your reference if you email, WhatsApp or send documents.'
         : 'Your domestic booking request has been sent to EPC Pro. Please quote your reference if you email, WhatsApp or send documents.';
 
     document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
