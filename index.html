@@ -596,38 +596,6 @@ main {
   margin: -2px 0 12px;
 }
 
-.route-toggle-wrap {
-  margin: 18px 0 6px;
-  padding: 14px 16px;
-  border: 1.5px dashed var(--warning-border);
-  border-radius: var(--radius);
-  background: var(--warning-bg);
-}
-
-.route-toggle-wrap p {
-  font-size: 13px;
-  color: var(--warning-text);
-  line-height: 1.5;
-  margin-bottom: 10px;
-}
-
-.btn-outline {
-  width: 100%;
-  background: white;
-  color: var(--warning-text);
-  border: 1.5px solid var(--warning-border);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.btn-outline:hover {
-  background: #fff7d6;
-}
-
 .no-dates-message {
   padding: 14px 16px;
   border-radius: var(--radius);
@@ -648,19 +616,12 @@ main {
   transition: all 0.15s;
 }
 
-.day-card.good {
-  border-color: #bbf7d0;
-}
-
-.day-card.open {
-  border-color: var(--blue-border);
-}
-
+.day-card.good { border-color: #bbf7d0; }
+.day-card.open { border-color: var(--blue-border); }
 .day-card.poor {
   border-color: var(--warning-border);
   background: #fffdf7;
 }
-
 .day-card.full {
   opacity: 0.68;
   background: #f8fafc;
@@ -1226,13 +1187,13 @@ footer a {
   <div class="form-step" id="step-3">
     <div class="step-header">
       <h2>Choose your date and window</h2>
-      <p>Available dates are shown in date order. Route-fit information is shown inside each date.</p>
+      <p>Available working days are shown in date order. Route information is shown inside each date.</p>
     </div>
 
     <div class="step-body">
       <div class="date-info">
         <strong>Capacity:</strong> AM has 5 spaces, PM has 3 spaces, with a maximum of 8 jobs per day.
-        The calendar offers AM first. PM becomes available only when the AM window is full for that date.
+        The calendar offers AM first. PM becomes available only when AM is full for that date.
       </div>
 
       <div class="availability-status loading" id="availability-status">
@@ -1457,8 +1418,7 @@ const state = {
   availabilityLoaded: false,
   availabilityError: '',
   selectedRouteFit: null,
-  reference: '',
-  showLessSuitableDates: false
+  reference: ''
 };
 
 const londonPrefixes = ['NW','SW','SE','WC','EC','EN','HA','IG','RM','TW','KT','BR','CR','SM','UB','DA','N','E','W'];
@@ -1662,7 +1622,7 @@ function getRouteFitForDate(dateISO) {
       code: 'unknown',
       label: 'Route fit unknown',
       title: 'ROUTE FIT: Area data missing',
-      message: 'This date has existing bookings, but their area data is missing. Please choose a recommended date if possible.',
+      message: 'This date has existing bookings, but their area data is missing. Please choose another date if possible.',
       reviewRequired: true,
       existingAreas: []
     };
@@ -1682,8 +1642,8 @@ function getRouteFitForDate(dateISO) {
   return {
     code: 'poor',
     label: 'Route review needed',
-    title: 'ROUTE FIT: Not recommended for this postcode area',
-    message: `This date already has bookings in ${existingAreas.join(', ')}. Please choose a recommended date above if possible.`,
+    title: 'ROUTE FIT: Different route area',
+    message: `This date already has bookings in ${existingAreas.join(', ')}.`,
     reviewRequired: true,
     existingAreas
   };
@@ -1696,10 +1656,6 @@ function isRecommendedRouteFit(routeFit) {
 function getDayMessage(availability, routeFit) {
   if (!availability.amAvailable && !availability.pmAvailable) {
     return { className: 'full', text: 'This date is fully booked. Please choose another date.' };
-  }
-
-  if (routeFit && routeFit.code === 'poor') {
-    return { className: 'warning', text: 'This date is less suitable for your postcode area. Please choose a recommended date if possible.' };
   }
 
   if (availability.amAvailable) {
@@ -1963,7 +1919,6 @@ async function loadLiveAvailability() {
   state.availabilityLoaded = false;
   state.availabilityError = '';
   state.liveJobs = [];
-  state.showLessSuitableDates = false;
   state.date = '';
   state.dateStr = '';
   state.bookingWindow = '';
@@ -2001,7 +1956,7 @@ async function loadLiveAvailability() {
     state.availabilityLoaded = true;
 
     status.className = 'availability-status ok';
-    status.textContent = `Live availability loaded. Dates are shown in date order. Existing future jobs checked: ${state.liveJobs.length}.`;
+    status.textContent = `Live availability loaded. Dates are shown from the next available working day. Existing future jobs checked: ${state.liveJobs.length}.`;
 
     if (continueBtn) continueBtn.disabled = false;
 
@@ -2020,9 +1975,7 @@ function collectDateOptions() {
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const options = [];
 
-  let offset = 1;
-
-  while (offset < 45) {
+  for (let offset = 1; offset < 45; offset++) {
     const d = new Date(today);
     d.setDate(today.getDate() + offset);
 
@@ -2042,8 +1995,6 @@ function collectDateOptions() {
         routeFit
       });
     }
-
-    offset++;
   }
 
   return options;
@@ -2114,11 +2065,6 @@ function createDayCard(day) {
   return dayCard;
 }
 
-function toggleLessSuitableDates() {
-  state.showLessSuitableDates = !state.showLessSuitableDates;
-  buildDateGrid();
-}
-
 function buildDateGrid() {
   const grid = document.getElementById('days-grid');
   grid.innerHTML = '';
@@ -2127,62 +2073,28 @@ function buildDateGrid() {
 
   const availableOptions = allOptions
     .filter(day => day.dayAvailable)
-    .sort((a, b) => a.iso.localeCompare(b.iso));
-
-  const mainOptions = availableOptions
-    .filter(day => isRecommendedRouteFit(day.routeFit))
-    .slice(0, 14);
-
-  const lessSuitable = availableOptions
-    .filter(day => !isRecommendedRouteFit(day.routeFit))
     .sort((a, b) => a.iso.localeCompare(b.iso))
-    .slice(0, 10);
+    .slice(0, 18);
 
   const fullSoon = allOptions
     .filter(day => !day.dayAvailable)
     .sort((a, b) => a.iso.localeCompare(b.iso))
     .slice(0, 4);
 
-  if (mainOptions.length > 0) {
+  if (availableOptions.length > 0) {
     const heading = document.createElement('div');
     heading.innerHTML = `
       <div class="calendar-heading">Available dates</div>
-      <div class="calendar-subnote">Dates are shown in date order. Route-fit details are shown inside each date.</div>
+      <div class="calendar-subnote">The next available working days are shown in date order. Route information is shown inside each date.</div>
     `;
     grid.appendChild(heading);
 
-    mainOptions.forEach(day => grid.appendChild(createDayCard(day)));
+    availableOptions.forEach(day => grid.appendChild(createDayCard(day)));
   } else {
     const msg = document.createElement('div');
     msg.className = 'no-dates-message';
-    msg.innerHTML = 'No main available dates were found in the next few weeks. You can show less suitable dates below, or contact EPC Pro for help arranging an appointment.';
+    msg.innerHTML = 'No available dates were found in the next few weeks. Please contact EPC Pro for help arranging an appointment.';
     grid.appendChild(msg);
-  }
-
-  if (lessSuitable.length > 0) {
-    const toggle = document.createElement('div');
-    toggle.className = 'route-toggle-wrap';
-    toggle.innerHTML = `
-      <p>
-        Some earlier dates may be available but are not ideal for the current postcode route.
-        Use these only if the main available dates do not work for you.
-      </p>
-      <button type="button" class="btn-outline" onclick="toggleLessSuitableDates()">
-        ${state.showLessSuitableDates ? 'Hide less suitable dates' : 'Show less suitable dates'}
-      </button>
-    `;
-    grid.appendChild(toggle);
-
-    if (state.showLessSuitableDates) {
-      const heading = document.createElement('div');
-      heading.innerHTML = `
-        <div class="calendar-heading">Less suitable dates</div>
-        <div class="calendar-subnote">These dates may require manual route review because they do not match the current route pattern.</div>
-      `;
-      grid.appendChild(heading);
-
-      lessSuitable.forEach(day => grid.appendChild(createDayCard(day)));
-    }
   }
 
   if (fullSoon.length > 0) {
