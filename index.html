@@ -1232,7 +1232,7 @@ footer a {
     <div class="step-body">
       <div class="date-info">
         <strong>Capacity:</strong> AM has 5 spaces, PM has 3 spaces, with a maximum of 8 jobs per day.
-        The system recommends dates that already match your route area first.
+        The calendar offers AM first. PM becomes available only when the AM window is full for that date.
       </div>
 
       <div class="availability-status loading" id="availability-status">
@@ -1608,6 +1608,20 @@ function getAvailabilityForDate(dateISO) {
   };
 }
 
+function isBookingWindowSelectable(availability, windowName) {
+  if (!availability || !availability.dayAvailable) return false;
+
+  if (windowName === 'AM') {
+    return availability.amAvailable;
+  }
+
+  if (windowName === 'PM') {
+    return availability.pmAvailable && !availability.amAvailable;
+  }
+
+  return false;
+}
+
 function getRouteFitForDate(dateISO) {
   const jobs = getActiveJobsForDate(dateISO);
   const customerZone = state.zoneName || '';
@@ -1628,7 +1642,7 @@ function getRouteFitForDate(dateISO) {
       code: 'open',
       label: 'Open route day',
       title: 'ROUTE FIT: Open route day',
-      message: `No bookings are set for this date yet. This can work for ${customerZone}.`,
+      message: 'No bookings are set for this date yet.',
       reviewRequired: false,
       existingAreas: []
     };
@@ -1689,15 +1703,15 @@ function getDayMessage(availability, routeFit) {
     return { className: 'warning', text: 'This date is less suitable for your postcode area. Please choose a recommended date if possible.' };
   }
 
+  if (availability.amAvailable) {
+    return { className: 'ok', text: 'AM is available. PM is held back until AM is full so appointments can be grouped together efficiently.' };
+  }
+
   if (!availability.amAvailable && availability.pmAvailable) {
-    return { className: 'warning', text: 'AM is full. PM is still available for this date.' };
+    return { className: 'warning', text: 'AM is full. PM is now available for this date.' };
   }
 
-  if (availability.amAvailable && !availability.pmAvailable) {
-    return { className: 'warning', text: 'PM is full. AM is still available for this date.' };
-  }
-
-  return { className: 'ok', text: 'AM is available and is preferred first where possible. PM is also available as a backup option.' };
+  return { className: 'warning', text: 'Please choose an available window for this date.' };
 }
 
 function formatPrice(value) {
@@ -2045,8 +2059,15 @@ function createDayCard(day) {
   const dayCard = document.createElement('div');
   dayCard.className = `day-card ${routeFit.code || 'unknown'}${!availability.dayAvailable ? ' full' : ''}`;
 
-  const amDisabled = !availability.amAvailable;
-  const pmDisabled = !availability.pmAvailable;
+  const amDisabled = !isBookingWindowSelectable(availability, 'AM');
+  const pmLockedUntilMorningFull = availability.pmAvailable && availability.amAvailable;
+  const pmDisabled = !isBookingWindowSelectable(availability, 'PM');
+
+  const pmStatusText = !availability.pmAvailable
+    ? 'PM full'
+    : pmLockedUntilMorningFull
+      ? 'PM opens after AM full'
+      : availability.pmLeft + ' PM spaces left';
 
   dayCard.innerHTML = `
     <div class="day-top">
@@ -2075,7 +2096,7 @@ function createDayCard(day) {
       <div class="window-option ${pmDisabled ? 'disabled' : ''}" data-date="${day.iso}" data-datestr="${day.dateStr}" data-window="PM">
         <div class="window-name">PM window</div>
         <div class="window-time">13:00 - 17:00</div>
-        <div class="window-left">${pmDisabled ? 'PM full' : availability.pmLeft + ' PM spaces left'}</div>
+        <div class="window-left">${pmStatusText}</div>
       </div>
     </div>
 
@@ -2181,6 +2202,13 @@ function buildDateGrid() {
 }
 
 function selectWindow(el, iso, str, windowName) {
+  const availability = getAvailabilityForDate(iso);
+
+  if (!isBookingWindowSelectable(availability, windowName)) {
+    alert('Please choose an available AM window first. PM becomes available once AM is full for that date.');
+    return;
+  }
+
   document.querySelectorAll('.window-option').forEach(option => option.classList.remove('selected'));
   el.classList.add('selected');
 
@@ -2315,10 +2343,14 @@ function goToStep(n) {
       }
 
       const availability = getAvailabilityForDate(state.date);
-      const stillAvailable = state.bookingWindow === 'AM' ? availability.amAvailable : availability.pmAvailable;
+      const stillAvailable = isBookingWindowSelectable(availability, state.bookingWindow);
 
       if (!stillAvailable) {
-        alert('That window has just become full. Please choose another available window.');
+        alert('That window is no longer available. Please choose another available AM window, or PM if AM is full.');
+        state.date = '';
+        state.dateStr = '';
+        state.bookingWindow = '';
+        state.selectedRouteFit = null;
         buildDateGrid();
         return;
       }
@@ -2446,10 +2478,10 @@ async function submitBooking() {
 
   try {
     const latestAvailability = getAvailabilityForDate(state.date);
-    const stillAvailable = state.bookingWindow === 'AM' ? latestAvailability.amAvailable : latestAvailability.pmAvailable;
+    const stillAvailable = isBookingWindowSelectable(latestAvailability, state.bookingWindow);
 
     if (!stillAvailable) {
-      alert('That window has just become full. Please choose another available window.');
+      alert('That window is no longer available. Please choose another available AM window, or PM if AM is full.');
       submitBtn.disabled = false;
       label.textContent = 'Confirm booking request';
       goToStep(3);
