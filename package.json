@@ -1,0 +1,9 @@
+{
+  "name": "epc-pro-booking-app",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
+    "stripe": "^18.0.0"
+  }
+}
