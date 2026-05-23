@@ -1,22 +1,36 @@
 const Stripe = require('stripe');
 const { createClient } = require('@supabase/supabase-js');
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 function getRequiredEnv(name) {
   const value = process.env[name];
-  if (!value) throw new Error(`Missing required environment variable: ${name}`);
-  return value;
+
+  if (!value || !String(value).trim()) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+
+  return String(value).trim();
+}
+
+function createStripeClient() {
+  return new Stripe(getRequiredEnv('STRIPE_SECRET_KEY'));
 }
 
 function createSupabaseClient() {
-  return createClient(getRequiredEnv('SUPABASE_URL'), getRequiredEnv('SUPABASE_SERVICE_ROLE_KEY'));
+  return createClient(
+    getRequiredEnv('SUPABASE_URL'),
+    getRequiredEnv('SUPABASE_SERVICE_ROLE_KEY')
+  );
 }
 
 function getBody(req) {
   if (!req.body) return {};
   if (typeof req.body === 'object') return req.body;
-  try { return JSON.parse(req.body); } catch { return {}; }
+
+  try {
+    return JSON.parse(req.body);
+  } catch {
+    return {};
+  }
 }
 
 function cleanText(value) {
@@ -104,7 +118,11 @@ async function checkCapacity(supabase, bookingDate, bookingWindow) {
 
   if (error) throw error;
 
-  const activeJobs = (data || []).filter(job => !['Completed', 'Closed', 'Cancelled', 'Lost', 'EPC served'].includes(String(job.status || '')));
+  const activeJobs = (data || []).filter(job => {
+    const status = String(job.status || '');
+    return !['Completed', 'Closed', 'Cancelled', 'Lost', 'EPC served'].includes(status);
+  });
+
   const amBooked = activeJobs.filter(job => String(job.booking_window || '').toUpperCase() === 'AM').length;
   const pmBooked = activeJobs.filter(job => String(job.booking_window || '').toUpperCase() === 'PM').length;
   const totalBooked = activeJobs.length;
@@ -162,7 +180,7 @@ async function savePendingBooking(supabase, booking, sessionId) {
     created_at: now
   };
 
-  const { data: contact } = await supabase
+  const { data: contact, error: contactError } = await supabase
     .from('contacts')
     .insert({
       id: generateUUID(),
@@ -175,7 +193,9 @@ async function savePendingBooking(supabase, booking, sessionId) {
     .select()
     .single();
 
-  const { data: property } = await supabase
+  if (contactError) throw contactError;
+
+  const { data: property, error: propertyError } = await supabase
     .from('properties')
     .insert({
       id: generateUUID(),
@@ -188,7 +208,9 @@ async function savePendingBooking(supabase, booking, sessionId) {
     .select()
     .single();
 
-  const { data: lead } = await supabase
+  if (propertyError) throw propertyError;
+
+  const { data: lead, error: leadError } = await supabase
     .from('leads')
     .insert({
       contact_id: contact ? contact.id : null,
@@ -210,6 +232,8 @@ async function savePendingBooking(supabase, booking, sessionId) {
     })
     .select()
     .single();
+
+  if (leadError) throw leadError;
 
   const { data: job, error: jobError } = await supabase
     .from('jobs')
@@ -238,24 +262,26 @@ async function savePendingBooking(supabase, booking, sessionId) {
 
   if (jobError) throw jobError;
 
-  if (lead && job) {
-    await supabase
-      .from('leads')
-      .update({
-        converted_job_id: job.id,
-        converted_at: now,
-        documents: { ...documents, converted_job_id: job.id, converted_at: now }
-      })
-      .eq('id', lead.id);
-  }
+  await supabase
+    .from('leads')
+    .update({
+      converted_job_id: job.id,
+      converted_at: now,
+      documents: { ...documents, converted_job_id: job.id, converted_at: now }
+    })
+    .eq('id', lead.id);
 
   return { contact, property, lead, job };
 }
 
 module.exports = async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Method not allowed. Use POST.' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ ok: false, error: 'Method not allowed. Use POST.' });
+  }
 
   try {
+    const stripe = createStripeClient();
+    const supabase = createSupabaseClient();
     const booking = buildBookingData(getBody(req));
 
     if (!booking.clientEmail) return res.status(400).json({ ok: false, error: 'Missing customer email.' });
@@ -264,10 +290,12 @@ module.exports = async function handler(req, res) {
     if (!booking.bookingDate || !booking.bookingWindow) return res.status(400).json({ ok: false, error: 'Missing booking date or window.' });
     if (!booking.isCommercial && booking.depositAmount <= 0) return res.status(400).json({ ok: false, error: 'Deposit amount must be greater than £0.' });
 
-    const supabase = createSupabaseClient();
     await checkCapacity(supabase, booking.bookingDate, booking.bookingWindow);
 
-    const appUrl = process.env.BOOKING_APP_URL || process.env.VERCEL_PROJECT_PRODUCTION_URL || `https://${req.headers.host}`;
+    const appUrl =
+      process.env.BOOKING_APP_URL ||
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : '') ||
+      `https://${req.headers.host}`;
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
