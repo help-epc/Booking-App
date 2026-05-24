@@ -1,14 +1,85 @@
-/*
-  EPC Pro Booking App override file
-  Purpose:
-  1. Replace the old inline submitBooking() behaviour without rewriting the whole index.html.
-  2. Redirect domestic bookings to Stripe Checkout via /api/create-checkout-session.
-  3. Keep commercial bookings in the review/request flow.
-  4. Tidy the calendar UI by replacing repeated route explanation boxes with compact labels.
-  5. Update hero accreditation wording for both domestic and non-domestic EPC work.
+/* EPC Pro Booking App override file
+   - Domestic bookings redirect to Stripe Checkout
+   - Commercial bookings stay in review/request flow
+   - Calendar display is compact and customer-facing
+   - Hero badge wording covers DEA and NDEA accreditation
 */
 
 (function () {
+  function getFieldValue(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  function getCustomerDetails() {
+    const fname = getFieldValue('fname');
+    const lname = getFieldValue('lname');
+    return {
+      fullName: `${fname} ${lname}`.trim(),
+      email: getFieldValue('email'),
+      phone: getFieldValue('phone'),
+      access: getFieldValue('access'),
+      referral: getFieldValue('referral') || 'Website'
+    };
+  }
+
+  function buildCommonBookingData(reference, jobId, routeFit) {
+    const customer = getCustomerDetails();
+    const squareMeterage = state.squareMeterage || getEstimatedSquareMeterageFromBandName(state.band);
+
+    return {
+      reference,
+      job_id: jobId,
+      client_name: customer.fullName,
+      customer_name: customer.fullName,
+      name: customer.fullName,
+      client_email: customer.email,
+      customer_email: customer.email,
+      email: customer.email,
+      client_phone: customer.phone,
+      customer_phone: customer.phone,
+      phone: customer.phone,
+      property_address: state.address,
+      address: state.address,
+      postcode: state.postcode,
+      service_type: state.type,
+      epc_type: state.type,
+      type: state.type,
+      property_subtype: state.subtype,
+      pricing_band: state.band,
+      pricing_basis: state.pricingBasis,
+      property_value: state.propertyValue,
+      square_meterage: squareMeterage,
+      duration_minutes: state.duration,
+      quote_amount: state.price,
+      invoice_amount: state.price,
+      price: state.price,
+      deposit_amount: state.deposit,
+      deposit: state.deposit,
+      balance_due: state.type === 'Commercial' ? state.price : state.balance,
+      booking_date: state.date,
+      date: state.date,
+      booking_window: state.bookingWindow,
+      window: state.bookingWindow,
+      route_fit: routeFit.code,
+      route_fit_label: routeFit.label,
+      route_message: routeFit.message,
+      route_review_required: routeFit.reviewRequired,
+      existing_route_areas: routeFit.existingAreas || [],
+      route_display_priority: isRecommendedRouteFit(routeFit) ? 'recommended' : 'less_suitable',
+      access_instructions: customer.access,
+      access: customer.access,
+      source: customer.referral,
+      referral: customer.referral,
+      capacity_rule: {
+        am_capacity: AM_CAPACITY,
+        pm_capacity: PM_CAPACITY,
+        day_capacity: DAY_CAPACITY
+      },
+      created_at: new Date().toISOString()
+    };
+  }
+
   async function submitBookingWithStripe() {
     if (!document.getElementById('terms').checked) {
       alert('Please confirm the booking terms before continuing.');
@@ -24,9 +95,7 @@
     const label = document.getElementById('submit-btn-label');
 
     submitBtn.disabled = true;
-    label.textContent = state.type === 'Domestic'
-      ? 'Opening secure payment...'
-      : 'Saving booking request...';
+    label.textContent = state.type === 'Domestic' ? 'Opening secure payment...' : 'Saving booking request...';
 
     try {
       const latestAvailability = getAvailabilityForDate(state.date);
@@ -44,70 +113,11 @@
       const reference = generateReference();
       const jobId = generateUUID();
       const routeFit = state.selectedRouteFit || getRouteFitForDate(state.date);
+      const customer = getCustomerDetails();
+      const squareMeterage = state.squareMeterage || getEstimatedSquareMeterageFromBandName(state.band);
+      const commonBookingData = buildCommonBookingData(reference, jobId, routeFit);
 
       state.reference = reference;
-
-      const fname = document.getElementById('fname').value.trim();
-      const lname = document.getElementById('lname').value.trim();
-      const fullName = `${fname} ${lname}`.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const access = document.getElementById('access').value.trim();
-      const referral = document.getElementById('referral').value || 'Website';
-
-      const squareMeterage = state.squareMeterage || getEstimatedSquareMeterageFromBandName(state.band);
-
-      const commonBookingData = {
-        reference,
-        job_id: jobId,
-        client_name: fullName,
-        customer_name: fullName,
-        name: fullName,
-        client_email: email,
-        customer_email: email,
-        email,
-        client_phone: phone,
-        customer_phone: phone,
-        phone,
-        property_address: state.address,
-        address: state.address,
-        postcode: state.postcode,
-        service_type: state.type,
-        epc_type: state.type,
-        type: state.type,
-        property_subtype: state.subtype,
-        pricing_band: state.band,
-        pricing_basis: state.pricingBasis,
-        property_value: state.propertyValue,
-        square_meterage: squareMeterage,
-        duration_minutes: state.duration,
-        quote_amount: state.price,
-        invoice_amount: state.price,
-        price: state.price,
-        deposit_amount: state.deposit,
-        deposit: state.deposit,
-        balance_due: state.type === 'Commercial' ? state.price : state.balance,
-        booking_date: state.date,
-        date: state.date,
-        booking_window: state.bookingWindow,
-        window: state.bookingWindow,
-        route_fit: routeFit.code,
-        route_fit_label: routeFit.label,
-        route_message: routeFit.message,
-        route_review_required: routeFit.reviewRequired,
-        existing_route_areas: routeFit.existingAreas || [],
-        route_display_priority: isRecommendedRouteFit(routeFit) ? 'recommended' : 'less_suitable',
-        access_instructions: access,
-        access,
-        source: referral,
-        referral,
-        capacity_rule: {
-          am_capacity: AM_CAPACITY,
-          pm_capacity: PM_CAPACITY,
-          day_capacity: DAY_CAPACITY
-        },
-        created_at: new Date().toISOString()
-      };
 
       if (state.type === 'Domestic') {
         if (!state.deposit || state.deposit <= 0) {
@@ -123,9 +133,7 @@
         const result = await response.json().catch(() => null);
 
         if (!response.ok || !result || !result.ok || !result.checkout_url) {
-          const message = result && result.error
-            ? result.error
-            : 'Stripe checkout could not be created.';
+          const message = result && result.error ? result.error : 'Stripe checkout could not be created.';
           throw new Error(message);
         }
 
@@ -143,9 +151,9 @@
       };
 
       const contact = await insertContact({
-        name: fullName,
-        email,
-        phone,
+        name: customer.fullName,
+        email: customer.email,
+        phone: customer.phone,
         type: 'Client',
         client_reference: reference
       });
@@ -166,20 +174,20 @@
         property_id: property ? property.id : null,
         property_address: state.address,
         postcode: state.postcode,
-        source: referral,
+        source: customer.referral,
         status: leadStatus,
         epc_type: state.type,
         property_value: state.propertyValue,
         square_meterage: squareMeterage,
         estimated_value: state.price,
         quoted_price: state.price,
-        client_name: fullName,
-        client_email: email,
-        client_phone: phone,
-        customer_name: fullName,
-        customer_email: email,
-        customer_phone: phone,
-        notes: access,
+        client_name: customer.fullName,
+        client_email: customer.email,
+        client_phone: customer.phone,
+        customer_name: customer.fullName,
+        customer_email: customer.email,
+        customer_phone: customer.phone,
+        notes: customer.access,
         documents
       });
 
@@ -199,17 +207,16 @@
         balance_due: state.price,
         epc_type: state.type,
         status: leadStatus,
-        source: referral,
+        source: customer.referral,
         documents,
         field_status: null,
-        notes: access
+        notes: customer.access
       };
 
       try {
         await insertJob(jobPayload);
       } catch (jobErr) {
         console.warn('Full job insert failed. Retrying minimal job payload:', jobErr.message);
-
         await insertJob({
           id: jobId,
           reference,
@@ -223,10 +230,10 @@
           balance_due: state.price,
           epc_type: state.type,
           status: leadStatus,
-          source: referral,
+          source: customer.referral,
           documents,
           field_status: null,
-          notes: access
+          notes: customer.access
         });
       }
 
@@ -259,6 +266,11 @@
     const style = document.createElement('style');
     style.id = 'epc-calendar-ui-override-style';
     style.textContent = `
+      #step-3 .date-info,
+      #step-3 #availability-status {
+        display: none !important;
+      }
+
       .calendar-compact-notice {
         background: var(--blue-bg);
         border: 1px solid var(--blue-border);
