@@ -5,6 +5,7 @@
   2. Redirect domestic bookings to Stripe Checkout via /api/create-checkout-session.
   3. Keep commercial bookings in the review/request flow.
   4. Tidy the calendar UI by replacing repeated route explanation boxes with compact labels.
+  5. Update hero accreditation wording for both domestic and non-domestic EPC work.
 */
 
 (function () {
@@ -59,64 +60,52 @@
       const commonBookingData = {
         reference,
         job_id: jobId,
-
         client_name: fullName,
         customer_name: fullName,
         name: fullName,
-
         client_email: email,
         customer_email: email,
         email,
-
         client_phone: phone,
         customer_phone: phone,
         phone,
-
         property_address: state.address,
         address: state.address,
         postcode: state.postcode,
-
         service_type: state.type,
         epc_type: state.type,
         type: state.type,
-
         property_subtype: state.subtype,
         pricing_band: state.band,
         pricing_basis: state.pricingBasis,
         property_value: state.propertyValue,
         square_meterage: squareMeterage,
         duration_minutes: state.duration,
-
         quote_amount: state.price,
         invoice_amount: state.price,
         price: state.price,
         deposit_amount: state.deposit,
         deposit: state.deposit,
         balance_due: state.type === 'Commercial' ? state.price : state.balance,
-
         booking_date: state.date,
         date: state.date,
         booking_window: state.bookingWindow,
         window: state.bookingWindow,
-
         route_fit: routeFit.code,
         route_fit_label: routeFit.label,
         route_message: routeFit.message,
         route_review_required: routeFit.reviewRequired,
         existing_route_areas: routeFit.existingAreas || [],
         route_display_priority: isRecommendedRouteFit(routeFit) ? 'recommended' : 'less_suitable',
-
         access_instructions: access,
         access,
         source: referral,
         referral,
-
         capacity_rule: {
           am_capacity: AM_CAPACITY,
           pm_capacity: PM_CAPACITY,
           day_capacity: DAY_CAPACITY
         },
-
         created_at: new Date().toISOString()
       };
 
@@ -252,6 +241,16 @@
       submitBtn.disabled = false;
       label.textContent = 'Confirm booking request';
     }
+  }
+
+  function updateHeroAccreditationBadge() {
+    const badges = document.querySelectorAll('.trust-badges .badge');
+    badges.forEach(badge => {
+      const text = (badge.textContent || '').trim().toLowerCase();
+      if (text === 'fully accredited dea') {
+        badge.textContent = 'Fully accredited DEA & NDEA';
+      }
+    });
   }
 
   function injectCalendarUiStyles() {
@@ -479,4 +478,9 @@
   window.createDayCard = createCompactDayCard;
   window.buildDateGrid = buildCompactDateGrid;
   injectCalendarUiStyles();
+  updateHeroAccreditationBadge();
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateHeroAccreditationBadge);
+  }
 })();
