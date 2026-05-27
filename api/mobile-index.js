@@ -154,14 +154,16 @@ const BETA_AREA_SCRIPT = `
   window.checkPostcode = function () {
     var input = document.getElementById('postcode');
     var el = document.getElementById('postcode-status');
-    if (!input || !el || !window.state) return;
+    if (!input || !el) return;
 
     var val = input.value.toUpperCase().trim();
     if (!val || val.length < 2) {
       el.className = 'postcode-status';
       el.textContent = '';
-      window.state.zone = '';
-      window.state.zoneName = '';
+      if (typeof state !== 'undefined') {
+        state.zone = '';
+        state.zoneName = '';
+      }
       return;
     }
 
@@ -169,15 +171,26 @@ const BETA_AREA_SCRIPT = `
     if (zone) {
       el.className = 'postcode-status zone';
       el.innerHTML = '✓ &nbsp;' + zone.name + ' — online booking available';
-      window.state.zone = zone.code;
-      window.state.zoneName = zone.name;
+      if (typeof state !== 'undefined') {
+        state.zone = zone.code;
+        state.zoneName = zone.name;
+      }
     } else {
       el.className = 'postcode-status err';
       el.innerHTML = '✗ &nbsp;' + getBlockedMessage(val);
-      window.state.zone = '';
-      window.state.zoneName = '';
+      if (typeof state !== 'undefined') {
+        state.zone = '';
+        state.zoneName = '';
+      }
     }
   };
+
+  var postcodeInput = document.getElementById('postcode');
+  if (postcodeInput) {
+    postcodeInput.removeEventListener('input', window.checkPostcode);
+    postcodeInput.addEventListener('input', window.checkPostcode);
+    postcodeInput.addEventListener('blur', window.checkPostcode);
+  }
 
   var err = document.getElementById('err-postcode');
   if (err) err.textContent = 'This postcode is outside the current online booking area.';
