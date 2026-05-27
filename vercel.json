@@ -1,8 +1,11 @@
 {
-  "rewrites": [
+  "routes": [
     {
-      "source": "/",
-      "destination": "/api/mobile-index"
+      "src": "/",
+      "dest": "/api/mobile-index"
+    },
+    {
+      "handle": "filesystem"
     }
   ]
 }
