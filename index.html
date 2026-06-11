@@ -833,6 +833,177 @@ main {
   line-height: 1.5;
 }
 
+/* EPC Evidence Info Section */
+.evidence-section {
+  border: 1.5px solid var(--blue-border);
+  border-radius: var(--radius);
+  background: var(--blue-bg);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.evidence-section-header {
+  padding: 16px 20px;
+}
+
+.evidence-section-header h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 16px;
+  color: var(--blue-text);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.evidence-intro-text {
+  font-size: 13px;
+  color: var(--ink2);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.evidence-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1.5px solid var(--blue-border);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue-text);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.evidence-toggle-btn:hover {
+  background: white;
+  border-color: var(--blue-text);
+}
+
+.evidence-toggle-icon {
+  font-size: 11px;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+.evidence-toggle-btn.open .evidence-toggle-icon {
+  transform: rotate(180deg);
+}
+
+.evidence-guide {
+  display: none;
+  padding: 0 20px 20px;
+}
+
+.evidence-guide.open { display: block; }
+
+.evidence-guide-intro {
+  font-size: 13px;
+  color: var(--ink2);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.evidence-guide-note {
+  font-size: 13px;
+  color: var(--ink3);
+  line-height: 1.6;
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+.evidence-category {
+  margin-bottom: 14px;
+}
+
+.evidence-category-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink2);
+  margin-bottom: 6px;
+}
+
+.evidence-category ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.evidence-category ul li {
+  font-size: 13px;
+  color: var(--ink3);
+  line-height: 1.5;
+  padding: 3px 0 3px 16px;
+  position: relative;
+}
+
+.evidence-category ul li::before {
+  content: '·';
+  position: absolute;
+  left: 4px;
+  color: var(--blue-text);
+  font-weight: 700;
+}
+
+.evidence-important-note {
+  background: white;
+  border: 1px solid var(--blue-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--ink2);
+  line-height: 1.55;
+  margin-top: 16px;
+}
+
+.evidence-important-note strong {
+  color: var(--blue-text);
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.evidence-checkbox-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 20px 16px;
+  border-top: 1px solid var(--blue-border);
+  background: white;
+  cursor: pointer;
+}
+
+.evidence-checkbox-wrap input[type=checkbox] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--blue-text);
+  margin-top: 2px;
+  cursor: pointer;
+}
+
+.evidence-checkbox-wrap span {
+  font-size: 13px;
+  color: var(--ink2);
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.evidence-warning {
+  display: none;
+  font-size: 12px;
+  color: var(--error);
+  padding: 8px 20px 12px;
+  background: white;
+  border-top: 1px solid #fde8e8;
+}
+
+.evidence-warning.show { display: block; }
+
 .btn-row {
   display: flex;
   gap: 12px;
@@ -1329,6 +1500,122 @@ footer a {
         <div class="price-row total" id="cf-balance-row">
           <span class="label">Balance after assessment</span>
           <span class="value" id="cf-balance">—</span>
+        </div>
+      </div>
+
+      <!-- EPC Evidence Info — shown for Domestic bookings only -->
+      <div class="evidence-section" id="evidence-section" style="display:none">
+        <div class="evidence-section-header">
+          <h3>Before Your EPC Assessment – Documents That May Help Improve Your EPC Rating</h3>
+          <p class="evidence-intro-text">
+            If your property has had a loft conversion, extension, replacement windows, insulation upgrades,
+            a new heating system or renewable energy installations, please read the guide below and have any
+            relevant documents available on the day of the assessment.
+          </p>
+          <button type="button" class="evidence-toggle-btn" id="evidence-toggle-btn" onclick="toggleEvidenceGuide()">
+            <span>View document guide</span>
+            <span class="evidence-toggle-icon">▼</span>
+          </button>
+        </div>
+
+        <div class="evidence-guide" id="evidence-guide">
+          <p class="evidence-guide-intro">
+            To ensure your Energy Performance Certificate (EPC) accurately reflects any improvements made to your
+            property, please have any relevant documents available for the assessor on the day of the survey.
+          </p>
+          <p class="evidence-guide-intro">
+            If evidence cannot be provided, industry rules may require the assessor to use standard assumptions
+            instead of the improved specification, which could affect the final EPC rating.
+          </p>
+          <p class="evidence-guide-note">
+            You do not need every document listed below. Only provide information that relates to work carried out at your property.
+          </p>
+
+          <div class="evidence-category">
+            <div class="evidence-category-title">Loft Conversions and Room-in-Roof Extensions</div>
+            <ul>
+              <li>Building Control Completion Certificate</li>
+              <li>Building Regulations Approval documents</li>
+              <li>Architectural drawings</li>
+              <li>Structural engineer drawings</li>
+              <li>Contractor invoices showing when the work was completed</li>
+            </ul>
+          </div>
+
+          <div class="evidence-category">
+            <div class="evidence-category-title">Home Extensions</div>
+            <ul>
+              <li>Building Control Completion Certificate</li>
+              <li>Approved plans or drawings</li>
+              <li>Building Regulations documentation</li>
+              <li>Contractor invoices</li>
+            </ul>
+          </div>
+
+          <div class="evidence-category">
+            <div class="evidence-category-title">Wall Insulation</div>
+            <ul>
+              <li>Installer certificate</li>
+              <li>Guarantee or warranty documents</li>
+              <li>Installation invoices</li>
+              <li>Photographs taken during installation</li>
+            </ul>
+          </div>
+
+          <div class="evidence-category">
+            <div class="evidence-category-title">Loft, Roof or Flat Roof Insulation</div>
+            <ul>
+              <li>Installation invoices</li>
+              <li>Installer certificates</li>
+              <li>Building Control documentation</li>
+              <li>Photographs taken during the works</li>
+            </ul>
+          </div>
+
+          <div class="evidence-category">
+            <div class="evidence-category-title">Replacement Windows and Doors</div>
+            <ul>
+              <li>FENSA certificate</li>
+              <li>CERTASS certificate</li>
+              <li>Building Control approval</li>
+              <li>Installation invoice</li>
+            </ul>
+          </div>
+
+          <div class="evidence-category">
+            <div class="evidence-category-title">Heating System Improvements</div>
+            <ul>
+              <li>Boiler installation certificate</li>
+              <li>Benchmark certificate</li>
+              <li>Commissioning certificate</li>
+              <li>Installation invoice</li>
+            </ul>
+          </div>
+
+          <div class="evidence-category">
+            <div class="evidence-category-title">Renewable Energy Systems</div>
+            <ul>
+              <li>MCS certificate</li>
+              <li>Installation invoice</li>
+              <li>Commissioning certificate</li>
+              <li>Manufacturer documentation</li>
+            </ul>
+          </div>
+
+          <div class="evidence-important-note">
+            <strong>Please note</strong>
+            Please do not worry if you cannot find all of these documents. The assessment can still be completed.
+            However, providing evidence may allow certain energy efficiency improvements to be included more
+            accurately within the EPC calculation. Electronic copies on a phone, tablet or computer are perfectly acceptable.
+          </div>
+        </div>
+
+        <label class="evidence-checkbox-wrap">
+          <input type="checkbox" id="evidence-ack" onchange="clearEvidenceWarning()">
+          <span>I understand that if I have had any relevant improvement works carried out, I should provide any available evidence to the assessor where possible.</span>
+        </label>
+        <div class="evidence-warning" id="evidence-warning">
+          Please confirm that you have read the EPC evidence information before continuing.
         </div>
       </div>
 
@@ -2161,6 +2448,47 @@ function populateConfirm() {
     document.getElementById('cf-deposit').textContent = formatPrice(state.deposit);
     document.getElementById('cf-balance').textContent = formatPrice(state.balance);
   }
+
+  // Show evidence section only for domestic bookings
+  const evidenceSection = document.getElementById('evidence-section');
+  if (state.type === 'Domestic') {
+    evidenceSection.style.display = 'block';
+    // Reset the acknowledgement checkbox and warning each time step 5 is entered
+    const ackBox = document.getElementById('evidence-ack');
+    if (ackBox) ackBox.checked = false;
+    const warn = document.getElementById('evidence-warning');
+    if (warn) warn.classList.remove('show');
+    // Collapse the guide if it was open
+    const guide = document.getElementById('evidence-guide');
+    const btn = document.getElementById('evidence-toggle-btn');
+    if (guide) guide.classList.remove('open');
+    if (btn) {
+      btn.classList.remove('open');
+      btn.querySelector('span:first-child').textContent = 'View document guide';
+    }
+  } else {
+    evidenceSection.style.display = 'none';
+  }
+}
+
+function toggleEvidenceGuide() {
+  const guide = document.getElementById('evidence-guide');
+  const btn = document.getElementById('evidence-toggle-btn');
+  const isOpen = guide.classList.contains('open');
+  if (isOpen) {
+    guide.classList.remove('open');
+    btn.classList.remove('open');
+    btn.querySelector('span:first-child').textContent = 'View document guide';
+  } else {
+    guide.classList.add('open');
+    btn.classList.add('open');
+    btn.querySelector('span:first-child').textContent = 'Hide document guide';
+  }
+}
+
+function clearEvidenceWarning() {
+  const warn = document.getElementById('evidence-warning');
+  if (warn) warn.classList.remove('show');
 }
 
 function goToStep(n) {
@@ -2373,6 +2701,17 @@ async function submitBooking() {
     return;
   }
 
+  // For domestic bookings, require the evidence acknowledgement checkbox
+  if (state.type === 'Domestic') {
+    const ackBox = document.getElementById('evidence-ack');
+    if (!ackBox || !ackBox.checked) {
+      const warn = document.getElementById('evidence-warning');
+      if (warn) warn.classList.add('show');
+      document.getElementById('evidence-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+  }
+
   if (!supabaseClient) {
     alert('The booking system cannot connect to Supabase. Please call 07831 363 622 to book.');
     return;
@@ -2443,6 +2782,7 @@ async function submitBooking() {
       route_display_priority: isRecommendedRouteFit(routeFit) ? 'recommended' : 'less_suitable',
       access_instructions: access,
       source: referral,
+      evidence_info_acknowledged: state.type === 'Domestic' ? true : null,
       created_from: 'booking_app',
       capacity_rule: {
         am_capacity: AM_CAPACITY,
@@ -2558,3 +2898,4 @@ setSubtypeOptions('Domestic');
 <script src="/stripe-submit-override.js"></script>
 </body>
 </html>
+
