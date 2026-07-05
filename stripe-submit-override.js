@@ -2,7 +2,7 @@
    - Domestic bookings redirect to Stripe Checkout
    - Commercial bookings stay in review/request flow
    - Calendar display is compact and customer-facing
-   - Hero badge wording covers DEA and NDEA accreditation
+   - Loads the domestic multi-property booking extension
 */
 
 (function () {
@@ -14,6 +14,7 @@
   function getCustomerDetails() {
     const fname = getFieldValue('fname');
     const lname = getFieldValue('lname');
+
     return {
       fullName: `${fname} ${lname}`.trim(),
       email: getFieldValue('email'),
@@ -86,6 +87,17 @@
       return;
     }
 
+    if (state.type === 'Domestic') {
+      const ackBox = document.getElementById('evidence-ack');
+      if (!ackBox || !ackBox.checked) {
+        const warn = document.getElementById('evidence-warning');
+        if (warn) warn.classList.add('show');
+        const evidence = document.getElementById('evidence-section');
+        if (evidence) evidence.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+    }
+
     if (!window.supabaseClient && typeof supabaseClient === 'undefined') {
       alert('The booking system cannot connect to Supabase. Please call 07831 363 622 to book.');
       return;
@@ -114,8 +126,8 @@
       const jobId = generateUUID();
       const routeFit = state.selectedRouteFit || getRouteFitForDate(state.date);
       const customer = getCustomerDetails();
-      const squareMeterage = state.squareMeterage || getEstimatedSquareMeterageFromBandName(state.band);
       const commonBookingData = buildCommonBookingData(reference, jobId, routeFit);
+      const squareMeterage = state.squareMeterage || getEstimatedSquareMeterageFromBandName(state.band);
 
       state.reference = reference;
 
@@ -251,12 +263,9 @@
   }
 
   function updateHeroAccreditationBadge() {
-    const badges = document.querySelectorAll('.trust-badges .badge');
-    badges.forEach(badge => {
+    document.querySelectorAll('.trust-badges .badge').forEach(badge => {
       const text = (badge.textContent || '').trim().toLowerCase();
-      if (text === 'fully accredited dea') {
-        badge.textContent = 'Fully accredited DEA & NDEA';
-      }
+      if (text === 'fully accredited dea') badge.textContent = 'Fully accredited DEA & NDEA';
     });
   }
 
@@ -267,92 +276,21 @@
     style.id = 'epc-calendar-ui-override-style';
     style.textContent = `
       #step-3 .date-info,
-      #step-3 #availability-status {
-        display: none !important;
-      }
-
-      .calendar-compact-notice {
-        background: var(--blue-bg);
-        border: 1px solid var(--blue-border);
-        color: var(--blue-text);
-        border-radius: var(--radius-sm);
-        padding: 12px 16px;
-        font-size: 13px;
-        line-height: 1.5;
-        margin-bottom: 16px;
-      }
-
-      .calendar-compact-notice strong {
-        display: block;
-        margin-bottom: 3px;
-        color: var(--blue-text);
-      }
-
-      .day-card.compact-calendar-card {
-        padding: 14px 16px;
-      }
-
-      .route-pill-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin: 10px 0 12px;
-      }
-
-      .route-pill,
-      .window-rule-pill {
-        display: inline-flex;
-        align-items: center;
-        border-radius: 999px;
-        padding: 5px 10px;
-        font-size: 12px;
-        font-weight: 700;
-        line-height: 1.2;
-      }
-
-      .route-pill.good {
-        background: var(--success-bg);
-        color: var(--success);
-        border: 1px solid #bbf7d0;
-      }
-
-      .route-pill.open {
-        background: var(--blue-bg);
-        color: var(--blue-text);
-        border: 1px solid var(--blue-border);
-      }
-
-      .route-pill.poor {
-        background: var(--warning-bg);
-        color: var(--warning-text);
-        border: 1px solid var(--warning-border);
-      }
-
-      .route-pill.unknown {
-        background: #f8fafc;
-        color: var(--ink3);
-        border: 1px solid var(--border);
-      }
-
-      .window-rule-pill {
-        background: #f8fafc;
-        color: var(--ink3);
-        border: 1px solid var(--border);
-        font-weight: 600;
-      }
-
+      #step-3 #availability-status { display: none !important; }
+      .calendar-compact-notice { background: var(--blue-bg); border: 1px solid var(--blue-border); color: var(--blue-text); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; line-height: 1.5; margin-bottom: 16px; }
+      .calendar-compact-notice strong { display: block; margin-bottom: 3px; color: var(--blue-text); }
+      .day-card.compact-calendar-card { padding: 14px 16px; }
+      .route-pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 12px; }
+      .route-pill, .window-rule-pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 5px 10px; font-size: 12px; font-weight: 700; line-height: 1.2; }
+      .route-pill.good { background: var(--success-bg); color: var(--success); border: 1px solid #bbf7d0; }
+      .route-pill.open { background: var(--blue-bg); color: var(--blue-text); border: 1px solid var(--blue-border); }
+      .route-pill.poor { background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-border); }
+      .route-pill.unknown { background: #f8fafc; color: var(--ink3); border: 1px solid var(--border); }
+      .window-rule-pill { background: #f8fafc; color: var(--ink3); border: 1px solid var(--border); font-weight: 600; }
       .compact-calendar-card .day-message,
-      .compact-calendar-card .route-message {
-        display: none !important;
-      }
-
-      .compact-calendar-card .day-top {
-        margin-bottom: 8px;
-      }
-
-      .compact-calendar-card .window-options {
-        margin-top: 2px;
-      }
+      .compact-calendar-card .route-message { display: none !important; }
+      .compact-calendar-card .day-top { margin-bottom: 8px; }
+      .compact-calendar-card .window-options { margin-top: 2px; }
     `;
 
     document.head.appendChild(style);
@@ -376,54 +314,28 @@
     const amDisabled = !isBookingWindowSelectable(availability, 'AM');
     const pmLockedUntilMorningFull = availability.pmAvailable && availability.amAvailable;
     const pmDisabled = !isBookingWindowSelectable(availability, 'PM');
-
-    const pmStatusText = !availability.pmAvailable
-      ? 'PM full'
-      : pmLockedUntilMorningFull
-        ? 'PM opens after AM full'
-        : availability.pmLeft + ' PM spaces left';
-
-    const rulePill = availability.amAvailable && availability.pmAvailable
-      ? '<span class="window-rule-pill">PM opens once AM is full</span>'
-      : '';
+    const pmStatusText = !availability.pmAvailable ? 'PM full' : pmLockedUntilMorningFull ? 'PM opens after AM full' : availability.pmLeft + ' PM spaces left';
+    const rulePill = availability.amAvailable && availability.pmAvailable ? '<span class="window-rule-pill">PM opens once AM is full</span>' : '';
 
     dayCard.innerHTML = `
       <div class="day-top">
-        <div>
-          <div class="day-title">${day.dateStr}</div>
-          <div class="day-meta">${day.iso}</div>
-        </div>
-        <div class="day-capacity">
-          ${availability.dayLeft}/${DAY_CAPACITY} spaces left<br>
-          ${availability.dayBooked} existing booking${availability.dayBooked === 1 ? '' : 's'}
-        </div>
+        <div><div class="day-title">${day.dateStr}</div><div class="day-meta">${day.iso}</div></div>
+        <div class="day-capacity">${availability.dayLeft}/${DAY_CAPACITY} spaces left<br>${availability.dayBooked} existing booking${availability.dayBooked === 1 ? '' : 's'}</div>
       </div>
-
-      <div class="route-pill-row">
-        <span class="route-pill ${routeFit.code || 'unknown'}">${getRoutePillText(routeFit)}</span>
-        ${rulePill}
-      </div>
-
+      <div class="route-pill-row"><span class="route-pill ${routeFit.code || 'unknown'}">${getRoutePillText(routeFit)}</span>${rulePill}</div>
       <div class="window-options">
         <div class="window-option ${amDisabled ? 'disabled' : ''}" data-date="${day.iso}" data-datestr="${day.dateStr}" data-window="AM">
-          <div class="window-name">AM window</div>
-          <div class="window-time">08:00 - 13:00</div>
-          <div class="window-left">${amDisabled ? 'AM full' : availability.amLeft + ' AM spaces left'}</div>
+          <div class="window-name">AM window</div><div class="window-time">08:00 - 13:00</div><div class="window-left">${amDisabled ? 'AM full' : availability.amLeft + ' AM spaces left'}</div>
         </div>
-
         <div class="window-option ${pmDisabled ? 'disabled' : ''}" data-date="${day.iso}" data-datestr="${day.dateStr}" data-window="PM">
-          <div class="window-name">PM window</div>
-          <div class="window-time">13:00 - 17:00</div>
-          <div class="window-left">${pmStatusText}</div>
+          <div class="window-name">PM window</div><div class="window-time">13:00 - 17:00</div><div class="window-left">${pmStatusText}</div>
         </div>
       </div>
     `;
 
     dayCard.querySelectorAll('.window-option').forEach(option => {
       if (!option.classList.contains('disabled')) {
-        option.addEventListener('click', () => {
-          selectWindow(option, option.dataset.date, option.dataset.datestr, option.dataset.window);
-        });
+        option.addEventListener('click', () => selectWindow(option, option.dataset.date, option.dataset.datestr, option.dataset.window));
       }
     });
 
@@ -435,37 +347,21 @@
 
     const grid = document.getElementById('days-grid');
     if (!grid) return;
-
     grid.innerHTML = '';
 
     const allOptions = collectDateOptions();
-
-    const availableOptions = allOptions
-      .filter(day => day.dayAvailable)
-      .sort((a, b) => a.iso.localeCompare(b.iso))
-      .slice(0, 18);
-
-    const fullSoon = allOptions
-      .filter(day => !day.dayAvailable)
-      .sort((a, b) => a.iso.localeCompare(b.iso))
-      .slice(0, 4);
+    const availableOptions = allOptions.filter(day => day.dayAvailable).sort((a, b) => a.iso.localeCompare(b.iso)).slice(0, 18);
+    const fullSoon = allOptions.filter(day => !day.dayAvailable).sort((a, b) => a.iso.localeCompare(b.iso)).slice(0, 4);
 
     const notice = document.createElement('div');
     notice.className = 'calendar-compact-notice';
-    notice.innerHTML = `
-      <strong>Choose your appointment window</strong>
-      Recommended dates fit better with the existing route. AM spaces are offered first; PM opens when AM is full for that date.
-    `;
+    notice.innerHTML = '<strong>Choose your appointment window</strong>Recommended dates fit better with the existing route. AM spaces are offered first; PM opens when AM is full for that date.';
     grid.appendChild(notice);
 
     if (availableOptions.length > 0) {
       const heading = document.createElement('div');
-      heading.innerHTML = `
-        <div class="calendar-heading">Available dates</div>
-        <div class="calendar-subnote">Select an available AM or PM window below.</div>
-      `;
+      heading.innerHTML = '<div class="calendar-heading">Available dates</div><div class="calendar-subnote">Select an available AM or PM window below.</div>';
       grid.appendChild(heading);
-
       availableOptions.forEach(day => grid.appendChild(createCompactDayCard(day)));
     } else {
       const msg = document.createElement('div');
@@ -476,23 +372,33 @@
 
     if (fullSoon.length > 0) {
       const heading = document.createElement('div');
-      heading.innerHTML = `
-        <div class="calendar-heading">Fully booked dates</div>
-        <div class="calendar-subnote">Shown for awareness only.</div>
-      `;
+      heading.innerHTML = '<div class="calendar-heading">Fully booked dates</div><div class="calendar-subnote">Shown for awareness only.</div>';
       grid.appendChild(heading);
-
       fullSoon.forEach(day => grid.appendChild(createCompactDayCard(day)));
     }
+  }
+
+  function loadMultiPropertyExtension() {
+    if (document.getElementById('epc-multi-property-extension')) return;
+    const script = document.createElement('script');
+    script.id = 'epc-multi-property-extension';
+    script.src = '/multi-property-extension.js?v=20260705';
+    script.defer = true;
+    document.body.appendChild(script);
   }
 
   window.submitBooking = submitBookingWithStripe;
   window.createDayCard = createCompactDayCard;
   window.buildDateGrid = buildCompactDateGrid;
+
   injectCalendarUiStyles();
   updateHeroAccreditationBadge();
+  loadMultiPropertyExtension();
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', updateHeroAccreditationBadge);
+    document.addEventListener('DOMContentLoaded', () => {
+      updateHeroAccreditationBadge();
+      loadMultiPropertyExtension();
+    });
   }
 })();
