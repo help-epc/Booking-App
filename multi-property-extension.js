@@ -28,17 +28,18 @@
     return { price: 0, band: '', duration: 0, property_value: null, pricing_basis: '', square_meterage: null };
   }
 
-  function currentBlockMode() {
-    const selected = document.querySelector('input[name="multi-block-mode"]:checked');
-    return selected ? selected.value : 'same';
-  }
-
   function baseAddressParts() {
+    const postcode = val('postcode').toUpperCase();
     return {
       address: val('address'),
-      postcode: val('postcode').toUpperCase(),
-      zone: getZone(val('postcode').toUpperCase())
+      postcode,
+      zone: postcode ? getZone(postcode) : null
     };
+  }
+
+  function isSameBlockCard(card) {
+    const selected = card.querySelector('input[type="radio"][data-block-mode]:checked');
+    return selected ? selected.value === 'same' : true;
   }
 
   function readMainProperty() {
@@ -65,7 +66,7 @@
   }
 
   function readExtraProperty(card, index) {
-    const sameBlock = card.dataset.sameBlock === 'true';
+    const sameBlock = isSameBlockCard(card);
     const base = baseAddressParts();
     const flatUnit = String((card.querySelector('.multi-flat-unit') || {}).value || '').trim();
     const valueBand = String((card.querySelector('.multi-value') || {}).value || '');
@@ -193,29 +194,55 @@
     return Array.from(select.options).map(o => `<option value="${o.value}">${o.textContent}</option>`).join('');
   }
 
+  function addressPreviewHtml() {
+    const base = baseAddressParts();
+    const text = [base.address, base.postcode].filter(Boolean).join(', ') || 'First property address will be used';
+    return `<div class="multi-address-preview">${text}</div>`;
+  }
+
+  function setCardAddressMode(card) {
+    const sameBlock = isSameBlockCard(card);
+    const target = card.querySelector('.multi-address-fields');
+    if (!target) return;
+
+    if (sameBlock) {
+      target.innerHTML = `<div class="field"><label>Flat / unit number <span class="req">*</span></label><input type="text" class="multi-flat-unit" placeholder="e.g. Flat 4">${addressPreviewHtml()}</div>`;
+    } else {
+      target.innerHTML = `<div class="field"><label>Property address <span class="req">*</span></label><input type="text" class="multi-address" placeholder="e.g. 22 Example Road, London"></div><div class="field"><label>Postcode <span class="req">*</span></label><input type="text" class="multi-postcode" placeholder="e.g. N5 1PF" style="text-transform:uppercase"><div class="hint">Must be in the same route area as the first property.</div></div>`;
+    }
+
+    target.querySelectorAll('input, select').forEach(input => {
+      input.addEventListener('input', () => updateCard(card));
+      input.addEventListener('change', () => updateCard(card));
+    });
+
+    updateCard(card);
+  }
+
   function createCard() {
     const number = nextPropertyNumber++;
-    const sameBlock = currentBlockMode() === 'same';
-    const base = baseAddressParts();
     const card = document.createElement('div');
     card.className = 'multi-property-card';
-    card.dataset.sameBlock = sameBlock ? 'true' : 'false';
+    const radioName = `multi-block-mode-${Date.now()}-${number}`;
 
-    const addressFields = sameBlock
-      ? `<div class="field"><label>Flat / unit number <span class="req">*</span></label><input type="text" class="multi-flat-unit" placeholder="e.g. Flat 4"><div class="hint">Address: ${base.address || 'first property address'}${base.postcode ? ', ' + base.postcode : ''}</div></div>`
-      : `<div class="field"><label>Property address <span class="req">*</span></label><input type="text" class="multi-address" placeholder="e.g. 22 Example Road, London"></div><div class="field"><label>Postcode <span class="req">*</span></label><input type="text" class="multi-postcode" placeholder="e.g. N5 1PF" style="text-transform:uppercase"><div class="hint">Must be in the same route area as the first property.</div></div>`;
-
-    card.innerHTML = `<div class="multi-property-card-head"><div class="multi-property-title">Property ${number}</div><button type="button" class="multi-remove">Remove</button></div>${addressFields}<div class="field-row"><div class="field"><label>Property type <span class="req">*</span></label><select class="multi-subtype">${subtypeOptions()}</select></div><div class="field"><label>Estimated property value <span class="req">*</span></label><select class="multi-value"><option value="">— Select —</option><option value="999000">Up to £999,000</option><option value="1999999">£1,000,000 to £1,999,999</option><option value="2999999">£2,000,000 to £2,999,999</option><option value="3999999">£3,000,000 to £3,999,999</option><option value="4000000">Over £4,000,000</option></select></div></div><div class="multi-price-line">Price: —</div>`;
+    card.innerHTML = `<div class="multi-property-card-head"><div class="multi-property-title">Property ${number}</div><button type="button" class="multi-remove">Remove</button></div><div class="multi-block-question"><div class="multi-block-question-label">Are these properties in the same building/block?</div><div class="multi-block-options"><label class="multi-block-option"><input type="radio" name="${radioName}" data-block-mode value="same" checked> Yes, same building/block</label><label class="multi-block-option"><input type="radio" name="${radioName}" data-block-mode value="different"> No, different address</label></div></div><div class="multi-address-fields"></div><div class="field-row"><div class="field"><label>Property type <span class="req">*</span></label><select class="multi-subtype">${subtypeOptions()}</select></div><div class="field"><label>Estimated property value <span class="req">*</span></label><select class="multi-value"><option value="">— Select —</option><option value="999000">Up to £999,000</option><option value="1999999">£1,000,000 to £1,999,999</option><option value="2999999">£2,000,000 to £2,999,999</option><option value="3999999">£3,000,000 to £3,999,999</option><option value="4000000">Over £4,000,000</option></select></div></div><div class="multi-price-line">Price: —</div>`;
 
     card.querySelector('.multi-remove').addEventListener('click', () => {
       card.remove();
       renumberCards();
       syncTotals();
     });
+
+    card.querySelectorAll('input[data-block-mode]').forEach(input => {
+      input.addEventListener('change', () => setCardAddressMode(card));
+    });
+
     card.querySelectorAll('input, select').forEach(input => {
       input.addEventListener('input', () => updateCard(card));
       input.addEventListener('change', () => updateCard(card));
     });
+
+    setCardAddressMode(card);
     return card;
   }
 
@@ -239,7 +266,7 @@
     if (document.getElementById('epc-multi-property-style')) return;
     const style = document.createElement('style');
     style.id = 'epc-multi-property-style';
-    style.textContent = `.multi-property-panel{border:1.5px solid var(--border);background:#f8fafc;border-radius:var(--radius);padding:16px;margin:18px 0 22px}.multi-property-panel h3{font-size:15px;color:var(--ink);margin-bottom:12px}.multi-block-question{background:white;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:12px}.multi-block-question-label{font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:10px}.multi-block-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}.multi-block-option{display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;background:#fff;font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer}.multi-block-option input{width:auto}.multi-property-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-top:12px}.multi-property-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.multi-property-title{font-size:14px;font-weight:700;color:var(--ink)}.multi-remove{border:none;background:transparent;color:var(--error);font-size:13px;font-weight:700;cursor:pointer}.multi-add-btn{width:100%;border:1.5px dashed var(--accent);background:var(--accent-light);color:var(--accent-dark);border-radius:var(--radius-sm);padding:13px 14px;font-size:14px;font-weight:700;cursor:pointer}.multi-price-line{margin-top:8px;font-size:13px;font-weight:700;color:var(--accent)}.multi-property-summary{display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px}.multi-property-summary.show{display:block}.multi-property-summary ul{margin:8px 0 0 18px;color:var(--ink2);font-size:13px;line-height:1.5}.multi-property-summary strong{color:var(--ink)}.confirm-property-list{margin-top:14px;padding:12px 14px;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;line-height:1.5}.confirm-property-list strong{display:block;margin-bottom:6px}@media(max-width:560px){.multi-block-options{grid-template-columns:1fr}}`;
+    style.textContent = `.multi-property-panel{border:1.5px solid var(--border);background:#f8fafc;border-radius:var(--radius);padding:16px;margin:18px 0 22px}.multi-property-panel h3{font-size:15px;color:var(--ink);margin-bottom:12px}.multi-block-question{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:12px}.multi-block-question-label{font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:10px}.multi-block-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}.multi-block-option{display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;background:#fff;font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer}.multi-block-option input{width:auto}.multi-property-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-top:12px}.multi-property-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.multi-property-title{font-size:14px;font-weight:700;color:var(--ink)}.multi-remove{border:none;background:transparent;color:var(--error);font-size:13px;font-weight:700;cursor:pointer}.multi-add-btn{width:100%;border:1.5px dashed var(--accent);background:var(--accent-light);color:var(--accent-dark);border-radius:var(--radius-sm);padding:13px 14px;font-size:14px;font-weight:700;cursor:pointer}.multi-address-preview{margin-top:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:#f8fafc;color:var(--ink);font-size:14px;font-weight:700;line-height:1.35}.multi-price-line{margin-top:8px;font-size:13px;font-weight:700;color:var(--accent)}.multi-property-summary{display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px}.multi-property-summary.show{display:block}.multi-property-summary ul{margin:8px 0 0 18px;color:var(--ink2);font-size:13px;line-height:1.5}.multi-property-summary strong{color:var(--ink)}.confirm-property-list{margin-top:14px;padding:12px 14px;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;line-height:1.5}.confirm-property-list strong{display:block;margin-bottom:6px}@media(max-width:560px){.multi-block-options{grid-template-columns:1fr}}`;
     document.head.appendChild(style);
   }
 
@@ -251,15 +278,8 @@
     const panel = document.createElement('div');
     panel.id = 'multi-property-panel';
     panel.className = 'multi-property-panel';
-    panel.innerHTML = `<h3>Booking more than one domestic property?</h3><div class="multi-block-question"><div class="multi-block-question-label">Are these properties in the same building/block?</div><div class="multi-block-options"><label class="multi-block-option"><input type="radio" name="multi-block-mode" value="same" checked> Yes, same building/block</label><label class="multi-block-option"><input type="radio" name="multi-block-mode" value="different"> No, different address</label></div></div><div id="multi-property-list"></div><button type="button" class="multi-add-btn" id="multi-add-property-btn">+ Add another property to this booking</button><div class="multi-property-summary" id="multi-property-summary"></div>`;
+    panel.innerHTML = `<h3>Booking more than one domestic property?</h3><div id="multi-property-list"></div><button type="button" class="multi-add-btn" id="multi-add-property-btn">+ Add another property to this booking</button><div class="multi-property-summary" id="multi-property-summary"></div>`;
     domesticPricing.appendChild(panel);
-    panel.querySelectorAll('input[name="multi-block-mode"]').forEach(input => {
-      input.addEventListener('change', () => {
-        document.querySelectorAll('.multi-property-card').forEach(card => card.remove());
-        renumberCards();
-        syncTotals();
-      });
-    });
     document.getElementById('multi-add-property-btn').addEventListener('click', () => {
       const card = createCard();
       document.getElementById('multi-property-list').appendChild(card);
