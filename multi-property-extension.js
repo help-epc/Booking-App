@@ -42,7 +42,6 @@
     const postcode = val('postcode').toUpperCase();
     const zone = postcode ? getZone(postcode) : null;
     const info = priceForDomesticBand(val('domestic-property-value'), val('domestic-sqm'));
-
     return {
       index: 1,
       address: val('address'),
@@ -66,7 +65,6 @@
     const valueBand = String((card.querySelector('.multi-value') || {}).value || '');
     const sqm = String((card.querySelector('.multi-sqm') || {}).value || '');
     const info = priceForDomesticBand(valueBand, sqm);
-
     return {
       index,
       address: String((card.querySelector('.multi-address') || {}).value || '').trim(),
@@ -107,11 +105,9 @@
   function syncTotals() {
     if (state.type !== 'Domestic') return;
     const t = totals();
-
     state.bookingProperties = t.properties;
     state.groupBooking = t.properties.length > 1;
     state.groupBookingCount = t.properties.length;
-
     if (t.properties.length > 1) {
       state.price = t.total;
       state.deposit = t.deposit;
@@ -120,7 +116,6 @@
       state.band = `${t.properties.length} domestic properties`;
       state.pricingBasis = 'domestic_multi_property';
     }
-
     renderStepQuote(t);
     renderMultiSummary(t);
   }
@@ -129,7 +124,6 @@
     if (state.type !== 'Domestic') return true;
     const props = bookingProperties();
     const anchorZone = props[0] && props[0].zone_code;
-
     for (const p of props) {
       if (!p.address) return fail(`Please enter the address for property ${p.index}.`, showAlert);
       if (!p.postcode || !getZone(p.postcode)) return fail(`Please enter a valid London postcode for property ${p.index}.`, showAlert);
@@ -139,7 +133,6 @@
       if (!p.quote_amount || p.quote_amount <= 0) return fail(`Please complete the pricing for property ${p.index}.`, showAlert);
       if (anchorZone && p.zone_code && p.zone_code !== anchorZone) return fail('These properties appear to be in different route areas. Please make a separate booking for properties outside the same area.', showAlert);
     }
-
     return true;
   }
 
@@ -154,7 +147,6 @@
 
   function renderStepQuote(t) {
     if (!t || t.properties.length <= 1) return;
-
     ['step2', 'step3'].forEach(step => {
       const fee = document.getElementById(`quote-fee-${step}`);
       const dep = document.getElementById(`quote-deposit-${step}`);
@@ -168,22 +160,13 @@
   function renderMultiSummary(t) {
     const el = document.getElementById('multi-property-summary');
     if (!el || !t) return;
-
     if (t.properties.length <= 1) {
       el.classList.remove('show');
       el.innerHTML = '';
       return;
     }
-
     el.classList.add('show');
-    el.innerHTML = `
-      <strong>${t.properties.length} properties in this booking</strong>
-      <ul>${t.properties.map(p => `<li>${propertyLine(p)}</li>`).join('')}</ul>
-      <p style="margin-top:10px;margin-bottom:0">
-        Total assessment fee: <strong>${formatPrice(t.total)}</strong><br>
-        Deposit due today: <strong>${formatPrice(t.deposit)}</strong>
-      </p>
-    `;
+    el.innerHTML = `<strong>${t.properties.length} properties in this booking</strong><ul>${t.properties.map(p => `<li>${propertyLine(p)}</li>`).join('')}</ul><p style="margin-top:10px;margin-bottom:0">Total assessment fee: <strong>${formatPrice(t.total)}</strong><br>Deposit due today: <strong>${formatPrice(t.deposit)}</strong></p>`;
   }
 
   function subtypeOptions() {
@@ -196,29 +179,16 @@
     const number = nextPropertyNumber++;
     const card = document.createElement('div');
     card.className = 'multi-property-card';
-    card.innerHTML = `
-      <div class="multi-property-card-head"><div class="multi-property-title">Property ${number}</div><button type="button" class="multi-remove">Remove</button></div>
-      <div class="field"><label>Property address <span class="req">*</span></label><input type="text" class="multi-address" placeholder="e.g. Flat 2, 14 Highbury Grove, London"></div>
-      <div class="field-row">
-        <div class="field"><label>Postcode <span class="req">*</span></label><input type="text" class="multi-postcode" placeholder="e.g. N5 1PF" style="text-transform:uppercase"><div class="hint">Must be in the same route area as the first property.</div></div>
-        <div class="field"><label>Property type <span class="req">*</span></label><select class="multi-subtype">${subtypeOptions()}</select></div>
-      </div>
-      <div class="field"><label>Estimated property value <span class="req">*</span></label><select class="multi-value"><option value="">— Select —</option><option value="999000">Up to £999,000</option><option value="1999999">£1,000,000 to £1,999,999</option><option value="2999999">£2,000,000 to £2,999,999</option><option value="3999999">£3,000,000 to £3,999,999</option><option value="4000000">Over £4,000,000</option></select></div>
-      <div class="field multi-sqm-field" style="display:none"><label>Approximate floor area m² <span class="req">*</span></label><input type="number" min="1" class="multi-sqm" placeholder="e.g. 180"><div class="hint">Required for properties over £4,000,000.</div></div>
-      <div class="multi-price-line">Price: —</div>
-    `;
-
+    card.innerHTML = `<div class="multi-property-card-head"><div class="multi-property-title">Property ${number}</div><button type="button" class="multi-remove">Remove</button></div><div class="field"><label>Property address <span class="req">*</span></label><input type="text" class="multi-address" placeholder="e.g. Flat 2, 14 Highbury Grove, London"></div><div class="field-row"><div class="field"><label>Postcode <span class="req">*</span></label><input type="text" class="multi-postcode" placeholder="e.g. N5 1PF" style="text-transform:uppercase"><div class="hint">Must be in the same route area as the first property.</div></div><div class="field"><label>Property type <span class="req">*</span></label><select class="multi-subtype">${subtypeOptions()}</select></div></div><div class="field"><label>Estimated property value <span class="req">*</span></label><select class="multi-value"><option value="">— Select —</option><option value="999000">Up to £999,000</option><option value="1999999">£1,000,000 to £1,999,999</option><option value="2999999">£2,000,000 to £2,999,999</option><option value="3999999">£3,000,000 to £3,999,999</option><option value="4000000">Over £4,000,000</option></select></div><div class="field multi-sqm-field" style="display:none"><label>Approximate floor area m² <span class="req">*</span></label><input type="number" min="1" class="multi-sqm" placeholder="e.g. 180"><div class="hint">Required for properties over £4,000,000.</div></div><div class="multi-price-line">Price: —</div>`;
     card.querySelector('.multi-remove').addEventListener('click', () => {
       card.remove();
       renumberCards();
       syncTotals();
     });
-
     card.querySelectorAll('input, select').forEach(input => {
       input.addEventListener('input', () => updateCard(card));
       input.addEventListener('change', () => updateCard(card));
     });
-
     return card;
   }
 
@@ -228,10 +198,8 @@
     const info = priceForDomesticBand(value, sqm);
     const sqmField = card.querySelector('.multi-sqm-field');
     const priceLine = card.querySelector('.multi-price-line');
-
     if (sqmField) sqmField.style.display = value === '4000000' ? 'block' : 'none';
     if (priceLine) priceLine.textContent = info.price ? `Price: ${formatPrice(info.price)}` : 'Price: —';
-
     syncTotals();
   }
 
@@ -247,7 +215,7 @@
     if (document.getElementById('epc-multi-property-style')) return;
     const style = document.createElement('style');
     style.id = 'epc-multi-property-style';
-    style.textContent = `.multi-property-panel{border:1.5px solid var(--border);background:#f8fafc;border-radius:var(--radius);padding:16px;margin:18px 0 22px}.multi-property-panel h3{font-size:15px;color:var(--ink);margin-bottom:4px}.multi-property-panel p{color:var(--ink3);font-size:13px;line-height:1.5;margin-bottom:14px}.multi-property-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-top:12px}.multi-property-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.multi-property-title{font-size:14px;font-weight:700;color:var(--ink)}.multi-remove{border:none;background:transparent;color:var(--error);font-size:13px;font-weight:700;cursor:pointer}.multi-add-btn{width:100%;border:1.5px dashed var(--accent);background:var(--accent-light);color:var(--accent-dark);border-radius:var(--radius-sm);padding:13px 14px;font-size:14px;font-weight:700;cursor:pointer}.multi-price-line{margin-top:8px;font-size:13px;font-weight:700;color:var(--accent)}.multi-property-summary{display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px}.multi-property-summary.show{display:block}.multi-property-summary ul{margin:8px 0 0 18px;color:var(--ink2);font-size:13px;line-height:1.5}.multi-property-summary strong{color:var(--ink)}.confirm-property-list{margin-top:14px;padding:12px 14px;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;line-height:1.5}.confirm-property-list strong{display:block;margin-bottom:6px}`;
+    style.textContent = `.multi-property-panel{border:1.5px solid var(--border);background:#f8fafc;border-radius:var(--radius);padding:16px;margin:18px 0 22px}.multi-property-panel h3{font-size:15px;color:var(--ink);margin-bottom:12px}.multi-property-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-top:12px}.multi-property-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.multi-property-title{font-size:14px;font-weight:700;color:var(--ink)}.multi-remove{border:none;background:transparent;color:var(--error);font-size:13px;font-weight:700;cursor:pointer}.multi-add-btn{width:100%;border:1.5px dashed var(--accent);background:var(--accent-light);color:var(--accent-dark);border-radius:var(--radius-sm);padding:13px 14px;font-size:14px;font-weight:700;cursor:pointer}.multi-price-line{margin-top:8px;font-size:13px;font-weight:700;color:var(--accent)}.multi-property-summary{display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px}.multi-property-summary.show{display:block}.multi-property-summary ul{margin:8px 0 0 18px;color:var(--ink2);font-size:13px;line-height:1.5}.multi-property-summary strong{color:var(--ink)}.confirm-property-list{margin-top:14px;padding:12px 14px;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;line-height:1.5}.confirm-property-list strong{display:block;margin-bottom:6px}`;
     document.head.appendChild(style);
   }
 
@@ -255,15 +223,12 @@
     if (document.getElementById('multi-property-panel')) return;
     const domesticPricing = document.getElementById('domestic-pricing');
     if (!domesticPricing) return;
-
     injectStyles();
-
     const panel = document.createElement('div');
     panel.id = 'multi-property-panel';
     panel.className = 'multi-property-panel';
-    panel.innerHTML = `<h3>Booking more than one domestic property?</h3><p>Add each extra property here. Each property is priced separately using the normal EPC Pro price bands, then the deposit is calculated from the combined total.</p><div id="multi-property-list"></div><button type="button" class="multi-add-btn" id="multi-add-property-btn">+ Add another property to this booking</button><div class="multi-property-summary" id="multi-property-summary"></div>`;
+    panel.innerHTML = `<h3>Booking more than one domestic property?</h3><div id="multi-property-list"></div><button type="button" class="multi-add-btn" id="multi-add-property-btn">+ Add another property to this booking</button><div class="multi-property-summary" id="multi-property-summary"></div>`;
     domesticPricing.appendChild(panel);
-
     document.getElementById('multi-add-property-btn').addEventListener('click', () => {
       const card = createCard();
       document.getElementById('multi-property-list').appendChild(card);
@@ -341,7 +306,6 @@
     syncTotals();
     const t = totals();
     if (t.properties.length <= 1) return;
-
     document.getElementById('cf-address').textContent = `${t.properties.length} domestic properties`;
     document.getElementById('cf-postcode').textContent = t.properties[0].postcode;
     document.getElementById('cf-service').textContent = 'Domestic EPC grouped booking';
@@ -351,7 +315,6 @@
     document.getElementById('cf-total').textContent = formatPrice(t.total);
     document.getElementById('cf-deposit').textContent = formatPrice(t.deposit);
     document.getElementById('cf-balance').textContent = formatPrice(t.balance);
-
     let list = document.getElementById('confirm-property-list');
     const grid = document.querySelector('#step-5 .confirm-grid');
     if (!list && grid) {
