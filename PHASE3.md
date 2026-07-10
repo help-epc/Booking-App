@@ -34,8 +34,12 @@ Phase 3 has been implemented as a disconnected future integration between the Bo
 
 ## Verification completed
 
-- Single-property booking: Â£60 fee / Â£30 deposit / one property / one item / one job.
-- Multi-property booking: separate Â£60 and Â£110 rules; Â£170 group total / Â£85 deposit / two properties / two items / two jobs.
+- Pricing is per property/job, never a generic single-booking fee and never automatically discounted.
+- Single-property test: a property below Â£1 million correctly produced its own Â£60 fee / Â£30 deposit / one property / one item / one job.
+- Same-band multi-property test: two properties below Â£1 million produced Â£60 + Â£60 = Â£120, with Â£30 + Â£30 = Â£60 deposit.
+- Boundary multi-property test: Â£999,999 and Â£1,000,000 properties produced Â£60 + Â£80 = Â£140, with Â£30 + Â£40 = Â£70 deposit.
+- Mixed-band multi-property test: below-Â£1-million and Â£2â€“3-million properties produced Â£60 + Â£110 = Â£170, with Â£30 + Â£55 = Â£85 deposit.
+- No automatic multi-property or same-building discount exists. A different price requires an explicitly authorised custom price and recorded reason.
 - Same-building booking: group flag and individual property/job records verified.
 - Arbitrary same-building overflow: rejected without an approved capacity override.
 - Capacity: unapproved sixth AM unit rejected.
