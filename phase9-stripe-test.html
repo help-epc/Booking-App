@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Phase 9 Stripe staging test</title>
+<style>
+body{font:16px system-ui,sans-serif;max-width:680px;margin:48px auto;padding:0 20px;color:#172033}
+button{padding:12px 18px;border:0;border-radius:8px;background:#1a3d5c;color:#fff;font-weight:700;cursor:pointer}
+button:disabled{opacity:.6} pre{white-space:pre-wrap;background:#f4f6f9;padding:16px;border-radius:8px}
+a{color:#1d4ed8}
+</style>
+</head>
+<body>
+<h1>Phase 9 Stripe staging test</h1>
+<p>This protected page creates one synthetic booking in the isolated staging database.</p>
+<button id="create">Create staging checkout</button>
+<pre id="status">Ready.</pre>
+<script>
+const button=document.getElementById('create');
+const status=document.getElementById('status');
+button.addEventListener('click',async()=>{
+  button.disabled=true;
+  status.textContent='Creating checkout…';
+  const bypass=new URLSearchParams(location.search).get('x-vercel-protection-bypass');
+  const suffix=bypass?'?x-vercel-protection-bypass='+encodeURIComponent(bypass):'';
+  const key='phase9-deposit-'+Date.now();
+  const payload={
+    customer:{name:'Phase 9 Stripe Test',email:'phase9-stripe-test@example.com',phone:'07000000000'},
+    booking_date:'2027-01-20',
+    booking_period:'AM',
+    same_building:false,
+    properties:[{address:'1 Phase 9 Test Road',city:'London',postcode:'SW1A 1AA',service_type:'domestic_epc',property_value_gbp:400000}]
+  };
+  try{
+    const response=await fetch('/api/v2/prepare-checkout'+suffix,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Idempotency-Key':key},
+      body:JSON.stringify(payload)
+    });
+    const result=await response.json();
+    if(!response.ok||!result.checkout_url)throw new Error(result.error||'Checkout creation failed.');
+    status.textContent=JSON.stringify({ok:true,reference:result.reference,item_count:result.item_count},null,2);
+    const link=document.createElement('a');
+    link.href=result.checkout_url;
+    link.textContent='Open Stripe test checkout';
+    link.id='checkout-link';
+    document.body.append(document.createElement('p')).append(link);
+  }catch(error){
+    status.textContent=JSON.stringify({ok:false,error:error.message},null,2);
+    button.disabled=false;
+  }
+});
+</script>
+</body>
+</html>
