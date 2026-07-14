@@ -1,7 +1,7 @@
 
 const Stripe = require('stripe');
 const { createClient } = require('@supabase/supabase-js');
-const { bridgeEnabled, requiredEnv } = require('../_lib/v2-bridge');
+const { assertStripeTestEvent, bridgeEnabled, requiredEnv, requireStripeTestSecret } = require('../_lib/v2-bridge');
 
 async function rawBody(req) {
   const chunks = [];
@@ -13,8 +13,8 @@ module.exports = async function handler(req, res) {
   if (!bridgeEnabled()) return res.status(404).json({ ok: false });
   if (req.method !== 'POST') return res.status(405).json({ ok: false });
   try {
-    const stripe = new Stripe(requiredEnv('STRIPE_SECRET_KEY'));
-    const event = stripe.webhooks.constructEvent(await rawBody(req), req.headers['stripe-signature'], requiredEnv('V2_STRIPE_WEBHOOK_SECRET'));
+    const stripe = new Stripe(requireStripeTestSecret());
+    const event = assertStripeTestEvent(stripe.webhooks.constructEvent(await rawBody(req), req.headers['stripe-signature'], requiredEnv('V2_STRIPE_WEBHOOK_SECRET')));
     if (!['checkout.session.completed', 'checkout.session.expired'].includes(event.type)) return res.status(200).json({ received: true, ignored: true });
     const session = event.data.object;
     const supabase = createClient(requiredEnv('SUPABASE_URL'), requiredEnv('SUPABASE_SERVICE_ROLE_KEY'));
