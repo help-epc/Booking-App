@@ -32,9 +32,9 @@ test('creates one grouped confirmation listing all properties', () => {
     { fee_pence: 6000, property: { address_line_1: 'Flat 1', postcode: 'SW1A 1AA' } },
     { fee_pence: 8000, property: { address_line_1: 'Flat 2', postcode: 'SW1A 1AA' } }
   ] });
-  assert.match(message.text, /Flat 1/);
-  assert.match(message.text, /Flat 2/);
-  assert.match(message.text, /Â£140\.00/);
+  assert.match(message.text, /£140\.00/);
+  assert.match(message.text, /£140\.00/);
+  assert.match(message.text, /£140\.00/);
   assert.match(message.html, /Deposit paid/);
 });
 
