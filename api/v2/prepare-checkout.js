@@ -1,7 +1,7 @@
 
 const Stripe = require('stripe');
 const { createClient } = require('@supabase/supabase-js');
-const { bridgeEnabled, buildDraftRequest, idempotencyKey, requiredEnv } = require('../_lib/v2-bridge');
+const { bridgeEnabled, buildDraftRequest, idempotencyKey, requiredEnv, requireStripeTestSecret } = require('../_lib/v2-bridge');
 
 module.exports = async function handler(req, res) {
   if (!bridgeEnabled()) return res.status(404).json({ ok: false, error: 'V2 booking bridge is not active.' });
@@ -24,7 +24,7 @@ module.exports = async function handler(req, res) {
     if (error) throw error;
     groupId = group.booking_group_id;
     const returnUrl = requiredEnv('V2_BOOKING_RETURN_URL').replace(/\/$/, '');
-    const stripe = new Stripe(requiredEnv('STRIPE_SECRET_KEY'));
+    const stripe = new Stripe(requireStripeTestSecret());
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       customer_email: draft.payload.customer.email,
