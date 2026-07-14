@@ -87,6 +87,21 @@ function requiredEnv(name) {
   return String(value).trim();
 }
 
+function requireStripeTestSecret() {
+  const value = requiredEnv('STRIPE_SECRET_KEY');
+  if (!/^sk_test_[A-Za-z0-9]+$/.test(value)) {
+    throw new Error('Stripe test-mode secret key required; live-mode Stripe is disabled for the V2 staging bridge.');
+  }
+  return value;
+}
+
+function assertStripeTestEvent(event) {
+  if (!event || event.livemode !== false) {
+    throw new Error('Stripe live-mode events are disabled for the V2 staging bridge.');
+  }
+  return event;
+}
+
 function timingSafeSecret(value, expected) {
   const a = Buffer.from(String(value || ''));
   const b = Buffer.from(String(expected || ''));
@@ -113,5 +128,5 @@ function groupedConfirmation({ group, contact, items }) {
   return { subject, text: textBody, html };
 }
 
-module.exports = { bridgeEnabled, buildDraftRequest, groupedConfirmation, idempotencyKey, money, requiredEnv, timingSafeSecret };
+module.exports = { assertStripeTestEvent, bridgeEnabled, buildDraftRequest, groupedConfirmation, idempotencyKey, money, requiredEnv, requireStripeTestSecret, timingSafeSecret };
 
