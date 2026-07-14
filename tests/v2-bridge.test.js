@@ -1,7 +1,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildDraftRequest, groupedConfirmation, idempotencyKey } = require('../api/_lib/v2-bridge');
+const { assertStripeTestEvent, buildDraftRequest, groupedConfirmation, idempotencyKey, requireStripeTestSecret } = require('../api/_lib/v2-bridge');
 
 test('normalises a single domestic booking without accepting prices', () => {
   const result = buildDraftRequest({ customer_name: ' Jane  Doe ', customer_email: 'JANE@EXAMPLE.COM', booking_date: '2027-01-10', booking_window: 'am', address: '1 Test Road', postcode: 'sw1a 1aa', property_value: 999999, price: 1, deposit: 1 });
@@ -38,3 +38,19 @@ test('creates one grouped confirmation listing all properties', () => {
   assert.match(message.html, /Deposit paid/);
 });
 
+
+
+test('fails closed before Stripe can use a live secret key or live event', () => {
+  const previous = process.env.STRIPE_SECRET_KEY;
+  try {
+    process.env.STRIPE_SECRET_KEY = 'sk_live_forbidden';
+    assert.throws(() => requireStripeTestSecret(), /test-mode secret key required/i);
+    process.env.STRIPE_SECRET_KEY = 'sk_test_safe123';
+    assert.equal(requireStripeTestSecret(), 'sk_test_safe123');
+    assert.throws(() => assertStripeTestEvent({ livemode: true }), /live-mode events are disabled/i);
+    assert.equal(assertStripeTestEvent({ livemode: false }).livemode, false);
+  } finally {
+    if (previous === undefined) delete process.env.STRIPE_SECRET_KEY;
+    else process.env.STRIPE_SECRET_KEY = previous;
+  }
+});
