@@ -15,9 +15,11 @@ async function sendEmail(message, to) {
 
 module.exports = async function handler(req, res) {
   if (!bridgeEnabled()) return res.status(404).json({ ok: false });
-  if (req.method !== 'POST') return res.status(405).json({ ok: false });
+  if (!['GET', 'POST'].includes(req.method)) return res.status(405).json({ ok: false });
   const supplied = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '');
-  if (!timingSafeSecret(supplied, requiredEnv('V2_BOOKING_BRIDGE_SECRET'))) return res.status(401).json({ ok: false });
+  const bridgeSecret = process.env.V2_BOOKING_BRIDGE_SECRET || '';
+  const cronSecret = process.env.CRON_SECRET || '';
+  if (!timingSafeSecret(supplied, bridgeSecret) && !timingSafeSecret(supplied, cronSecret)) return res.status(401).json({ ok: false });
   const supabase = createClient(requiredEnv('SUPABASE_URL'), requiredEnv('SUPABASE_SERVICE_ROLE_KEY'));
   const { data: rows, error } = await supabase.from('v2_email_outbox').select('*').in('status', ['pending', 'failed']).lte('next_attempt_at', new Date().toISOString()).limit(10);
   if (error) return res.status(500).json({ ok: false });

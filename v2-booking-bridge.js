@@ -15,12 +15,16 @@
       body: JSON.stringify({ ...payload, idempotency_key: idempotencyKey })
     });
     const result = await response.json().catch(() => ({}));
-    if (!response.ok || !result.checkout_url) throw new Error(result.error || 'The V2 checkout could not be prepared.');
+    if (!response.ok || !result.checkout_url) {
+      const error = new Error(result.error || 'The V2 checkout could not be prepared.');
+      error.code = response.status === 404 ? 'V2_BRIDGE_DISABLED' : 'V2_CHECKOUT_FAILED';
+      throw error;
+    }
     return { ...result, idempotency_key: idempotencyKey };
   }
 
-  // This file is deliberately not loaded by the production booking page.
-  // A separately approved cutover will connect the existing submit action to this adapter.
+  // The public page loads this adapter, but the server-side bridge remains fail-closed
+  // unless V2_BOOKING_BRIDGE_ENABLED=true is deliberately configured.
   global.EPCV2BookingBridge = Object.freeze({ createIdempotencyKey, prepareCheckout });
 })(window);
 

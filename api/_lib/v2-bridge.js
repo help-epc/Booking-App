@@ -67,7 +67,7 @@ function buildDraftRequest(body = {}) {
     },
     bookingDate: date(body.booking_date || body.date),
     bookingPeriod: period(body.booking_period || body.booking_window || body.window),
-    sameBuilding: body.same_building === true || body.same_building === 'true'
+    sameBuilding: body.same_building === true || body.same_building === 'true' || body.same_building_block === true || body.same_building_block === 'true'
   };
 }
 
@@ -87,17 +87,18 @@ function requiredEnv(name) {
   return String(value).trim();
 }
 
-function requireStripeTestSecret() {
+function requireStripeSecret() {
   const value = requiredEnv('STRIPE_SECRET_KEY');
-  if (!/^sk_test_[A-Za-z0-9]+$/.test(value)) {
-    throw new Error('Stripe test-mode secret key required; live-mode Stripe is disabled for the V2 staging bridge.');
+  if (!/^sk_(test|live)_[A-Za-z0-9]+$/.test(value)) {
+    throw new Error('A valid Stripe test-mode or live-mode secret key is required.');
   }
   return value;
 }
 
-function assertStripeTestEvent(event) {
-  if (!event || event.livemode !== false) {
-    throw new Error('Stripe live-mode events are disabled for the V2 staging bridge.');
+function assertStripeEventMode(event, secret) {
+  const liveKey = String(secret || '').startsWith('sk_live_');
+  if (!event || event.livemode !== liveKey) {
+    throw new Error('Stripe event mode does not match the configured Stripe secret key.');
   }
   return event;
 }
@@ -128,5 +129,5 @@ function groupedConfirmation({ group, contact, items }) {
   return { subject, text: textBody, html };
 }
 
-module.exports = { assertStripeTestEvent, bridgeEnabled, buildDraftRequest, groupedConfirmation, idempotencyKey, money, requiredEnv, requireStripeTestSecret, timingSafeSecret };
+module.exports = { assertStripeEventMode, bridgeEnabled, buildDraftRequest, groupedConfirmation, idempotencyKey, money, requiredEnv, requireStripeSecret, timingSafeSecret };
 

@@ -136,17 +136,26 @@
           throw new Error('Deposit amount is missing. Please go back and check the quote.');
         }
 
-        const response = await fetch('/api/create-checkout-session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(commonBookingData)
-        });
+        let result = null;
+        if (window.EPCV2BookingBridge) {
+          try {
+            result = await window.EPCV2BookingBridge.prepareCheckout(commonBookingData);
+          } catch (error) {
+            if (error.code !== 'V2_BRIDGE_DISABLED') throw error;
+          }
+        }
 
-        const result = await response.json().catch(() => null);
-
-        if (!response.ok || !result || !result.ok || !result.checkout_url) {
-          const message = result && result.error ? result.error : 'Stripe checkout could not be created.';
-          throw new Error(message);
+        if (!result) {
+          const response = await fetch('/api/create-checkout-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(commonBookingData)
+          });
+          result = await response.json().catch(() => null);
+          if (!response.ok || !result || !result.ok || !result.checkout_url) {
+            const message = result && result.error ? result.error : 'Stripe checkout could not be created.';
+            throw new Error(message);
+          }
         }
 
         label.textContent = 'Redirecting to secure payment...';
