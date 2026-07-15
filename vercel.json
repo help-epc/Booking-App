@@ -12,6 +12,10 @@
     {
       "path": "/api/cron/sync-bookings-to-calendar",
       "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/v2/process-email-outbox",
+      "schedule": "*/10 * * * *"
     }
   ]
 }

@@ -332,7 +332,7 @@
   const originalFetch = window.fetch.bind(window);
   window.fetch = function (url, options) {
     const urlString = typeof url === 'string' ? url : (url && url.url) || '';
-    if (urlString.includes('/api/create-checkout-session') && options && options.body && state.type === 'Domestic') {
+    if ((urlString.includes('/api/create-checkout-session') || urlString.includes('/api/v2/prepare-checkout')) && options && options.body && state.type === 'Domestic') {
       try {
         options = Object.assign({}, options, { body: JSON.stringify(patchPayload(JSON.parse(options.body))) });
       } catch (err) {
