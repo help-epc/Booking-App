@@ -36,6 +36,10 @@ test('creates one grouped confirmation listing all properties', () => {
   assert.match(message.text, /£140\.00/);
   assert.match(message.text, /£140\.00/);
   assert.match(message.html, /Deposit paid/);
+  assert.equal(message.subject, 'EPC Pro booking confirmed \u2014 V2-ABC');
+  assert.ok(!message.subject.includes('â€”'));
+  assert.ok(!message.text.includes('â€”'));
+  assert.ok(!message.html.includes('â€”'));
 });
 
 
