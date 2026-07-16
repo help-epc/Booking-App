@@ -120,11 +120,11 @@ function escapeHtml(value) {
 function groupedConfirmation({ group, contact, items }) {
   const rows = items.map((item, index) => {
     const property = item.property || {};
-    return `${index + 1}. ${property.address_line_1}, ${property.postcode} â€” ${money(item.fee_pence)}`;
+    return `${index + 1}. ${property.address_line_1}, ${property.postcode} \u2014 ${money(item.fee_pence)}`;
   });
-  const subject = `EPC Pro booking confirmed â€” ${group.reference}`;
+  const subject = `EPC Pro booking confirmed \u2014 ${group.reference}`;
   const textBody = `Hello ${contact.full_name},\n\nYour EPC booking is confirmed.\n\nReference: ${group.reference}\n${rows.join('\n')}\n\nTotal: ${money(group.total_fee_pence)}\nDeposit paid: ${money(group.total_deposit_pence)}\nBalance due: ${money(group.total_fee_pence - group.total_deposit_pence)}\n\nEPC Pro\nhelp@theepc.pro`;
-  const htmlRows = items.map(item => `<li>${escapeHtml(item.property.address_line_1)}, ${escapeHtml(item.property.postcode)} â€” <strong>${escapeHtml(money(item.fee_pence))}</strong></li>`).join('');
+  const htmlRows = items.map(item => `<li>${escapeHtml(item.property.address_line_1)}, ${escapeHtml(item.property.postcode)} &mdash; <strong>${escapeHtml(money(item.fee_pence))}</strong></li>`).join('');
   const html = `<div style="font-family:Arial,sans-serif;color:#172033;line-height:1.55;max-width:680px;margin:auto"><h1 style="color:#1a3d5c;font-size:24px">Booking confirmed</h1><p>Hello ${escapeHtml(contact.full_name)},</p><p>Your EPC booking is confirmed.</p><p><strong>Reference:</strong> ${escapeHtml(group.reference)}</p><ol>${htmlRows}</ol><p><strong>Total:</strong> ${escapeHtml(money(group.total_fee_pence))}<br><strong>Deposit paid:</strong> ${escapeHtml(money(group.total_deposit_pence))}<br><strong>Balance due:</strong> ${escapeHtml(money(group.total_fee_pence - group.total_deposit_pence))}</p><p>EPC Pro<br><a href="mailto:help@theepc.pro">help@theepc.pro</a></p></div>`;
   return { subject, text: textBody, html };
 }
