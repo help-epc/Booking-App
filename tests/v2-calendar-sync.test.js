@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 1.7 seconds
-Output:
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { buildEvent, eventIdForJob, insertEvent } = require('../api/v2-calendar-sync');
