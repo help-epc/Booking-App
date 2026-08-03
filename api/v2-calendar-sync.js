@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 1.6 seconds
-Output:
 const crypto = require('node:crypto');
 
 function env(name, fallback = '') {
@@ -15,7 +12,7 @@ function eventIdForJob(jobId) {
 }
 
 function money(value) {
-  return `Â£${(Number(value || 0) / 100).toFixed(2)}`;
+  return `£${(Number(value || 0) / 100).toFixed(2)}`;
 }
 
 function buildEvent({ calendarRow, job, item, group, property, contact }) {
