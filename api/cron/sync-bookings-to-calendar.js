@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 1.7 seconds
-Output:
 const { createClient } = require('@supabase/supabase-js');
 const { processBookingOps, safeDocuments } = require('../booking-ops');
 const { processV2CalendarQueue } = require('../v2-calendar-sync');
