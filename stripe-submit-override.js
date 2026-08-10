@@ -342,7 +342,7 @@
       <div class="route-pill-row"><span class="route-pill ${routeFit.code || 'unknown'}">${getRoutePillText(routeFit)}</span>${rulePill}</div>
       <div class="window-options">
         <div class="window-option ${amDisabled ? 'disabled' : ''}" data-date="${day.iso}" data-datestr="${day.dateStr}" data-window="AM">
-          <div class="window-name">AM window</div><div class="window-time">08:00 - 13:00</div><div class="window-left">${amDisabled ? (availability.amBlocked > 0 ? 'AM unavailable â€” blocked' : 'AM unavailable') : availability.amLeft + ' AM spaces left'}</div>
+          <div class="window-name">AM window</div><div class="window-time">08:00 - 13:00</div><div class="window-left">${amDisabled ? (availability.amBlocked > 0 ? 'AM unavailable — blocked' : 'AM unavailable') : availability.amLeft + ' AM spaces left'}</div>
         </div>
         <div class="window-option ${pmDisabled ? 'disabled' : ''}" data-date="${day.iso}" data-datestr="${day.dateStr}" data-window="PM">
           <div class="window-name">PM window</div><div class="window-time">13:00 - 17:00</div><div class="window-left">${pmStatusText}</div>
@@ -419,4 +419,3 @@
     });
   }
 })();
-
