@@ -17,7 +17,7 @@
     const result = await response.json().catch(() => ({}));
     if (!response.ok || !result.checkout_url) {
       const error = new Error(result.error || 'The V2 checkout could not be prepared.');
-      error.code = response.status === 404 ? 'V2_BRIDGE_DISABLED' : 'V2_CHECKOUT_FAILED';
+      error.code = response.status === 404 ? 'V2_BRIDGE_DISABLED' : (response.status === 409 ? 'CAPACITY_UNAVAILABLE' : 'V2_CHECKOUT_FAILED');
       throw error;
     }
     return { ...result, idempotency_key: idempotencyKey };
@@ -27,4 +27,5 @@
   // unless V2_BOOKING_BRIDGE_ENABLED=true is deliberately configured.
   global.EPCV2BookingBridge = Object.freeze({ createIdempotencyKey, prepareCheckout });
 })(window);
+
 
