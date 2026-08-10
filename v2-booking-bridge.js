@@ -28,4 +28,3 @@
   global.EPCV2BookingBridge = Object.freeze({ createIdempotencyKey, prepareCheckout });
 })(window);
 
-
