@@ -265,6 +265,14 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       console.error('Booking submission error:', err);
+      if (err && err.code === 'CAPACITY_UNAVAILABLE') {
+        submitBtn.disabled = false;
+        label.textContent = 'Confirm booking request';
+        goToStep(3);
+        await loadLiveAvailability();
+        alert('That time has just become unavailable. The calendar has been refreshed with the latest available dates.');
+        return;
+      }
       alert('There was a problem continuing with the booking: ' + (err.message || err));
       submitBtn.disabled = false;
       label.textContent = 'Confirm booking request';
@@ -323,7 +331,7 @@
     const amDisabled = !isBookingWindowSelectable(availability, 'AM');
     const pmLockedUntilMorningFull = availability.pmAvailable && availability.amAvailable;
     const pmDisabled = !isBookingWindowSelectable(availability, 'PM');
-    const pmStatusText = !availability.pmAvailable ? 'PM full' : pmLockedUntilMorningFull ? 'PM opens after AM full' : availability.pmLeft + ' PM spaces left';
+    const pmStatusText = !availability.pmAvailable ? 'PM unavailable' : pmLockedUntilMorningFull ? 'PM opens after AM full' : availability.pmLeft + ' PM spaces left';
     const rulePill = availability.amAvailable && availability.pmAvailable ? '<span class="window-rule-pill">PM opens once AM is full</span>' : '';
 
     dayCard.innerHTML = `
@@ -334,7 +342,7 @@
       <div class="route-pill-row"><span class="route-pill ${routeFit.code || 'unknown'}">${getRoutePillText(routeFit)}</span>${rulePill}</div>
       <div class="window-options">
         <div class="window-option ${amDisabled ? 'disabled' : ''}" data-date="${day.iso}" data-datestr="${day.dateStr}" data-window="AM">
-          <div class="window-name">AM window</div><div class="window-time">08:00 - 13:00</div><div class="window-left">${amDisabled ? 'AM full' : availability.amLeft + ' AM spaces left'}</div>
+          <div class="window-name">AM window</div><div class="window-time">08:00 - 13:00</div><div class="window-left">${amDisabled ? (availability.amBlocked > 0 ? 'AM unavailable — blocked' : 'AM unavailable') : availability.amLeft + ' AM spaces left'}</div>
         </div>
         <div class="window-option ${pmDisabled ? 'disabled' : ''}" data-date="${day.iso}" data-datestr="${day.dateStr}" data-window="PM">
           <div class="window-name">PM window</div><div class="window-time">13:00 - 17:00</div><div class="window-left">${pmStatusText}</div>

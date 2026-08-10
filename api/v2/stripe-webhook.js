@@ -9,6 +9,11 @@ async function rawBody(req) {
   return Buffer.concat(chunks);
 }
 
+function isV2CheckoutSession(session) {
+  const metadata = session && session.metadata;
+  return Boolean(metadata && metadata.v2_booking_group_id && metadata.v2_reference);
+}
+
 module.exports = async function handler(req, res) {
   if (!bridgeEnabled()) return res.status(404).json({ ok: false });
   if (req.method !== 'POST') return res.status(405).json({ ok: false });
@@ -23,6 +28,9 @@ module.exports = async function handler(req, res) {
       const groupId = session.metadata && session.metadata.v2_booking_group_id;
       if (groupId) await supabase.rpc('v2_cancel_booking_draft', { p_booking_group_id: groupId, p_reason: 'stripe_checkout_expired' });
       return res.status(200).json({ received: true });
+    }
+    if (!isV2CheckoutSession(session)) {
+      return res.status(200).json({ received: true, ignored: true, reason: 'not_v2_checkout_session' });
     }
     const { data: confirmation, error } = await supabase.rpc('v2_confirm_checkout', {
       p_stripe_event_id: event.id,
@@ -42,4 +50,5 @@ module.exports = async function handler(req, res) {
 };
 
 module.exports.config = { api: { bodyParser: false } };
+module.exports.isV2CheckoutSession = isV2CheckoutSession;
 

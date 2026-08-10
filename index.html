@@ -1702,6 +1702,7 @@ const state = {
   dateStr: '',
   bookingWindow: '',
   liveJobs: [],
+  capacityByDate: {},
   availabilityLoaded: false,
   availabilityError: '',
   selectedRouteFit: null,
@@ -1844,6 +1845,33 @@ function getActiveJobsForDate(dateISO) {
 
 function getAvailabilityForDate(dateISO) {
   const jobs = getActiveJobsForDate(dateISO);
+  const snapshot = state.capacityByDate[dateISO];
+  if (snapshot && snapshot.periods && snapshot.periods.AM && snapshot.periods.PM) {
+    const am = snapshot.periods.AM;
+    const pm = snapshot.periods.PM;
+    const requiredUnits = Math.max(1, Number(state.groupBookingCount || 1));
+    const amLeft = Math.max(0, Number(am.remaining_units || 0));
+    const pmLeft = Math.max(0, Number(pm.remaining_units || 0));
+    const dayLeft = amLeft + pmLeft;
+    const amBooked = Number(am.used_units || 0);
+    const pmBooked = Number(pm.used_units || 0);
+    return {
+      jobs,
+      amBooked,
+      pmBooked,
+      dayBooked: amBooked + pmBooked,
+      amBlocked: Number(am.blocked_units || 0),
+      pmBlocked: Number(pm.blocked_units || 0),
+      amLeft,
+      pmLeft,
+      dayLeft,
+      requiredUnits,
+      amAvailable: amLeft >= requiredUnits,
+      pmAvailable: pmLeft >= requiredUnits,
+      dayAvailable: amLeft >= requiredUnits || pmLeft >= requiredUnits,
+      authoritative: true
+    };
+  }
   const amBooked = jobs.filter(job => getJobBookingWindow(job) === 'AM').length;
   const pmBooked = jobs.filter(job => getJobBookingWindow(job) === 'PM').length;
   const dayBooked = amBooked + pmBooked;
@@ -1950,7 +1978,7 @@ function getDayMessage(availability, routeFit) {
   }
 
   if (!availability.amAvailable && availability.pmAvailable) {
-    return { className: 'warning', text: 'AM is full. PM is now available for this date.' };
+    return { className: 'warning', text: availability.amBlocked > 0 ? 'AM is unavailable because this period is blocked. PM is available for this date.' : 'AM is full. PM is now available for this date.' };
   }
 
   return { className: 'warning', text: 'Please choose an available window for this date.' };
@@ -2206,6 +2234,7 @@ async function loadLiveAvailability() {
   state.availabilityLoaded = false;
   state.availabilityError = '';
   state.liveJobs = [];
+  state.capacityByDate = {};
   state.date = '';
   state.dateStr = '';
   state.bookingWindow = '';
@@ -2214,14 +2243,7 @@ async function loadLiveAvailability() {
   if (continueBtn) continueBtn.disabled = true;
 
   status.className = 'availability-status loading';
-  status.textContent = 'Checking live availability from Supabase...';
-
-  if (!supabaseClient) {
-    state.availabilityError = 'Supabase is not connected.';
-    status.className = 'availability-status err';
-    status.textContent = 'Could not check live availability. Please call 07831 363 622 to book.';
-    return;
-  }
+  status.textContent = 'Checking live booking capacity...';
 
   try {
     const today = new Date();
@@ -2231,19 +2253,17 @@ async function loadLiveAvailability() {
     future.setDate(today.getDate() + 45);
     const toDate = formatLocalDateISO(future);
 
-    const { data, error } = await supabaseClient
-      .from('jobs')
-      .select('id, reference, status, booking_date, booking_window, epc_type, documents')
-      .gte('booking_date', fromDate)
-      .lte('booking_date', toDate);
-
-    if (error) throw error;
-
-    state.liveJobs = data || [];
+    const response = await fetch(`/api/availability?from=${encodeURIComponent(fromDate)}&to=${encodeURIComponent(toDate)}`, {
+      headers: { Accept: 'application/json' },
+      cache: 'no-store'
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.ok || !Array.isArray(result.dates)) throw new Error(result.error || 'Live capacity request failed.');
+    state.capacityByDate = Object.fromEntries(result.dates.map(item => [item.date, item]));
     state.availabilityLoaded = true;
 
     status.className = 'availability-status ok';
-    status.textContent = `Live availability loaded. Dates are shown from the next available working day. Existing future jobs checked: ${state.liveJobs.length}.`;
+    status.textContent = 'Live availability loaded, including existing bookings and blocked time.';
 
     if (continueBtn) continueBtn.disabled = false;
 
@@ -2326,7 +2346,7 @@ function createDayCard(day) {
       <div class="window-option ${amDisabled ? 'disabled' : ''}" data-date="${day.iso}" data-datestr="${day.dateStr}" data-window="AM">
         <div class="window-name">AM window</div>
         <div class="window-time">08:00 - 13:00</div>
-        <div class="window-left">${amDisabled ? 'AM full' : availability.amLeft + ' AM spaces left'}</div>
+        <div class="window-left">${amDisabled ? (availability.amBlocked > 0 ? 'AM unavailable' : 'AM full') : availability.amLeft + ' AM spaces left'}</div>
       </div>
 
       <div class="window-option ${pmDisabled ? 'disabled' : ''}" data-date="${day.iso}" data-datestr="${day.dateStr}" data-window="PM">
