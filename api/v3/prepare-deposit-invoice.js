@@ -18,7 +18,11 @@ module.exports = async function handler(req, res) {
       throw new Error('Commercial bookings use the commercial approval route.');
     }
 
-    const supabase = createClient(requiredEnv('SUPABASE_URL'), requiredEnv('SUPABASE_SERVICE_ROLE_KEY'), {
+    const supabaseUrl = requiredEnv('SUPABASE_URL');
+    let parsedSupabase;
+    try { parsedSupabase = new URL(supabaseUrl); } catch { throw new Error('SUPABASE_URL is invalid.'); }
+    if (parsedSupabase.protocol !== 'https:' || !parsedSupabase.hostname.endsWith('.supabase.co')) throw new Error('SUPABASE_URL is invalid.');
+    const supabase = createClient(supabaseUrl, requiredEnv('SUPABASE_SERVICE_ROLE_KEY'), {
       auth: { persistSession: false, autoRefreshToken: false }
     });
     const draftResult = await supabase.rpc('v2_create_booking_draft', {
@@ -33,6 +37,9 @@ module.exports = async function handler(req, res) {
     const group = draftResult.data;
 
     const dashboardOrigin = requiredEnv('V3_DASHBOARD_ORIGIN').replace(/\/$/, '');
+    let parsedDashboard;
+    try { parsedDashboard = new URL(dashboardOrigin); } catch { throw new Error('V3_DASHBOARD_ORIGIN is invalid.'); }
+    if (parsedDashboard.protocol !== 'https:') throw new Error('V3_DASHBOARD_ORIGIN must use HTTPS.');
     const response = await fetch(`${dashboardOrigin}/api/v3/booking-deposit-invoice`, {
       method: 'POST',
       headers: {
