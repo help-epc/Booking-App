@@ -13,7 +13,7 @@ module.exports = async function handler(req, res) {
 
   try {
     const dates = dateRange(req.query && req.query.from, req.query && req.query.to);
-    const supabase = createClient(required('SUPABASE_URL'), required('SUPABASE_SERVICE_ROLE_KEY'), {
+    const supabase = createClient(required('SUPABASE_URL'), required('SUPABASE_PUBLISHABLE_KEY'), {
       auth: { persistSession: false, autoRefreshToken: false }
     });
     const snapshots = await mapInBatches(dates, 8, async date => {
@@ -27,4 +27,3 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ ok: false, error: 'Live availability could not be loaded. Please call 07831 363 622 to book.' });
   }
 };
-
