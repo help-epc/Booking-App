@@ -17,5 +17,7 @@ test('server route is fail-closed and calls Dashboard bridge', () => {
   assert.match(source, /V3_BOOKING_BRIDGE_SECRET/);
   assert.match(source, /V3_DASHBOARD_ORIGIN/);
   assert.match(source, /p_hold_minutes: 60/);
+  assert.match(source, /SUPABASE_URL is invalid/);
+  assert.match(source, /V3_DASHBOARD_ORIGIN must use HTTPS/);
   assert.doesNotMatch(source, /STRIPE_SECRET_KEY/);
 });
