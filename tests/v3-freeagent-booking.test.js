@@ -11,13 +11,14 @@ test('domestic V3 booking starts from a FreeAgent invoice', () => {
   assert.doesNotMatch(source, /prepareCheckout\(commonBookingData\)/);
 });
 
-test('server route is fail-closed and calls Dashboard bridge', () => {
+test('server route is fail-closed and calls the privileged Dashboard bridge', () => {
   const source = fs.readFileSync(path.join(__dirname, '..', 'api', 'v3', 'prepare-deposit-invoice.js'), 'utf8');
   assert.match(source, /V3_FREEAGENT_BOOKING_ENABLED/);
   assert.match(source, /V3_BOOKING_BRIDGE_SECRET/);
   assert.match(source, /V3_DASHBOARD_ORIGIN/);
-  assert.match(source, /p_hold_minutes: 60/);
-  assert.match(source, /SUPABASE_URL is invalid/);
+  assert.match(source, /payload: draft\.payload/);
   assert.match(source, /V3_DASHBOARD_ORIGIN must use HTTPS/);
+  assert.doesNotMatch(source, /SUPABASE_SERVICE_ROLE_KEY/);
+  assert.doesNotMatch(source, /createClient/);
   assert.doesNotMatch(source, /STRIPE_SECRET_KEY/);
 });
