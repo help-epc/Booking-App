@@ -22,3 +22,10 @@ test('server route is fail-closed and calls the privileged Dashboard bridge', ()
   assert.doesNotMatch(source, /createClient/);
   assert.doesNotMatch(source, /STRIPE_SECRET_KEY/);
 });
+
+test('public availability uses only the publishable Supabase credential', () => {
+  const source = fs.readFileSync(path.join(__dirname, '..', 'api', 'availability.js'), 'utf8');
+  assert.match(source, /SUPABASE_PUBLISHABLE_KEY/);
+  assert.match(source, /v2_capacity_snapshot/);
+  assert.doesNotMatch(source, /SUPABASE_SERVICE_ROLE_KEY/);
+});
