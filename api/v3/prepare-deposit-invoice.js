@@ -28,7 +28,8 @@ module.exports = async function handler(req, res) {
         Authorization: `Bearer ${requiredEnv('V3_BOOKING_BRIDGE_SECRET')}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'X-Idempotency-Key': key
+        'X-Idempotency-Key': key,
+        'x-vercel-protection-bypass': requiredEnv('V3_DASHBOARD_BYPASS_SECRET')
       },
       body: JSON.stringify({
         payload: draft.payload,
@@ -39,7 +40,8 @@ module.exports = async function handler(req, res) {
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok || !result.ok || !result.payment_url) {
-      const error = new Error(result.error || 'The FreeAgent deposit invoice could not be prepared.');
+      const detail = typeof result.error === 'string' ? result.error : 'The FreeAgent deposit invoice could not be prepared.';
+      const error = new Error(detail);
       error.code = result.code || 'FREEAGENT_DEPOSIT_PREPARATION_FAILED';
       throw error;
     }
