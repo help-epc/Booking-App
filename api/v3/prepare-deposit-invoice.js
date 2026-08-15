@@ -26,6 +26,7 @@ module.exports = async function handler(req, res) {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${requiredEnv('V3_BOOKING_BRIDGE_SECRET')}`,
+        'X-V3-Booking-Bridge-Secret': requiredEnv('V3_BOOKING_BRIDGE_SECRET'),
         'Content-Type': 'application/json',
         Accept: 'application/json',
         'X-Idempotency-Key': key,
