@@ -1,5 +1,5 @@
 /* EPC Pro Booking App override file
-   - Domestic bookings redirect to Stripe Checkout
+   - Domestic bookings start with a FreeAgent deposit invoice and its Stripe payment link
    - Commercial bookings stay in review/request flow
    - Calendar display is compact and customer-facing
    - Loads the domestic multi-property booking extension
@@ -81,7 +81,7 @@
     };
   }
 
-  async function submitBookingWithStripe() {
+  async function submitBookingWithPayment() {
     if (!document.getElementById('terms').checked) {
       alert('Please confirm the booking terms before continuing.');
       return;
@@ -136,30 +136,16 @@
           throw new Error('Deposit amount is missing. Please go back and check the quote.');
         }
 
-        let result = null;
-        if (window.EPCV2BookingBridge) {
-          try {
-            result = await window.EPCV2BookingBridge.prepareCheckout(commonBookingData);
-          } catch (error) {
-            if (error.code !== 'V2_BRIDGE_DISABLED') throw error;
-          }
+        if (!window.EPCV2BookingBridge || typeof window.EPCV2BookingBridge.prepareDepositInvoice !== 'function') {
+          throw new Error('The FreeAgent booking route is not available.');
+        }
+        const result = await window.EPCV2BookingBridge.prepareDepositInvoice(commonBookingData);
+        if (result.payment_authority !== 'freeagent' || !result.payment_url) {
+          throw new Error('The booking did not return a verified FreeAgent payment link.');
         }
 
-        if (!result) {
-          const response = await fetch('/api/create-checkout-session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(commonBookingData)
-          });
-          result = await response.json().catch(() => null);
-          if (!response.ok || !result || !result.ok || !result.checkout_url) {
-            const message = result && result.error ? result.error : 'Stripe checkout could not be created.';
-            throw new Error(message);
-          }
-        }
-
-        label.textContent = 'Redirecting to secure payment...';
-        window.location.href = result.checkout_url;
+        label.textContent = 'Opening FreeAgent invoice payment...';
+        window.location.href = result.payment_url;
         return;
       }
 
@@ -404,7 +390,7 @@
     document.body.appendChild(script);
   }
 
-  window.submitBooking = submitBookingWithStripe;
+  window.submitBooking = submitBookingWithPayment;
   window.createDayCard = createCompactDayCard;
   window.buildDateGrid = buildCompactDateGrid;
 
