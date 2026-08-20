@@ -1,52 +1,58 @@
-const fs = require('fs');
-const path = require('path');
-
-const MOBILE_CSS = `
-/* EPC Pro mobile booking fixes */
-html{-webkit-text-size-adjust:100%;text-size-adjust:100%}body{overflow-x:hidden}button,input,select,textarea,.type-card,.band-option,.window-option{touch-action:manipulation}.field input,.field select,.field textarea{min-height:48px}
-@media(max-width:720px){header{padding:14px 16px}.logo-mark{width:34px;height:34px}.logo-text{font-size:16px}.hero{padding:26px 16px 30px}.hero h1{font-size:31px;line-height:1.08}.hero p{font-size:14px}.progress-wrap{padding:0 8px;overflow-x:auto}.progress-steps{min-width:320px;max-width:none}.step-tab{justify-content:center;padding:12px 4px}.step-num{width:24px;height:24px}main{padding:14px 10px 34px}.form-card{width:100%;max-width:none;border-radius:12px}.step-header{padding:20px 16px 16px}.step-header h2{font-size:23px}.step-body{padding:18px 16px}.field input,.field select,.field textarea{font-size:16px;padding:13px 12px}.type-cards,.field-row,.window-options{grid-template-columns:1fr}.type-card{padding:18px 16px}.band-option{align-items:flex-start;padding:13px 12px}.band-info{min-width:0}.band-range,.band-duration,.band-price{overflow-wrap:anywhere}.price-summary{padding:16px 14px}.date-info,.availability-status,.route-message,.day-message,.no-dates-message{font-size:12px;line-height:1.42;padding:11px 12px}.day-card{padding:14px 12px}.day-top{align-items:flex-start}.day-capacity{min-width:72px;font-size:11px}.window-option{min-height:58px}.confirm-item{flex-direction:column;gap:2px}.btn-row{position:sticky;bottom:0;z-index:9;background:rgba(255,255,255,.96);padding:12px 12px calc(12px + env(safe-area-inset-bottom))}.btn{min-height:48px}.success-screen{padding:36px 18px}.booking-ref{display:block;width:100%}footer{padding:18px 16px calc(18px + env(safe-area-inset-bottom))}}
-`;
-
-const BETA_GET_ZONE = `function getZone(pc) {
-  const clean = String(pc || '').replace(/\\s/g, '').toUpperCase();
-  const outwardMatch = clean.match(/^([A-Z]{1,2}[0-9][0-9A-Z]?)/);
-  const outward = outwardMatch ? outwardMatch[1] : '';
-  const areaMatch = clean.match(/^[A-Z]+/);
-  const area = areaMatch ? areaMatch[0] : '';
-  const allowedAreas = ['N', 'NW', 'W', 'WC', 'EN', 'HA'];
-  const allowedOutwards = ['WD3', 'WD4', 'WD5', 'WD6', 'WD7', 'WD17', 'WD18', 'WD19', 'WD23', 'WD24', 'WD25', 'AL1', 'AL2', 'AL3', 'AL4', 'AL5'];
-  if (!clean || clean.length < 2) return null;
-  if (allowedOutwards.includes(outward)) {
-    if (outward.startsWith('WD')) return { code: 'WD', name: 'Watford / nearby North West route area' };
-    if (outward.startsWith('AL')) return { code: 'AL', name: 'St Albans / nearby North West route area' };
-  }
-  if (allowedAreas.includes(area)) {
-    const names = { N: 'North London', NW: 'North West London', W: 'West London', WC: 'Central / West Central London', EN: 'North London', HA: 'North West London' };
-    return { code: area, name: names[area] || 'EPC Pro online booking area' };
-  }
-  return null;
-}`;
-
-function patchBookingHtml(html) {
-  let out = html;
-  out = out.replace(/const londonPrefixes = \[[^\]]*\];/, "const londonPrefixes = ['N','NW','W','WC','EN','HA','WD','AL'];");
-  out = out.replace(/function getZone\(pc\) \{[\s\S]*?\n\}/, BETA_GET_ZONE);
-  out = out.replace('el.innerHTML = `✓ &nbsp;${zone.name} — we cover this area`;', 'el.innerHTML = `✓ &nbsp;${zone.name} — online booking available`;');
-  out = out.replace('el.innerHTML = `✗ &nbsp;Sorry, this postcode is not currently recognised as a covered London area.`;', 'el.innerHTML = `✗ &nbsp;This postcode is outside our current online booking area. Please contact EPC Pro and we can review it manually.`;');
-  out = out.replace(/<div class="error-msg" id="err-postcode">[\s\S]*?<\/div>/, '<div class="error-msg" id="err-postcode">This postcode is outside our current online booking area.</div>');
-  if (!out.includes('EPC Pro mobile booking fixes')) out = out.replace('</style>', `${MOBILE_CSS}\n</style>`);
-  return out;
-}
+const HOLDING_PAGE = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Online booking temporarily unavailable | EPC Pro</title>
+  <style>
+    :root{--navy:#153047;--navy2:#1a3d5c;--orange:#f5a623;--ink:#172536;--muted:#627184;--line:#e4e9ef;--paper:#fff;--wash:#f4f6f9}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:var(--wash)}
+    body{display:flex;flex-direction:column;min-height:100vh}
+    header{background:var(--navy2);padding:17px 24px;box-shadow:0 2px 12px rgba(9,28,43,.18)}
+    .brand{width:min(100%,960px);margin:auto;display:flex;align-items:center;gap:12px;color:#fff;font-size:18px;font-weight:700;letter-spacing:-.2px}
+    .mark{width:42px;height:42px;border-radius:11px;background:var(--orange);display:grid;place-items:center;box-shadow:0 6px 18px rgba(245,166,35,.23)}
+    .mark svg{width:25px;height:25px}.brand span{color:var(--orange)}
+    main{flex:1;display:grid;place-items:center;padding:44px 18px 56px;background:radial-gradient(circle at 50% 0,rgba(245,166,35,.12),transparent 330px),var(--wash)}
+    .card{width:min(100%,680px);background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:46px 44px;text-align:center;box-shadow:0 18px 55px rgba(21,48,71,.12)}
+    .status{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;margin:0 auto 22px;background:#fff4e6;border:1px solid #fbd3a0;color:#c36508;font-size:31px;font-weight:700}
+    h1{margin:0 0 15px;color:var(--navy);font-size:clamp(28px,5vw,42px);line-height:1.12;letter-spacing:-.8px}
+    .message{margin:0 auto 25px;max-width:560px;color:var(--muted);font-size:18px;line-height:1.62}
+    .call-box{margin:0 auto 20px;padding:22px;border-radius:14px;background:#f7f9fb;border:1px solid var(--line)}
+    .call-box p{margin:0 0 8px;color:var(--muted);font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.8px}
+    .phone{display:inline-flex;align-items:center;justify-content:center;gap:10px;color:var(--navy);font-size:clamp(25px,6vw,34px);font-weight:800;text-decoration:none;letter-spacing:.4px}
+    .phone:focus,.phone:hover{color:#b85e05;text-decoration:underline}.note{margin:0;color:#7a8795;font-size:14px;line-height:1.5}
+    footer{background:var(--navy);color:rgba(255,255,255,.67);padding:17px 20px;text-align:center;font-size:13px}
+    @media(max-width:560px){header{padding:14px 16px}.card{padding:34px 21px;border-radius:15px}.message{font-size:17px}.call-box{padding:19px 12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand" aria-label="EPC Pro">
+      <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M3 11.2 12 4l9 7.2v8.3a.5.5 0 0 1-.5.5h-17a.5.5 0 0 1-.5-.5v-8.3Z" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="M9 20v-6h6v6" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg></div>
+      <div>EPC <span>PRO</span></div>
+    </div>
+  </header>
+  <main>
+    <section class="card" aria-labelledby="page-title">
+      <div class="status" aria-hidden="true">!</div>
+      <h1 id="page-title">Online booking is temporarily unavailable</h1>
+      <p class="message">I’m very sorry, but at the moment there is a technical fault with this system. Please call us and we will take your booking manually.</p>
+      <div class="call-box">
+        <p>Call EPC Pro</p>
+        <a class="phone" href="tel:+447831363622" aria-label="Call EPC Pro on 07831 363 622">07831 363 622</a>
+      </div>
+      <p class="note">Our team will be happy to arrange your EPC appointment by phone.</p>
+    </section>
+  </main>
+  <footer>© EPC Pro · Professional Energy Performance Certificates</footer>
+</body>
+</html>`;
 
 module.exports = function handler(req, res) {
-  try {
-    const filePath = path.join(process.cwd(), 'index.html');
-    const html = patchBookingHtml(fs.readFileSync(filePath, 'utf8'));
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', 'no-store');
-    return res.status(200).send(html);
-  } catch (error) {
-    console.error('mobile-index failed:', error);
-    return res.status(500).send('Booking app could not load.');
-  }
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  return res.status(503).send(HOLDING_PAGE);
 };
+

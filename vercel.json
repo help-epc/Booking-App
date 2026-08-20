@@ -5,6 +5,10 @@
       "dest": "/api/mobile-index"
     },
     {
+      "src": "/index.html",
+      "dest": "/api/mobile-index"
+    },
+    {
       "handle": "filesystem"
     }
   ],
@@ -15,3 +19,4 @@
     }
   ]
 }
+
