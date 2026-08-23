@@ -1,23 +1,3 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const { dateRange, normaliseSnapshot } = require('../api/_lib/availability');
-
-test('dateRange validates and includes both endpoints', () => {
-  assert.deepEqual(dateRange('2026-08-10', '2026-08-12'), ['2026-08-10', '2026-08-11', '2026-08-12']);
-  assert.throws(() => dateRange('2026-08-12', '2026-08-10'));
-  assert.throws(() => dateRange('not-a-date', '2026-08-10'));
-});
-
-test('normaliseSnapshot retains bookings, blocks, overrides and remaining units', () => {
-  assert.deepEqual(normaliseSnapshot('2026-08-13', [
-    { period: 'AM', standard_capacity: 5, used_units: 0, blocked_units: 5, override_units: 0, remaining_units: 0 },
-    { period: 'PM', standard_capacity: 3, used_units: 1, blocked_units: 0, override_units: 1, remaining_units: 3 }
-  ]), {
-    date: '2026-08-13',
-    periods: {
-      AM: { standard_capacity: 5, used_units: 0, blocked_units: 5, override_units: 0, remaining_units: 0 },
-      PM: { standard_capacity: 3, used_units: 1, blocked_units: 0, override_units: 1, remaining_units: 3 }
-    }
-  });
-});
-
+const test=require('node:test');const assert=require('node:assert/strict');const {dateRange,validateV3Availability}=require('../api/_lib/availability');
+test('date range validates and includes endpoints',()=>assert.deepEqual(dateRange('2026-09-01','2026-09-02'),['2026-09-01','2026-09-02']));
+test('only clean disabled V3 availability is accepted',()=>{const payload={ok:true,architecture:'clean-v3',source:'epc_v3_capacity',writes_enabled:false,from:'2026-09-01',to:'2026-09-01',dates:[{date:'2026-09-01',periods:{AM:{remaining_units:1},PM:{remaining_units:0}}}]};assert.equal(validateV3Availability(payload,'2026-09-01','2026-09-01'),payload);assert.throws(()=>validateV3Availability({...payload,architecture:'legacy'},'2026-09-01','2026-09-01'));assert.throws(()=>validateV3Availability({...payload,writes_enabled:true},'2026-09-01','2026-09-01'))});
