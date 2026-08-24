@@ -11,3 +11,4 @@ api/_lib/*
 !tests/v3-*.test.js
 !package.json
 !vercel.json
+!build.mjs
