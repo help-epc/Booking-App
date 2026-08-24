@@ -17,13 +17,13 @@ test('public booking mutation is stopped locally before any Dashboard request',(
   assert.match(source,/return res\.status\(503\).*V3_BOOKING_DISABLED/);
 });
 
-test('preview deployment excludes every legacy route and publishes only clean V3 APIs',()=>{
-  const ignore=read('.vercelignore');
-  assert.match(ignore,/api\/\*/);
-  assert.match(ignore,/!api\/mobile-index\.js/);
-  assert.match(ignore,/!api\/v3\/\*\*/);
+test('preview build context excludes every legacy route and publishes only clean V3 APIs',()=>{
   for(const legacy of['create-checkout-session.js','prepare-checkout.js','stripe-webhook.js','v2-booking-bridge.js']){
-    assert.equal(ignore.includes('!api/'+legacy),false,legacy+' must not be allowlisted into deployment');
+    assert.equal(fs.existsSync(path.join(root,'api',legacy)),false,legacy+' must not exist in the deployed build context');
+  }
+  assert.equal(fs.existsSync(path.join(root,'api','mobile-index.js')),true);
+  for(const route of['availability.js','booking-intents.js','booking-status.js','quote.js']){
+    assert.equal(fs.existsSync(path.join(root,'api','v3',route)),true,route+' must exist in the clean V3 build context');
   }
   const config=JSON.parse(read('vercel.json'));
   assert.equal(JSON.stringify(config).includes('/v2'),false);
