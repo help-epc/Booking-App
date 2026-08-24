@@ -1,31 +1,8 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');
+const read=(...parts)=>fs.readFileSync(path.join(__dirname,'..',...parts),'utf8');
+const excludes=source=>{assert.doesNotMatch(source,/\/api\/v2|create-checkout-session|STRIPE_SECRET_KEY|SUPABASE_SERVICE_ROLE_KEY|SUPABASE_PUBLISHABLE_KEY|createClient\(/)};
 
-test('domestic V3 booking starts from a FreeAgent invoice', () => {
-  const source = fs.readFileSync(path.join(__dirname, '..', 'stripe-submit-override.js'), 'utf8');
-  assert.match(source, /prepareDepositInvoice\(commonBookingData\)/);
-  assert.match(source, /payment_authority !== 'freeagent'/);
-  assert.doesNotMatch(source, /create-checkout-session/);
-  assert.doesNotMatch(source, /prepareCheckout\(commonBookingData\)/);
-});
-
-test('server route is fail-closed and calls the privileged Dashboard bridge', () => {
-  const source = fs.readFileSync(path.join(__dirname, '..', 'api', 'v3', 'prepare-deposit-invoice.js'), 'utf8');
-  assert.match(source, /V3_FREEAGENT_BOOKING_ENABLED/);
-  assert.match(source, /V3_BOOKING_BRIDGE_SECRET/);
-  assert.match(source, /V3_DASHBOARD_ORIGIN/);
-  assert.match(source, /payload: draft\.payload/);
-  assert.match(source, /V3_DASHBOARD_ORIGIN must use HTTPS/);
-  assert.doesNotMatch(source, /SUPABASE_SERVICE_ROLE_KEY/);
-  assert.doesNotMatch(source, /createClient/);
-  assert.doesNotMatch(source, /STRIPE_SECRET_KEY/);
-});
-
-test('public availability uses only the publishable Supabase credential', () => {
-  const source = fs.readFileSync(path.join(__dirname, '..', 'api', 'availability.js'), 'utf8');
-  assert.match(source, /SUPABASE_PUBLISHABLE_KEY/);
-  assert.match(source, /v2_capacity_snapshot/);
-  assert.doesNotMatch(source, /SUPABASE_SERVICE_ROLE_KEY/);
-});
+test('domestic V3 booking proxies only to the clean Dashboard booking-intent contract',()=>{const source=read('api','v3','booking-intents.js');for(const marker of["V3_PUBLIC_BOOKING_ENABLED!=='true'","V3_DASHBOARD_ORIGIN","/api/v3/public/booking-intents","payload.next_action!=='await_freeagent_payment_link'","payload.status_token","payload.status_url"])assert.ok(source.includes(marker),`missing ${marker}`);excludes(source)});
+test('public availability comes only from the Dashboard V3 capacity source',()=>{const source=read('api','v3','availability.js');for(const marker of['V3_DASHBOARD_ORIGIN','/api/v3/public/availability',"payload.architecture!=='clean-v3'","payload.source!=='epc_v3_capacity'"])assert.ok(source.includes(marker),`missing ${marker}`);excludes(source)});
+test('public quote rejects discounts and validates the clean V3 response',()=>{const source=read('api','v3','quote.js');for(const marker of['V3_DASHBOARD_ORIGIN','/api/v3/public/quote',"payload.architecture!=='clean-v3'","payload.quote?.automatic_discount_applied!==false","Number(payload.quote?.discount_amount_pence)!==0"])assert.ok(source.includes(marker),`missing ${marker}`);excludes(source)});
+test('payment status is token-protected and accepts only HTTPS FreeAgent links',()=>{const source=read('api','v3','booking-status.js');for(const marker of['booking_id','token','/api/v3/public/booking-status',"payload.architecture!=='clean-v3'","startsWith('https://')"])assert.ok(source.includes(marker),`missing ${marker}`);excludes(source)});
