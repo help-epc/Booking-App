@@ -1,0 +1,2 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');
+test('booking proxy preserves safe V3 validation errors such as out-of-area postcodes',()=>{const source=fs.readFileSync(path.join(__dirname,'..','api','v3','booking-intents.js'),'utf8');assert.match(source,/\[400,409\]\.includes\(response\.status\)/);assert.match(source,/Booking details could not be accepted/);assert.doesNotMatch(source,/\/api\/v2|create-checkout-session/)});
