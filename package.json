@@ -1,9 +1,9 @@
-
 {
   "name": "epc-pro-booking-app",
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "build": "npm test",
     "check": "node scripts/check.js",
     "test": "node --test tests/*.test.js"
   },
@@ -12,4 +12,3 @@
     "stripe": "18.5.0"
   }
 }
-
