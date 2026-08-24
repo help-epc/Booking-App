@@ -1,0 +1,13 @@
+/*
+!api/
+api/*
+!api/mobile-index.js
+!api/v3/
+!api/v3/**
+!api/_lib/
+api/_lib/*
+!api/_lib/v3-booking-page.js
+!tests/
+!tests/v3-*.test.js
+!package.json
+!vercel.json
