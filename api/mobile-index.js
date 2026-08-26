@@ -7,7 +7,7 @@ async function dashboardReady(){
  const previewOrigin=previewE2E()?'https://epc-dashboard-git-codex-clean-v3-platform-help-8328s-projects.vercel.app':'';
  const origin=String(process.env.V3_DASHBOARD_ORIGIN||previewOrigin).trim().replace(/\/$/,'');
  if(!origin){console.error('v3_home_readiness_failed',{reason:'missing_dashboard_origin'});return false}
- const headers={Accept:'application/json'},bypass=String(process.env.V3_VERCEL_BYPASS_SECRET||'').trim();
+ const headers={Accept:'application/json'},bypass=String(process.env.V3_DASHBOARD_BYPASS_SECRET||'').trim();
  if(bypass)headers['x-vercel-protection-bypass']=bypass;
  try{
   const response=await fetch(origin+'/api/v3/health',{headers,signal:AbortSignal.timeout(5000)});
