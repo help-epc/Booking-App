@@ -13,7 +13,7 @@ async function dashboardReady(){
   const contentType=String(response.headers.get('content-type')||'');
   if(!contentType.includes('application/json')){console.error('v3_home_readiness_failed',{reason:'non_json_health_response',status:response.status,has_bypass:Boolean(bypass)});return false}
   const payload=await response.json(),snapshot=readinessSnapshot(response,payload);
-  const ready=snapshot.ok&&snapshot.payload_ok&&snapshot.platform==='EPC Pro V3'&&snapshot.architecture==='clean-v3'&&snapshot.writes_enabled&&snapshot.online_booking_enabled&&snapshot.database_configured;
+  const ready=response.ok&&payload?.ok===true&&payload.platform==='EPC Pro V3'&&payload.architecture==='clean-v3'&&payload.writes_enabled===true&&payload.online_booking_enabled===true&&payload.database_configured===true;
   if(!ready)console.error('v3_home_readiness_failed',{reason:'health_validation_failed',has_bypass:Boolean(bypass),...snapshot});
   return ready
  }catch(error){console.error('v3_home_readiness_failed',{reason:'health_request_failed',has_bypass:Boolean(bypass),message:error.message||String(error)});return false}
