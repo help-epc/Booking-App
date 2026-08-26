@@ -4,7 +4,8 @@ function previewE2E(){return process.env.VERCEL_ENV==='preview'&&process.env.VER
 function readinessSnapshot(response,payload){return{status:response.status,ok:response.ok,payload_ok:payload?.ok===true,platform:payload?.platform||null,architecture:payload?.architecture||null,writes_enabled:payload?.writes_enabled===true,online_booking_enabled:payload?.online_booking_enabled===true,database_configured:payload?.database_configured===true}}
 async function dashboardReady(){
  if(process.env.V3_PUBLIC_BOOKING_ENABLED!=='true'&&!previewE2E()){console.warn('v3_home_readiness_disabled',{reason:'public_booking_disabled'});return false}
- const origin=String(process.env.V3_DASHBOARD_ORIGIN||'').trim().replace(/\/$/,'');
+ const previewOrigin=previewE2E()?'https://epc-dashboard-git-codex-clean-v3-platform-help-8328s-projects.vercel.app':'';
+ const origin=String(process.env.V3_DASHBOARD_ORIGIN||previewOrigin).trim().replace(/\/$/,'');
  if(!origin){console.error('v3_home_readiness_failed',{reason:'missing_dashboard_origin'});return false}
  const headers={Accept:'application/json'},bypass=String(process.env.V3_VERCEL_BYPASS_SECRET||'').trim();
  if(bypass)headers['x-vercel-protection-bypass']=bypass;
