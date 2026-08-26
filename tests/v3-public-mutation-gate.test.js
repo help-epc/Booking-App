@@ -9,9 +9,10 @@ const read=(...parts)=>fs.readFileSync(path.join(root,...parts),'utf8');
 test('public booking mutation is stopped locally before any Dashboard request',()=>{
   const source=read('api','v3','booking-intents.js');
   const gate=source.indexOf("V3_PUBLIC_BOOKING_ENABLED!=='true'");
-  const origin=source.indexOf("required('V3_DASHBOARD_ORIGIN')");
+  const origin=source.indexOf("const origin=");
   const request=source.indexOf("fetch(origin+'/api/v3/public/booking-intents'");
   assert.ok(gate>=0);
+  assert.ok(origin>=0);
   assert.ok(gate<origin,'local booking gate must run before Dashboard configuration');
   assert.ok(gate<request,'local booking gate must run before the Dashboard mutation request');
   assert.match(source,/return res\.status\(503\).*V3_BOOKING_DISABLED/);
