@@ -12,3 +12,6 @@ api/_lib/*
 !package.json
 !vercel.json
 !build.mjs
+!index.html
+!multi-property-extension.js
+!v3-experience.js
