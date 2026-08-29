@@ -329,19 +329,6 @@
     });
   }
 
-  const originalFetch = window.fetch.bind(window);
-  window.fetch = function (url, options) {
-    const urlString = typeof url === 'string' ? url : (url && url.url) || '';
-    if ((urlString.includes('/api/create-checkout-session') || urlString.includes('/api/v2/prepare-checkout')) && options && options.body && state.type === 'Domestic') {
-      try {
-        options = Object.assign({}, options, { body: JSON.stringify(patchPayload(JSON.parse(options.body))) });
-      } catch (err) {
-        console.warn('Could not update Stripe payload for multi-property booking:', err);
-      }
-    }
-    return originalFetch(url, options);
-  };
-
   window.goToStep = function (n) {
     const active = document.querySelector('.form-step.active');
     const cur = active && active.id === 'step-success' ? 6 : parseInt(active.id.replace('step-', ''), 10);
