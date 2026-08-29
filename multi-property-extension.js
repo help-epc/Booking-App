@@ -19,12 +19,19 @@
     return el ? String(el.value || '').trim() : '';
   }
 
-  function priceForDomesticBand(value) {
-    if (value === '999000') return { price: 60, band: 'Up to £999,000', duration: 45, property_value: 999000, pricing_basis: 'domestic_value', square_meterage: null };
-    if (value === '1999999') return { price: 80, band: '£1,000,000 to £1,999,999', duration: 60, property_value: 1500000, pricing_basis: 'domestic_value', square_meterage: null };
-    if (value === '2999999') return { price: 110, band: '£2,000,000 to £2,999,999', duration: 75, property_value: 2500000, pricing_basis: 'domestic_value', square_meterage: null };
-    if (value === '3999999') return { price: 150, band: '£3,000,000 to £3,999,999', duration: 90, property_value: 3500000, pricing_basis: 'domestic_value', square_meterage: null };
-    if (value === '4000000') return { price: 180, band: 'Over £4,000,000', duration: 120, property_value: 4000000, pricing_basis: 'domestic_value', square_meterage: null };
+  function priceForDomesticBand(value, sqm) {
+    if (value === '999000') return { price: 60, band: 'Up to £999,999', duration: 45, property_value: 999000, pricing_basis: 'property_value_gbp', square_meterage: null };
+    if (value === '1999999') return { price: 80, band: '£1,000,000 to £1,999,999', duration: 45, property_value: 1500000, pricing_basis: 'property_value_gbp', square_meterage: null };
+    if (value === '2999999') return { price: 110, band: '£2,000,000 to £2,999,999', duration: 45, property_value: 2500000, pricing_basis: 'property_value_gbp', square_meterage: null };
+    if (value === '3999999') return { price: 150, band: '£3,000,000 to £3,999,999', duration: 45, property_value: 3500000, pricing_basis: 'property_value_gbp', square_meterage: null };
+    if (value === '4000000') {
+      const area = Number(sqm || 0);
+      if (area >= 100 && area <= 150) return { price: 180, band: '£4,000,000+ / 100–150 m²', duration: 45, property_value: 4000000, pricing_basis: 'floor_area_m2', square_meterage: area };
+      if (area >= 151 && area <= 300) return { price: 240, band: '£4,000,000+ / 151–300 m²', duration: 45, property_value: 4000000, pricing_basis: 'floor_area_m2', square_meterage: area };
+      if (area >= 301 && area <= 500) return { price: 400, band: '£4,000,000+ / 301–500 m²', duration: 45, property_value: 4000000, pricing_basis: 'floor_area_m2', square_meterage: area };
+      if (area >= 501 && area <= 10000) return { price: 450, band: '£4,000,000+ / 501–10,000 m²', duration: 45, property_value: 4000000, pricing_basis: 'floor_area_m2', square_meterage: area };
+      if (area > 0) return { price: 180, band: 'Unusual area — starts at £180 with review', duration: 45, property_value: 4000000, pricing_basis: 'floor_area_m2', square_meterage: area };
+    }
     return { price: 0, band: '', duration: 0, property_value: null, pricing_basis: '', square_meterage: null };
   }
 
@@ -45,7 +52,7 @@
   function readMainProperty() {
     const postcode = val('postcode').toUpperCase();
     const zone = postcode ? getZone(postcode) : null;
-    const info = priceForDomesticBand(val('domestic-property-value'));
+    const info = priceForDomesticBand(val('domestic-property-value'), val('domestic-sqm'));
     return {
       index: 1,
       address: val('address'),
@@ -70,7 +77,8 @@
     const base = baseAddressParts();
     const flatUnit = String((card.querySelector('.multi-flat-unit') || {}).value || '').trim();
     const valueBand = String((card.querySelector('.multi-value') || {}).value || '');
-    const info = priceForDomesticBand(valueBand);
+    const sqm = Number((card.querySelector('.multi-sqm') || {}).value || 0) || null;
+    const info = priceForDomesticBand(valueBand, sqm);
 
     const address = sameBlock
       ? [flatUnit, base.address].filter(Boolean).join(', ')
@@ -94,7 +102,7 @@
       pricing_band: info.band,
       pricing_basis: info.pricing_basis,
       property_value: info.property_value,
-      square_meterage: null,
+      square_meterage: info.square_meterage,
       quote_amount: info.price,
       duration_minutes: info.duration,
       same_building_block: sameBlock
@@ -149,6 +157,7 @@
       if (!p.postcode || !getZone(p.postcode)) return fail(`Please enter a valid London postcode for property ${p.index}.`, showAlert);
       if (!p.property_subtype) return fail(`Please select the property type for property ${p.index}.`, showAlert);
       if (!p.value_band) return fail(`Please select the estimated property value for property ${p.index}.`, showAlert);
+      if (p.value_band === '4000000' && !p.square_meterage) return fail(`Please enter the floor area for property ${p.index}.`, showAlert);
       if (!p.quote_amount || p.quote_amount <= 0) return fail(`Please complete the pricing for property ${p.index}.`, showAlert);
       if (anchorZone && p.zone_code && p.zone_code !== anchorZone) return fail('These properties appear to be in different route areas. Please make a separate booking for properties outside the same area.', showAlert);
     }
@@ -225,7 +234,7 @@
     card.className = 'multi-property-card';
     const radioName = `multi-block-mode-${Date.now()}-${number}`;
 
-    card.innerHTML = `<div class="multi-property-card-head"><div class="multi-property-title">Property ${number}</div><button type="button" class="multi-remove">Remove</button></div><div class="multi-block-question"><div class="multi-block-question-label">Are these properties in the same building/block?</div><div class="multi-block-options"><label class="multi-block-option"><input type="radio" name="${radioName}" data-block-mode value="same" checked> Yes, same building/block</label><label class="multi-block-option"><input type="radio" name="${radioName}" data-block-mode value="different"> No, different address</label></div></div><div class="multi-address-fields"></div><div class="field-row"><div class="field"><label>Property type <span class="req">*</span></label><select class="multi-subtype">${subtypeOptions()}</select></div><div class="field"><label>Estimated property value <span class="req">*</span></label><select class="multi-value"><option value="">— Select —</option><option value="999000">Up to £999,000</option><option value="1999999">£1,000,000 to £1,999,999</option><option value="2999999">£2,000,000 to £2,999,999</option><option value="3999999">£3,000,000 to £3,999,999</option><option value="4000000">Over £4,000,000</option></select></div></div><div class="multi-price-line">Price: —</div>`;
+    card.innerHTML = `<div class="multi-property-card-head"><div class="multi-property-title">Property ${number}</div><button type="button" class="multi-remove">Remove</button></div><div class="multi-block-question"><div class="multi-block-question-label">Are these properties in the same building/block?</div><div class="multi-block-options"><label class="multi-block-option"><input type="radio" name="${radioName}" data-block-mode value="same" checked> Yes, same building/block</label><label class="multi-block-option"><input type="radio" name="${radioName}" data-block-mode value="different"> No, different address</label></div></div><div class="multi-address-fields"></div><div class="field-row"><div class="field"><label>Property type <span class="req">*</span></label><select class="multi-subtype">${subtypeOptions()}</select></div><div class="field"><label>Estimated property value <span class="req">*</span></label><select class="multi-value"><option value="">— Select —</option><option value="999000">Up to £999,999</option><option value="1999999">£1,000,000 to £1,999,999</option><option value="2999999">£2,000,000 to £2,999,999</option><option value="3999999">£3,000,000 to £3,999,999</option><option value="4000000">£4,000,000 and above</option></select></div></div><div class="field multi-sqm-field" style="display:none"><label>Approximate floor area (m²) <span class="req">*</span></label><input type="number" class="multi-sqm" min="1" max="100000" placeholder="e.g. 145"></div><div class="multi-price-line">Price: —</div>`;
 
     card.querySelector('.multi-remove').addEventListener('click', () => {
       card.remove();
@@ -248,7 +257,9 @@
 
   function updateCard(card) {
     const value = String((card.querySelector('.multi-value') || {}).value || '');
-    const info = priceForDomesticBand(value);
+    const sqmField = card.querySelector('.multi-sqm-field');
+    if (sqmField) sqmField.style.display = value === '4000000' ? 'block' : 'none';
+    const info = priceForDomesticBand(value, (card.querySelector('.multi-sqm') || {}).value);
     const priceLine = card.querySelector('.multi-price-line');
     if (priceLine) priceLine.textContent = info.price ? `Price: ${formatPrice(info.price)}` : 'Price: —';
     syncTotals();
@@ -291,14 +302,6 @@
   function requiredCapacity() {
     return state.type === 'Domestic' ? Math.max(1, bookingProperties().length) : 1;
   }
-
-  window.isBookingWindowSelectable = function (availability, windowName) {
-    const required = requiredCapacity();
-    if (!availability || availability.dayLeft < required) return false;
-    if (windowName === 'AM') return availability.amLeft >= required;
-    if (windowName === 'PM') return availability.pmLeft >= required && availability.amLeft < required;
-    return false;
-  };
 
   function patchPayload(payload) {
     if (!payload || state.type !== 'Domestic') return payload;
