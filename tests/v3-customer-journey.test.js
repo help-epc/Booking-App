@@ -30,3 +30,9 @@ test('review uses 45-minute visits and required customer snapshots',()=>{
   for(const field of['first_name','surname','email','phone','access_instructions','referral_source'])assert.ok(experience.includes(field));
   for(const id of['evidence-ack','terms','cf-total','cf-deposit','cf-balance'])assert.ok(experience.includes(id)||page.includes(id));
 });
+
+test('commercial bands retain their area conversion and £180 to £535 plus POA presentation',()=>{
+  assert.ok(experience.includes('window.getEstimatedSquareMeterageFromBandName=areaFromBand'));
+  for(const price of['£180','£215','£255','£305','£355','£410','£455','£495','£535','POA'])assert.ok(page.includes(price));
+  assert.ok(page.includes('901 m² and above'));
+});
