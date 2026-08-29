@@ -3,18 +3,17 @@ const fs=require('fs');
 const path=require('path');
 
 const root=path.join(__dirname,'..');
-const page=fs.readFileSync(path.join(root,'api','_lib','v3-booking-page.js'),'utf8');
+const page=fs.readFileSync(path.join(root,'v3-experience.js'),'utf8');
 const home=fs.readFileSync(path.join(root,'api','mobile-index.js'),'utf8');
 
 for(const marker of[
- 'id="quote"',
  'async function refreshQuote()',
  "'/api/v3/quote'",
- 'q.manual_quote_required',
- 'quotedValue!==currentValue',
- 'Please confirm the exact fee before booking.',
- 'payload.intent?.total_pence',
- 'payload.intent?.deposit_pence'
+ 'quote.manual_quote_required',
+ 'await refreshQuote()',
+ 'quote.total_fee_pence',
+ 'quote.deposit_pence',
+ "'/api/v3/booking-intents'"
 ])assert.ok(page.includes(marker),`Missing quote-before-booking guard: ${marker}`);
 
 for(const marker of[
@@ -28,5 +27,5 @@ for(const marker of[
 ])assert.ok(home.includes(marker),`Missing dual-system readiness guard: ${marker}`);
 
 assert.ok(home.includes("return res.status(503).send(HOLDING)"));
-assert.ok(home.includes("return res.status(200).send(PAGE)"));
+assert.ok(home.includes("return res.status(200).send(bookingPage())"));
 console.log('Booking App quote and dual-system cutover gates verified');

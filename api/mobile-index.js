@@ -1,4 +1,4 @@
-const {PAGE}=require('./_lib/v3-booking-page');
+const fs=require('fs');const path=require('path');
 const HOLDING=`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Online booking temporarily unavailable | EPC Pro</title><style>body{margin:0;background:#f4f6f9;color:#172536;font-family:Arial,sans-serif;display:grid;min-height:100vh;place-items:center}.card{width:min(650px,calc(100% - 30px));box-sizing:border-box;background:#fff;border:1px solid #e1e7ed;border-radius:18px;padding:42px;text-align:center;box-shadow:0 18px 55px rgba(21,48,71,.12)}h1{color:#17364f;font-size:37px}p{color:#627184;font-size:18px;line-height:1.55}a{display:inline-block;color:#17364f;font-size:31px;font-weight:800;margin:15px}</style></head><body><main class="card"><h1>Online booking is temporarily unavailable</h1><p>There is a technical fault with online booking. Please call and we will arrange your EPC manually.</p><a href="tel:+447831363622">07831 363 622</a></main></body></html>`;
 function previewE2E(){return process.env.VERCEL_ENV==='preview'&&process.env.VERCEL_GIT_COMMIT_REF==='codex/v3-booking-integration'}
 function readinessSnapshot(response,payload){return{status:response.status,ok:response.ok,payload_ok:payload?.ok===true,platform:payload?.platform||null,architecture:payload?.architecture||null,writes_enabled:payload?.writes_enabled===true,online_booking_enabled:payload?.online_booking_enabled===true,database_configured:payload?.database_configured===true}}
@@ -19,7 +19,9 @@ async function dashboardReady(){
   return ready
  }catch(error){console.error('v3_home_readiness_failed',{reason:'health_request_failed',has_bypass:Boolean(bypass),message:error.message||String(error)});return false}
 }
-module.exports=async function handler(req,res){res.setHeader('Content-Type','text/html; charset=utf-8');res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, max-age=0');if(!await dashboardReady()){res.setHeader('X-Robots-Tag','noindex, nofollow');res.setHeader('X-EPC-V3-Readiness','disabled');return res.status(503).send(HOLDING)}res.setHeader('X-EPC-V3-Readiness','ready');return res.status(200).send(PAGE)};
+function bookingPage(){const candidates=[path.join(process.cwd(),'public','index.html'),path.join(process.cwd(),'index.html')];const file=candidates.find(candidate=>fs.existsSync(candidate));if(!file)throw new Error('Booking page asset is missing.');return fs.readFileSync(file,'utf8')}
+module.exports=async function handler(req,res){res.setHeader('Content-Type','text/html; charset=utf-8');res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, max-age=0');if(!await dashboardReady()){res.setHeader('X-Robots-Tag','noindex, nofollow');res.setHeader('X-EPC-V3-Readiness','disabled');return res.status(503).send(HOLDING)}try{res.setHeader('X-EPC-V3-Readiness','ready');return res.status(200).send(bookingPage())}catch(error){console.error('v3_booking_page_failed',{message:error.message||String(error)});return res.status(503).send(HOLDING)}};
 module.exports.dashboardReady=dashboardReady;
 module.exports.previewE2E=previewE2E;
 module.exports.readinessSnapshot=readinessSnapshot;
+module.exports.bookingPage=bookingPage;
