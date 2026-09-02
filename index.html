@@ -626,6 +626,38 @@ main {
   background: #f8fafc;
 }
 
+.compact-calendar-card {
+  width: 100%;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.compact-calendar-card:hover:not(:disabled) {
+  border-color: var(--accent-mid);
+  background: var(--accent-light);
+}
+
+.compact-calendar-card.selected,
+.compact-calendar-card.selected:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 0 0 3px rgba(224, 123, 16, 0.18);
+}
+
+.compact-calendar-card.selected .day-title,
+.compact-calendar-card.selected .day-meta,
+.compact-calendar-card.selected .day-capacity,
+.compact-calendar-card.selected .day-message {
+  color: white;
+}
+
+.compact-calendar-card.selected .day-message {
+  background: rgba(255,255,255,0.16);
+  border-color: rgba(255,255,255,0.45);
+}
+
 .day-top {
   display: flex;
   justify-content: space-between;
@@ -1690,29 +1722,8 @@ const state = {
   reference: ''
 };
 
-const londonPrefixes = ['NW','SW','SE','WC','EC','EN','HA','IG','RM','TW','KT','BR','CR','SM','UB','DA','N','E','W'];
-
-const zones = {
-  N: 'North London',
-  NW: 'North West London',
-  E: 'East London',
-  W: 'West London',
-  EC: 'Central London',
-  WC: 'Central London',
-  SW: 'South West London',
-  SE: 'South East London',
-  EN: 'North London',
-  HA: 'North West London',
-  IG: 'East London',
-  RM: 'East London',
-  TW: 'South West London',
-  KT: 'South West London',
-  BR: 'South East London',
-  CR: 'South East London',
-  SM: 'South London',
-  UB: 'West London',
-  DA: 'South East London'
-};
+const onlineBookingAreas = new Set(['N','NW','W','WC','EN','HA']);
+const onlineBookingOutwards = new Set(['WD3','WD4','WD5','WD6','WD7','WD17','WD18','WD19','WD23','WD24','WD25','AL1','AL2','AL3','AL4','AL5']);
 
 const domesticSubtypes = [
   ['', '— Select —'],
@@ -1754,12 +1765,12 @@ function formatLocalDateISO(date) {
 }
 
 function getZone(pc) {
-  const clean = String(pc || '').replace(/\s/g, '').toUpperCase();
-  for (const prefix of londonPrefixes) {
-    if (clean.startsWith(prefix)) {
-      return { code: prefix, name: zones[prefix] || 'London' };
-    }
-  }
+  const raw = String(pc || '').toUpperCase().trim();
+  const clean = raw.replace(/\s/g, '');
+  const area = clean.match(/^[A-Z]+/)?.[0] || '';
+  const outward = raw.split(/\s+/)[1] ? raw.split(/\s+/)[0] : (clean.length > 3 ? clean.slice(0, -3) : clean);
+  if (onlineBookingOutwards.has(outward)) return { code: area, name: area === 'AL' ? 'St Albans / nearby North West route area' : 'Watford / nearby North West route area' };
+  if (onlineBookingAreas.has(area)) return { code: area, name: ({N:'North London',NW:'North West London',W:'West London',WC:'Central / West Central London',EN:'North London',HA:'North West London'})[area] };
   return null;
 }
 
@@ -2178,7 +2189,7 @@ function checkPostcode() {
     state.zoneName = zone.name;
   } else {
     el.className = 'postcode-status err';
-    el.innerHTML = `✗ &nbsp;Sorry, this postcode is not currently recognised as a covered London area.`;
+    el.innerHTML = `✗ &nbsp;This postcode is outside our current online booking area. Please call 07831 363 622 or email help@theepc.pro and we can review availability manually.`;
     state.zone = '';
     state.zoneName = '';
   }
