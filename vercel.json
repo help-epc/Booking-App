@@ -1,1 +1,1 @@
-{"routes":[{"src":"/","dest":"/api/mobile-index"},{"src":"/index.html","dest":"/api/mobile-index"},{"handle":"filesystem"}]}
+{"routes":[{"src":"/","dest":"/api/mobile-index"},{"src":"/index.html","dest":"/api/mobile-index"},{"handle":"filesystem"}],"functions":{"api/v3/booking-intents.js":{"maxDuration":60}}}
