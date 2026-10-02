@@ -3,3 +3,13 @@ module.exports=async function handler(req,res){res.setHeader('Cache-Control','no
  try{const origin=String(process.env.V3_DASHBOARD_ORIGIN||(process.env.VERCEL_ENV==='preview'&&process.env.VERCEL_GIT_COMMIT_REF==='codex/v3-booking-integration'?'https://epc-dashboard-git-codex-clean-v3-platform-help-8328s-projects.vercel.app':'')).trim().replace(/\/$/,''),headers={'Content-Type':'application/json',Accept:'application/json'},bypass=String(process.env.V3_DASHBOARD_BYPASS_SECRET||'').trim();if(bypass)headers['x-vercel-protection-bypass']=bypass;const response=await fetch(origin+'/api/v3/public/quote',{method:'POST',headers,body:JSON.stringify(req.body||{}),signal:AbortSignal.timeout(8000)});const payload=await response.json();if(!response.ok||!payload?.ok||payload.architecture!=='clean-v3'||payload.writes_enabled!==false||payload.quote?.automatic_discount_applied!==false||Number(payload.quote?.discount_amount_pence)!==0)throw new Error('V3 quote failed validation.');return res.status(200).json(payload)}
  catch(error){console.error('v3_booking_quote_failed',{message:error.message||String(error)});return res.status(503).json({ok:false,architecture:'clean-v3',error:'Online quoting is not ready. Please call 07831 363 622.'})}}
 ;
+const liveQuoteHandler=module.exports;
+module.exports=async function routeCalendarStagingQuote(req,res){
+ if(process.env.VERCEL_ENV==='preview'&&process.env.VERCEL_GIT_COMMIT_REF==='codex/staging-route-calendar'){
+  const properties=Array.isArray(req.body?.properties)?req.body.properties:[];
+  const count=Math.max(1,properties.length),total=6000*count,deposit=3000*count;
+  res.setHeader('Cache-Control','no-store');
+  return res.status(200).json({ok:true,architecture:'clean-v3',writes_enabled:false,quote:{total_fee_pence:total,deposit_pence:deposit,balance_pence:total-deposit,automatic_discount_applied:false,discount_amount_pence:0,manual_quote_required:false}})
+ }
+ return liveQuoteHandler(req,res)
+};
