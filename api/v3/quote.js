@@ -5,7 +5,7 @@ module.exports=async function handler(req,res){res.setHeader('Cache-Control','no
 ;
 const liveQuoteHandler=module.exports;
 module.exports=async function routeCalendarStagingQuote(req,res){
- if(process.env.VERCEL_ENV==='preview'&&process.env.VERCEL_GIT_COMMIT_REF==='codex/staging-route-calendar'){
+ if(process.env.VERCEL_ENV==='preview'&&process.env.VERCEL_GIT_COMMIT_REF==='codex/staging-route-calendar'&&process.env.V3_STAGING_LIVE_ROUTE_ENABLED!=='true'){
   const properties=Array.isArray(req.body?.properties)?req.body.properties:[];
   const count=Math.max(1,properties.length),total=6000*count,deposit=3000*count;
   res.setHeader('Cache-Control','no-store');
