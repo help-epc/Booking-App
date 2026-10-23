@@ -55,8 +55,8 @@
     const info = priceForDomesticBand(val('domestic-property-value'), val('domestic-sqm'));
     return {
       index: 1,
-      address: val('address'),
-      flat_unit: '',
+      address: [val('flat-unit'), val('address')].filter(Boolean).join(', '),
+      flat_unit: val('flat-unit'),
       postcode,
       zone_code: zone ? zone.code : '',
       zone_name: zone ? zone.name : '',
@@ -80,9 +80,10 @@
     const sqm = Number((card.querySelector('.multi-sqm') || {}).value || 0) || null;
     const info = priceForDomesticBand(valueBand, sqm);
 
-    const address = sameBlock
-      ? [flatUnit, base.address].filter(Boolean).join(', ')
+    const streetAddress = sameBlock
+      ? base.address
       : String((card.querySelector('.multi-address') || {}).value || '').trim();
+    const address = [flatUnit, streetAddress].filter(Boolean).join(', ');
 
     const postcode = sameBlock
       ? base.postcode
@@ -105,7 +106,10 @@
       square_meterage: info.square_meterage,
       quote_amount: info.price,
       duration_minutes: info.duration,
-      same_building_block: sameBlock
+      same_building_block: sameBlock,
+      tenant_name: String((card.querySelector('.multi-access-name') || {}).value || '').trim() || null,
+      tenant_phone: String((card.querySelector('.multi-access-phone') || {}).value || '').trim() || null,
+      access_notes: String((card.querySelector('.multi-access-notes') || {}).value || '').trim() || null
     };
   }
 
@@ -217,7 +221,7 @@
     if (sameBlock) {
       target.innerHTML = `<div class="field"><label>Flat / unit number <span class="req">*</span></label><input type="text" class="multi-flat-unit" placeholder="e.g. Flat 4">${addressPreviewHtml()}</div>`;
     } else {
-      target.innerHTML = `<div class="field"><label>Property address <span class="req">*</span></label><input type="text" class="multi-address" placeholder="e.g. 22 Example Road, London"></div><div class="field"><label>Postcode <span class="req">*</span></label><input type="text" class="multi-postcode" placeholder="e.g. N5 1PF" style="text-transform:uppercase"><div class="hint">Must be in the same route area as the first property.</div></div>`;
+      target.innerHTML = `<div class="field"><label>Flat / unit number (optional)</label><input type="text" class="multi-flat-unit" placeholder="e.g. Flat 4"></div><div class="field"><label>Property address <span class="req">*</span></label><input type="text" class="multi-address" placeholder="e.g. 22 Example Road, London"></div><div class="field"><label>Postcode <span class="req">*</span></label><input type="text" class="multi-postcode" placeholder="e.g. N5 1PF" style="text-transform:uppercase"><div class="hint">Must be in the same route area as the first property.</div></div>`;
     }
 
     target.querySelectorAll('input, select').forEach(input => {
@@ -234,7 +238,7 @@
     card.className = 'multi-property-card';
     const radioName = `multi-block-mode-${Date.now()}-${number}`;
 
-    card.innerHTML = `<div class="multi-property-card-head"><div class="multi-property-title">Property ${number}</div><button type="button" class="multi-remove">Remove</button></div><div class="multi-block-question"><div class="multi-block-question-label">Are these properties in the same building/block?</div><div class="multi-block-options"><label class="multi-block-option"><input type="radio" name="${radioName}" data-block-mode value="same" checked> Yes, same building/block</label><label class="multi-block-option"><input type="radio" name="${radioName}" data-block-mode value="different"> No, different address</label></div></div><div class="multi-address-fields"></div><div class="field-row"><div class="field"><label>Property type <span class="req">*</span></label><select class="multi-subtype">${subtypeOptions()}</select></div><div class="field"><label>Estimated property value <span class="req">*</span></label><select class="multi-value"><option value="">— Select —</option><option value="999000">Up to £999,999</option><option value="1999999">£1,000,000 to £1,999,999</option><option value="2999999">£2,000,000 to £2,999,999</option><option value="3999999">£3,000,000 to £3,999,999</option><option value="4000000">£4,000,000 and above</option></select></div></div><div class="field multi-sqm-field" style="display:none"><label>Approximate floor area (m²) <span class="req">*</span></label><input type="number" class="multi-sqm" min="1" max="100000" placeholder="e.g. 145"></div><div class="multi-price-line">Price: —</div>`;
+    card.innerHTML = `<div class="multi-property-card-head"><div class="multi-property-title">Property ${number}</div><button type="button" class="multi-remove">Remove</button></div><div class="multi-block-question"><div class="multi-block-question-label">Are these properties in the same building/block?</div><div class="multi-block-options"><label class="multi-block-option"><input type="radio" name="${radioName}" data-block-mode value="same" checked> Yes, same building/block</label><label class="multi-block-option"><input type="radio" name="${radioName}" data-block-mode value="different"> No, different address</label></div></div><div class="multi-address-fields"></div><div class="field-row"><div class="field"><label>Property type <span class="req">*</span></label><select class="multi-subtype">${subtypeOptions()}</select></div><div class="field"><label>Estimated property value <span class="req">*</span></label><select class="multi-value"><option value="">— Select —</option><option value="999000">Up to £999,999</option><option value="1999999">£1,000,000 to £1,999,999</option><option value="2999999">£2,000,000 to £2,999,999</option><option value="3999999">£3,000,000 to £3,999,999</option><option value="4000000">£4,000,000 and above</option></select></div></div><div class="field-row"><div class="field"><label>Access contact (optional)</label><input type="text" class="multi-access-name" placeholder="Tenant, agent or contractor"></div><div class="field"><label>Access contact phone (optional)</label><input type="tel" class="multi-access-phone" placeholder="07xxx xxx xxx"></div></div><div class="field"><label>Access notes (optional)</label><input type="text" class="multi-access-notes" placeholder="How to get access"></div><div class="field multi-sqm-field" style="display:none"><label>Approximate floor area (m²) <span class="req">*</span></label><input type="number" class="multi-sqm" min="1" max="100000" placeholder="e.g. 145"></div><div class="multi-price-line">Price: —</div>`;
 
     card.querySelector('.multi-remove').addEventListener('click', () => {
       card.remove();

@@ -1209,7 +1209,7 @@ footer a {
   <p>Fast, professional energy performance certificates for London properties. Accredited assessor, certificates issued promptly after assessment and payment.</p>
   <div class="trust-badges">
     <div class="badge">Fully accredited DEA</div>
-    <div class="badge">London route-fit check</div>
+    <div class="badge">Live availability</div>
     <div class="badge">Choose your preferred date</div>
   </div>
 </div>
@@ -1261,6 +1261,10 @@ footer a {
     </div>
 
     <div class="step-body">
+      <div class="field">
+        <label>Flat / unit number <span style="color:var(--ink3);font-weight:400">(optional)</span></label>
+        <input type="text" id="flat-unit" placeholder="e.g. Flat 4, Unit 2">
+      </div>
       <div class="field">
         <label>Property address <span class="req">*</span></label>
         <input type="text" id="address" placeholder="e.g. 14 Highbury Grove, London">
@@ -1389,12 +1393,12 @@ footer a {
   <div class="form-step" id="step-3">
     <div class="step-header">
       <h2>Choose your date</h2>
-      <p>Choose a convenient date. Your visit time is planned automatically.</p>
+      <p>Choose an available AM or PM appointment.</p>
     </div>
 
     <div class="step-body">
       <div class="date-info">
-        Available dates use the live EPC Pro schedule and route plan.
+        We will confirm your appointment time 24 hours beforehand.
       </div>
 
       <div class="availability-status loading" id="availability-status">
@@ -1430,7 +1434,7 @@ footer a {
   <div class="form-step" id="step-4">
     <div class="step-header">
       <h2>Your contact details</h2>
-      <p>We will send your booking reference and appointment details to this email address.</p>
+      <p>We will send your booking reference and appointment window to this email address.</p>
     </div>
 
     <div class="step-body">
@@ -1460,8 +1464,12 @@ footer a {
         <div class="error-msg" id="err-phone">Please enter a phone number.</div>
       </div>
 
+      <div class="field-row">
+        <div class="field"><label>Access contact <span style="color:var(--ink3);font-weight:400">(optional)</span></label><input type="text" id="tenant-name" placeholder="Tenant, agent or contractor"></div>
+        <div class="field"><label>Access contact phone <span style="color:var(--ink3);font-weight:400">(optional)</span></label><input type="tel" id="tenant-phone" placeholder="07xxx xxx xxx"></div>
+      </div>
       <div class="field">
-        <label>Access instructions <span style="color:var(--ink3);font-weight:400">(optional)</span></label>
+        <label>Access notes <span style="color:var(--ink3);font-weight:400">(optional)</span></label>
         <input type="text" id="access" placeholder="e.g. Tenant will be present, key with agent, ring doorbell">
         <div class="hint">Any information that helps the assessor access the property.</div>
       </div>
@@ -1505,8 +1513,8 @@ footer a {
       <div class="confirm-block">
         <div class="confirm-block-label">Appointment</div>
         <div class="confirm-item"><span class="ci-label">Date</span><span class="ci-value" id="cf-date">—</span></div>
-        <div class="confirm-item"><span class="ci-label">Visit time</span><span class="ci-value" id="cf-window">Planned automatically</span></div>
-        <div class="confirm-item"><span class="ci-label">Route fit</span><span class="ci-value" id="cf-route">—</span></div>
+        <div class="confirm-item"><span class="ci-label">Appointment window</span><span class="ci-value" id="cf-window">AM or PM</span></div>
+        <div class="confirm-item" style="display:none"><span class="ci-label">Route fit</span><span class="ci-value" id="cf-route">—</span></div>
         <div class="confirm-item"><span class="ci-label">Duration</span><span class="ci-value" id="cf-duration">—</span></div>
       </div>
 
@@ -2255,7 +2263,7 @@ async function loadLiveAvailability() {
     state.availabilityLoaded = true;
 
     status.className = 'availability-status ok';
-    status.textContent = 'Live availability loaded, including existing bookings and blocked time.';
+    status.textContent = 'Available appointment dates loaded.';
 
     if (continueBtn) continueBtn.disabled = false;
 
@@ -2384,7 +2392,7 @@ function buildDateGrid() {
     const heading = document.createElement('div');
     heading.innerHTML = `
       <div class="calendar-heading">Available dates</div>
-      <div class="calendar-subnote">The next available working days are shown in date order. Route information is shown inside each date.</div>
+      <div class="calendar-subnote">The next available appointment dates are shown in date order.</div>
     `;
     grid.appendChild(heading);
 
@@ -2439,7 +2447,7 @@ function populateConfirm() {
   document.getElementById('cf-subtype').textContent = state.subtype || '—';
   document.getElementById('cf-band').textContent = state.band;
   document.getElementById('cf-date').textContent = state.dateStr;
-  document.getElementById('cf-window').textContent = state.bookingWindow === 'AM' ? 'AM — 08:00 to 13:00' : 'PM — 13:00 to 17:00';
+  document.getElementById('cf-window').textContent = state.bookingWindow === 'AM' ? 'AM appointment' : 'PM appointment';
   document.getElementById('cf-route').textContent = routeFit.label + ' — ' + routeFit.message;
   document.getElementById('cf-duration').textContent = state.duration ? state.duration + ' minutes' : 'Review required';
   document.getElementById('cf-name').textContent = `${fname} ${lname}`.trim();
