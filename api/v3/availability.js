@@ -3,7 +3,7 @@ module.exports=async function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   if(req.method!=='GET')return res.status(405).json({ok:false,error:'Use GET.'});
   try{
-    const from=String(req.query?.from||''),to=String(req.query?.to||''),postcode=String(req.query?.postcode||''),origin=String(process.env.V3_DASHBOARD_ORIGIN||(process.env.VERCEL_ENV==='preview'&&process.env.VERCEL_GIT_COMMIT_REF==='codex/v3-booking-integration'?'https://epc-dashboard-git-codex-clean-v3-platform-help-8328s-projects.vercel.app':'')).trim().replace(/\/$/,''),headers={Accept:'application/json'},bypass=String(process.env.V3_DASHBOARD_BYPASS_SECRET||'').trim();
+    const from=String(req.query?.from||''),to=String(req.query?.to||''),postcode=String(req.query?.postcode||''),origin=String(process.env.V3_DASHBOARD_ORIGIN||(process.env.VERCEL_ENV==='preview'&&process.env.VERCEL_GIT_COMMIT_REF==='codex/v3-booking-integration'?'https://epc-dashboard-git-codex-clean-v3-platform-help-8328s-projects.vercel.app':process.env.VERCEL_ENV==='preview'&&process.env.VERCEL_GIT_COMMIT_REF==='codex/unified-booking-intake'?'https://epc-dashboard-git-v3-staging-help-8328s-projects.vercel.app':'')).trim().replace(/\/$/,''),headers={Accept:'application/json'},bypass=String(process.env.V3_DASHBOARD_BYPASS_SECRET||'').trim();
     if(bypass)headers['x-vercel-protection-bypass']=bypass;
     const response=await fetch(`${origin}/api/v3/public/availability?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&postcode=${encodeURIComponent(postcode)}`,{headers,signal:AbortSignal.timeout(8000)}),payload=await response.json();
     if(response.status===400&&payload?.code==='MANUAL_BOOKING_REQUIRED')return res.status(400).json(payload);
