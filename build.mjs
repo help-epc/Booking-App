@@ -4,3 +4,4 @@ await writeFile('public/.keep', 'Clean V3 booking application; root is served by
 await copyFile('index.html','public/index.html');
 await copyFile('v3-experience.js','public/v3-experience.js');
 await copyFile('multi-property-extension.js','public/multi-property-extension.js');
+await copyFile('booking-preview.html','public/booking-preview.html');

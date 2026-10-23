@@ -15,3 +15,4 @@ api/_lib/*
 !index.html
 !multi-property-extension.js
 !v3-experience.js
+!booking-preview.html
