@@ -27,7 +27,7 @@ test('multi-property supports exact domestic area bands and one V3 availability 
 
 test('review uses 45-minute visits and required customer snapshots',()=>{
   assert.ok(experience.includes("'45 minutes per property':'45 minutes'"));
-  for(const field of['first_name','surname','email','phone','access_instructions','referral_source'])assert.ok(experience.includes(field));
+  for(const field of['first_name','surname','email','phone','flat_unit','tenant_name','tenant_phone','access_notes','requested_period','referral_source'])assert.ok(experience.includes(field));
   for(const id of['evidence-ack','terms','cf-total','cf-deposit','cf-balance'])assert.ok(experience.includes(id)||page.includes(id));
 });
 
