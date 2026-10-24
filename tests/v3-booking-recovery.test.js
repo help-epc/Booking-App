@@ -2,6 +2,7 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
+const {createRequire}=require('node:module');
 function client(fetch,storage=new Map()){
  const elements=new Map();
  const document={readyState:'loading',addEventListener(){},getElementById(id){if(!elements.has(id))elements.set(id,{});return elements.get(id)}};
@@ -25,7 +26,7 @@ test('definitive capacity rejection allows a fresh request',async()=>{
 });
 test('proxy allows slow invoice completion and reports uncertain results honestly',async()=>{
  const source=fs.readFileSync(require.resolve('../api/v3/booking-intents.js'),'utf8');let timeout;
- const context={module:{exports:{}},process:{env:{V3_PUBLIC_BOOKING_ENABLED:'true',V3_DASHBOARD_ORIGIN:'https://example.com'}},console:{error(){}},AbortSignal:{timeout:ms=>{timeout=ms}},fetch:async()=>{throw new Error('timeout')}};
+ const context={module:{exports:{}},require:createRequire(require.resolve('../api/v3/booking-intents.js')),process:{env:{V3_PUBLIC_BOOKING_ENABLED:'true',V3_DASHBOARD_ORIGIN:'https://example.com'}},console:{error(){}},AbortSignal:{timeout:ms=>{timeout=ms}},fetch:async()=>{throw new Error('timeout')}};
  vm.runInNewContext(source,context);const res={setHeader(){},status(n){this.code=n;return this},json(body){this.body=body;return this}};
  await context.module.exports({method:'POST',headers:{'idempotency-key':'same'},body:{}},res);
  assert.equal(timeout,55000);assert.equal(res.code,503);assert.equal(res.body.code,'V3_BOOKING_RESULT_PENDING');assert.equal(res.body.retryable,true);assert.doesNotMatch(res.body.error,/unavailable/);

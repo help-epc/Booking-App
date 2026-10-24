@@ -15,7 +15,7 @@
     .steps{display:flex;gap:8px;align-items:center;margin:0 0 18px;flex-wrap:wrap}.step{border:1px solid var(--line);border-radius:999px;padding:7px 12px;background:white;color:var(--muted);font-size:13px}.step.active{border-color:var(--orange);color:#9a5100;background:#fff7ed;font-weight:700}.arrow{color:#a7b2bd}
     .grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);gap:18px}.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 8px 26px rgba(23,54,79,.06)}h2{font-size:19px;color:var(--navy);margin:0 0 4px}.sub{color:var(--muted);font-size:13px;margin:0 0 18px}
     label{display:block;font-weight:700;font-size:13px;margin:13px 0 5px}.field{width:100%;border:1px solid #cfd9e2;border-radius:8px;padding:11px 12px;background:#f9fbfc;color:#35485a}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field[readonly]{cursor:default}
-    .window-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.window{border:1px solid #cfd9e2;border-radius:9px;padding:14px;background:#fff;color:var(--navy);font-size:16px;font-weight:700;cursor:pointer}.window small{display:block;color:var(--muted);font-size:12px;font-weight:400;margin-top:3px}.window.selected{border:2px solid var(--orange);background:#fff7ed;color:#995000}
+    .window-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.window{border:1px solid #cfd9e2;border-radius:9px;padding:14px;background:#fff;color:var(--navy);font-size:16px;font-weight:700;cursor:pointer}.window small{display:block;color:var(--muted);font-size:12px;font-weight:400;margin-top:3px}.window.selected{border:2px solid var(--orange);background:#fff7ed;color:#995000}.window:disabled{background:#f1f3f5;color:#788694;cursor:not-allowed}
     .promise{border-left:4px solid var(--orange);background:#fff8f0;padding:12px 14px;margin-top:15px;border-radius:5px;color:#594327}.response{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:18px;margin-top:15px}.response .label{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700}.response strong{display:block;color:var(--navy);font-size:18px;margin:5px 0}.response p{margin:5px 0;color:#43566a}
     .note{white-space:pre-line;background:#f7f9fb;border:1px solid var(--line);border-radius:9px;padding:16px;color:#2f4357;font-family:inherit}.tag{display:inline-block;background:#e9f6ef;color:var(--green);border-radius:999px;padding:4px 9px;font-size:12px;font-weight:700;margin:0 0 10px}.foot{font-size:12px;color:var(--muted);margin-top:18px}
     @media(max-width:760px){header{padding:15px 20px}header span{display:none}main{margin:20px auto}.grid{grid-template-columns:1fr}h1{font-size:25px}.card{padding:18px}}
@@ -37,16 +37,17 @@
         <div class="row"><div><label for="access-name">Access contact</label><input class="field" id="access-name" value="Sam Tenant" readonly></div><div><label for="access-phone">Access contact phone</label><input class="field" id="access-phone" value="07000 000 001" readonly></div></div>
         <label for="access-notes">Access notes</label><textarea class="field" id="access-notes" rows="2" readonly>Ring Sam on arrival. The tenant will meet you at the main entrance.</textarea>
         <label>Choose an appointment window · Wednesday 28 October</label>
-        <div class="window-row" role="group" aria-label="Choose AM or PM">
-          <button class="window selected" type="button" aria-pressed="true" data-period="AM">AM appointment<small>Morning</small></button>
-          <button class="window" type="button" aria-pressed="false" data-period="PM">PM appointment<small>Afternoon</small></button>
+        <div class="window-row" role="group" aria-label="Appointment availability">
+          <button class="window selected" type="button" aria-pressed="true">AM appointment<small>3 spaces available</small></button>
+          <button class="window" type="button" disabled aria-disabled="true">PM appointment<small>Opens when AM is full</small></button>
         </div>
+        <p class="foot">AM appointments are offered first. PM appointments open after the AM spaces are full.</p>
         <div class="promise">We will confirm your appointment time 24 hours beforehand.</div>
         <p class="foot">No arrival time or route-planning explanation is shown to the client.</p>
       </section>
       <section class="card" aria-labelledby="handoff-title">
         <h2 id="handoff-title">What each side sees</h2>
-        <p class="sub">Changing AM/PM updates both the client confirmation and the V3 diary note.</p>
+        <p class="sub">The selected appointment window and access details carry into the V3 diary note.</p>
         <div class="response" aria-live="polite">
           <span class="label">Client booking response</span>
           <strong id="client-response">Your booking is for the AM appointment.</strong>
@@ -62,14 +63,5 @@ Access notes: Ring Sam on arrival. The tenant will meet you at the main entrance
       </section>
     </div>
   </main>
-  <script>
-    const response=document.getElementById('client-response'),notes=document.getElementById('v3-notes');
-    document.querySelectorAll('[data-period]').forEach(button=>button.addEventListener('click',()=>{
-      const period=button.dataset.period;
-      document.querySelectorAll('[data-period]').forEach(option=>{const selected=option===button;option.classList.toggle('selected',selected);option.setAttribute('aria-pressed',String(selected))});
-      response.textContent=`Your booking is for the ${period} appointment.`;
-      notes.textContent=`Property: Flat 4, 86 Example Road, London, N5 1PF\nAppointment: Wednesday 28 October · ${period}\nAccess contact: Sam Tenant · 07000 000 001\nAccess notes: Ring Sam on arrival. The tenant will meet you at the main entrance.`;
-    }));
-  </script>
 </body>
 </html>
